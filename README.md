@@ -8,14 +8,27 @@ Parcours explicable de vidéos YouTube dans un graphe de sujets. Pipeline Python
 pip install -e ".[extract,render,test]"   # ou : pip install networkx pytest
 ```
 
+## Démarrage rapide (corpus réel de 35 vidéos YouTube vérifiées)
+
+Les 35 vidéos (`data/corpus_real.json`) sont de vraies conférences/tutoriels YouTube,
+chaque ID validé via l'oEmbed public. Les sujets (3-5 par vidéo) sont assignés
+manuellement depuis les titres publics (provenance `manual-curated`) :
+clusters Roslyn/C#, Compilateurs/LLVM, Rust, TypeScript, Machine Learning,
+Noyau Linux + ponts inter-clusters.
+
+```bash
+python scripts/make_real_corpus.py                                          # régénère data/corpus_real.json
+python -m vte.cli run data/corpus_real.json --start ghnY4S8unMM --mode decouvrir --out data/runs/demo.json
+python -m vte.cli render data/corpus_real.json --run data/runs/demo.json --out out/parcours.html
+python -m vte.cli graph data/corpus_real.json --run data/runs/demo.json --out out/graphe.png
+python -m vte.cli baseline data/corpus_real.json --start ghnY4S8unMM
+```
+
 ## Démarrage rapide (corpus de démonstration fictif)
 
 ```bash
 python scripts/make_demo_corpus.py                 # ~35 vidéos fictives en 6 clusters + ponts
 python -m vte.cli run data/corpus_demo.json --start vid-001 --mode decouvrir --out data/runs/demo.json
-python -m vte.cli render data/corpus_demo.json --run data/runs/demo.json --out out/parcours.html
-python -m vte.cli graph data/corpus_demo.json --run data/runs/demo.json --out out/graphe.png
-python -m vte.cli baseline data/corpus_demo.json --start vid-001
 ```
 
 ## Flux réel
