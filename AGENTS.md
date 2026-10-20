@@ -34,3 +34,17 @@ Skills from [mattpocock/skills](https://github.com/mattpocock/skills), installed
 - [to-questionnaire](.agents/skills/to-questionnaire/SKILL.md): Turn a decision you can't fully answer into a questionnaire for someone else.
 - [wait-what](.agents/skills/wait-what/SKILL.md): Stop. That last message did not land: re-pitch it.
 - [writing-for-agents](.agents/skills/writing-for-agents/SKILL.md): Writing documents for agents. Use when creating or editing skills or AGENTS.md.
+
+## Repo config for skills
+
+### Issue tracker
+
+GitHub Issues via the `gh` CLI. See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+Canonical names, unchanged. See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Single-context: `GLOSSARY.md` and `docs/adr/` at the repo root. See `docs/agents/domain.md`.
