@@ -1,0 +1,13 @@
+# Secrets et préférences personnelles
+.env
+.env.*
+!.env.example
+data/*
+!data/.gitkeep
+*.db
+*.sqlite
+*.sqlite3
+__pycache__/
+.venv/
+venv/
+.DS_Store
