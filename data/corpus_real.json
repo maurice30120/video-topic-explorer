@@ -1,0 +1,1394 @@
+{
+  "videos": [
+    {
+      "id": "ghnY4S8unMM",
+      "url": "https://www.youtube.com/watch?v=ghnY4S8unMM",
+      "title": "Building Code Analyzers with the new C# compiler platform (Roslyn) - Filip W",
+      "channel": "NDC Conferences",
+      "description": "Conférence/tutoriel YouTube sur : Roslyn, C#, .NET, Analyse statique.",
+      "topics": [
+        {
+          "raw": "Roslyn",
+          "canonical": "Roslyn",
+          "justification": "assigné depuis le titre public",
+          "provenance": {
+            "source": "manual-curated",
+            "model": "human",
+            "version": "2026-10"
+          }
+        },
+        {
+          "raw": "C#",
+          "canonical": "C#",
+          "justification": "assigné depuis le titre public",
+          "provenance": {
+            "source": "manual-curated",
+            "model": "human",
+            "version": "2026-10"
+          }
+        },
+        {
+          "raw": ".NET",
+          "canonical": ".NET",
+          "justification": "assigné depuis le titre public",
+          "provenance": {
+            "source": "manual-curated",
+            "model": "human",
+            "version": "2026-10"
+          }
+        },
+        {
+          "raw": "Analyse statique",
+          "canonical": "Analyse statique",
+          "justification": "assigné depuis le titre public",
+          "provenance": {
+            "source": "manual-curated",
+            "model": "human",
+            "version": "2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "wXXHd8gYqVg",
+      "url": "https://www.youtube.com/watch?v=wXXHd8gYqVg",
+      "title": "Learn Roslyn Now - E01 - Introduction to Roslyn Tooling",
+      "channel": "Josh Varty",
+      "description": "Conférence/tutoriel YouTube sur : Roslyn, C#, .NET.",
+      "topics": [
+        {
+          "raw": "Roslyn",
+          "canonical": "Roslyn",
+          "justification": "assigné depuis le titre public",
+          "provenance": {
+            "source": "manual-curated",
+            "model": "human",
+            "version": "2026-10"
+          }
+        },
+        {
+          "raw": "C#",
+          "canonical": "C#",
+          "justification": "assigné depuis le titre public",
+          "provenance": {
+            "source": "manual-curated",
+            "model": "human",
+            "version": "2026-10"
+          }
+        },
+        {
+          "raw": ".NET",
+          "canonical": ".NET",
+          "justification": "assigné depuis le titre public",
+          "provenance": {
+            "source": "manual-curated",
+            "model": "human",
+            "version": "2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "vGYG8vkrlyk",
+      "url": "https://www.youtube.com/watch?v=vGYG8vkrlyk",
+      "title": "RoslynPad - or how to build a C# editor with Roslyn",
+      "channel": "Microsoft Developer",
+      "description": "Conférence/tutoriel YouTube sur : Roslyn, C#, Éditeurs.",
+      "topics": [
+        {
+          "raw": "Roslyn",
+          "canonical": "Roslyn",
+          "justification": "assigné depuis le titre public",
+          "provenance": {
+            "source": "manual-curated",
+            "model": "human",
+            "version": "2026-10"
+          }
+        },
+        {
+          "raw": "C#",
+          "canonical": "C#",
+          "justification": "assigné depuis le titre public",
+          "provenance": {
+            "source": "manual-curated",
+            "model": "human",
+            "version": "2026-10"
+          }
+        },
+        {
+          "raw": "Éditeurs",
+          "canonical": "Éditeurs",
+          "justification": "assigné depuis le titre public",
+          "provenance": {
+            "source": "manual-curated",
+            "model": "human",
+            "version": "2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "-bBA8WvH-BQ",
+      "url": "https://www.youtube.com/watch?v=-bBA8WvH-BQ",
+      "title": "Using Roslyn Analyzers",
+      "channel": "Microsoft Visual Studio",
+      "description": "Conférence/tutoriel YouTube sur : Roslyn, C#, Analyse statique.",
+      "topics": [
+        {
+          "raw": "Roslyn",
+          "canonical": "Roslyn",
+          "justification": "assigné depuis le titre public",
+          "provenance": {
+            "source": "manual-curated",
+            "model": "human",
+            "version": "2026-10"
+          }
+        },
+        {
+          "raw": "C#",
+          "canonical": "C#",
+          "justification": "assigné depuis le titre public",
+          "provenance": {
+            "source": "manual-curated",
+            "model": "human",
+            "version": "2026-10"
+          }
+        },
+        {
+          "raw": "Analyse statique",
+          "canonical": "Analyse statique",
+          "justification": "assigné depuis le titre public",
+          "provenance": {
+            "source": "manual-curated",
+            "model": "human",
+            "version": "2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "ROK4BMx81EY",
+      "url": "https://www.youtube.com/watch?v=ROK4BMx81EY",
+      "title": ".NET Compiler Platform Roslyn. Analyzers and the Rise of Code Aware Libraries",
+      "channel": "Developer TV",
+      "description": "Conférence/tutoriel YouTube sur : Roslyn, .NET, Compilateurs.",
+      "topics": [
+        {
+          "raw": "Roslyn",
+          "canonical": "Roslyn",
+          "justification": "assigné depuis le titre public",
+          "provenance": {
+            "source": "manual-curated",
+            "model": "human",
+            "version": "2026-10"
+          }
+        },
+        {
+          "raw": ".NET",
+          "canonical": ".NET",
+          "justification": "assigné depuis le titre public",
+          "provenance": {
+            "source": "manual-curated",
+            "model": "human",
+            "version": "2026-10"
+          }
+        },
+        {
+          "raw": "Compilateurs",
+          "canonical": "Compilateurs",
+          "justification": "assigné depuis le titre public",
+          "provenance": {
+            "source": "manual-curated",
+            "model": "human",
+            "version": "2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "uMqx8NNT4xY",
+      "url": "https://www.youtube.com/watch?v=uMqx8NNT4xY",
+      "title": "The history of C# and TypeScript with Anders Hejlsberg | GitHub",
+      "channel": "GitHub",
+      "description": "Conférence/tutoriel YouTube sur : C#, TypeScript, Conception de langage.",
+      "topics": [
+        {
+          "raw": "C#",
+          "canonical": "C#",
+          "justification": "assigné depuis le titre public",
+          "provenance": {
+            "source": "manual-curated",
+            "model": "human",
+            "version": "2026-10"
+          }
+        },
+        {
+          "raw": "TypeScript",
+          "canonical": "TypeScript",
+          "justification": "assigné depuis le titre public",
+          "provenance": {
+            "source": "manual-curated",
+            "model": "human",
+            "version": "2026-10"
+          }
+        },
+        {
+          "raw": "Conception de langage",
+          "canonical": "Conception de langage",
+          "justification": "assigné depuis le titre public",
+          "provenance": {
+            "source": "manual-curated",
+            "model": "human",
+            "version": "2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "w9T8pSVcX3Q",
+      "url": "https://www.youtube.com/watch?v=w9T8pSVcX3Q",
+      "title": "Analyzing source code using Roslyn - Erik Schierboom - NDC Oslo 2020",
+      "channel": "NDC Conferences",
+      "description": "Conférence/tutoriel YouTube sur : Roslyn, Analyse statique, .NET.",
+      "topics": [
+        {
+          "raw": "Roslyn",
+          "canonical": "Roslyn",
+          "justification": "assigné depuis le titre public",
+          "provenance": {
+            "source": "manual-curated",
+            "model": "human",
+            "version": "2026-10"
+          }
+        },
+        {
+          "raw": "Analyse statique",
+          "canonical": "Analyse statique",
+          "justification": "assigné depuis le titre public",
+          "provenance": {
+            "source": "manual-curated",
+            "model": "human",
+            "version": "2026-10"
+          }
+        },
+        {
+          "raw": ".NET",
+          "canonical": ".NET",
+          "justification": "assigné depuis le titre public",
+          "provenance": {
+            "source": "manual-curated",
+            "model": "human",
+            "version": "2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "Gv7vuA-7UVA",
+      "url": "https://www.youtube.com/watch?v=Gv7vuA-7UVA",
+      "title": "Introduction to Roslyn",
+      "channel": "Xamarin University",
+      "description": "Conférence/tutoriel YouTube sur : Roslyn, C#, Analyse statique.",
+      "topics": [
+        {
+          "raw": "Roslyn",
+          "canonical": "Roslyn",
+          "justification": "assigné depuis le titre public",
+          "provenance": {
+            "source": "manual-curated",
+            "model": "human",
+            "version": "2026-10"
+          }
+        },
+        {
+          "raw": "C#",
+          "canonical": "C#",
+          "justification": "assigné depuis le titre public",
+          "provenance": {
+            "source": "manual-curated",
+            "model": "human",
+            "version": "2026-10"
+          }
+        },
+        {
+          "raw": "Analyse statique",
+          "canonical": "Analyse statique",
+          "justification": "assigné depuis le titre public",
+          "provenance": {
+            "source": "manual-curated",
+            "model": "human",
+            "version": "2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "bUTXhcf_aNc",
+      "url": "https://www.youtube.com/watch?v=bUTXhcf_aNc",
+      "title": "Intro to the Architecture of LLVM",
+      "channel": "Nick Desaulniers",
+      "description": "Conférence/tutoriel YouTube sur : LLVM, Compilateurs, Architecture.",
+      "topics": [
+        {
+          "raw": "LLVM",
+          "canonical": "LLVM",
+          "justification": "assigné depuis le titre public",
+          "provenance": {
+            "source": "manual-curated",
+            "model": "human",
+            "version": "2026-10"
+          }
+        },
+        {
+          "raw": "Compilateurs",
+          "canonical": "Compilateurs",
+          "justification": "assigné depuis le titre public",
+          "provenance": {
+            "source": "manual-curated",
+            "model": "human",
+            "version": "2026-10"
+          }
+        },
+        {
+          "raw": "Architecture",
+          "canonical": "Architecture",
+          "justification": "assigné depuis le titre public",
+          "provenance": {
+            "source": "manual-curated",
+            "model": "human",
+            "version": "2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "mfTYfzKqi5s",
+      "url": "https://www.youtube.com/watch?v=mfTYfzKqi5s",
+      "title": "How Compilers Work: Introduction to LLVM Passes - Andrzej Warzynski - C++ on Sea 2022",
+      "channel": "cpponsea",
+      "description": "Conférence/tutoriel YouTube sur : LLVM, Compilateurs, Optimisation.",
+      "topics": [
+        {
+          "raw": "LLVM",
+          "canonical": "LLVM",
+          "justification": "assigné depuis le titre public",
+          "provenance": {
+            "source": "manual-curated",
+            "model": "human",
+            "version": "2026-10"
+          }
+        },
+        {
+          "raw": "Compilateurs",
+          "canonical": "Compilateurs",
+          "justification": "assigné depuis le titre public",
+          "provenance": {
+            "source": "manual-curated",
+            "model": "human",
+            "version": "2026-10"
+          }
+        },
+        {
+          "raw": "Optimisation",
+          "canonical": "Optimisation",
+          "justification": "assigné depuis le titre public",
+          "provenance": {
+            "source": "manual-curated",
+            "model": "human",
+            "version": "2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "8pdQFUOlHLQ",
+      "url": "https://www.youtube.com/watch?v=8pdQFUOlHLQ",
+      "title": "Introduction To LLVM",
+      "channel": "Mike Shah",
+      "description": "Conférence/tutoriel YouTube sur : LLVM, Compilateurs, Conception de langage.",
+      "topics": [
+        {
+          "raw": "LLVM",
+          "canonical": "LLVM",
+          "justification": "assigné depuis le titre public",
+          "provenance": {
+            "source": "manual-curated",
+            "model": "human",
+            "version": "2026-10"
+          }
+        },
+        {
+          "raw": "Compilateurs",
+          "canonical": "Compilateurs",
+          "justification": "assigné depuis le titre public",
+          "provenance": {
+            "source": "manual-curated",
+            "model": "human",
+            "version": "2026-10"
+          }
+        },
+        {
+          "raw": "Conception de langage",
+          "canonical": "Conception de langage",
+          "justification": "assigné depuis le titre public",
+          "provenance": {
+            "source": "manual-curated",
+            "model": "human",
+            "version": "2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "VKIv_Bkp4pk",
+      "url": "https://www.youtube.com/watch?v=VKIv_Bkp4pk",
+      "title": "Introduction to LLVM Building simple program analysis tools and instrumentation",
+      "channel": "FOSDEM",
+      "description": "Conférence/tutoriel YouTube sur : LLVM, Compilateurs, Instrumentation.",
+      "topics": [
+        {
+          "raw": "LLVM",
+          "canonical": "LLVM",
+          "justification": "assigné depuis le titre public",
+          "provenance": {
+            "source": "manual-curated",
+            "model": "human",
+            "version": "2026-10"
+          }
+        },
+        {
+          "raw": "Compilateurs",
+          "canonical": "Compilateurs",
+          "justification": "assigné depuis le titre public",
+          "provenance": {
+            "source": "manual-curated",
+            "model": "human",
+            "version": "2026-10"
+          }
+        },
+        {
+          "raw": "Instrumentation",
+          "canonical": "Instrumentation",
+          "justification": "assigné depuis le titre public",
+          "provenance": {
+            "source": "manual-curated",
+            "model": "human",
+            "version": "2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "3CI23HA7P9Y",
+      "url": "https://www.youtube.com/watch?v=3CI23HA7P9Y",
+      "title": "What is LLVM? | The compiler infrastructure explained",
+      "channel": "InfoWorld",
+      "description": "Conférence/tutoriel YouTube sur : LLVM, Compilateurs, Rust.",
+      "topics": [
+        {
+          "raw": "LLVM",
+          "canonical": "LLVM",
+          "justification": "assigné depuis le titre public",
+          "provenance": {
+            "source": "manual-curated",
+            "model": "human",
+            "version": "2026-10"
+          }
+        },
+        {
+          "raw": "Compilateurs",
+          "canonical": "Compilateurs",
+          "justification": "assigné depuis le titre public",
+          "provenance": {
+            "source": "manual-curated",
+            "model": "human",
+            "version": "2026-10"
+          }
+        },
+        {
+          "raw": "Rust",
+          "canonical": "Rust",
+          "justification": "assigné depuis le titre public",
+          "provenance": {
+            "source": "manual-curated",
+            "model": "human",
+            "version": "2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "BT2Cv-Tjq7Q",
+      "url": "https://www.youtube.com/watch?v=BT2Cv-Tjq7Q",
+      "title": "LLVM in 100 Seconds",
+      "channel": "Fireship",
+      "description": "Conférence/tutoriel YouTube sur : LLVM, Compilateurs, Rust.",
+      "topics": [
+        {
+          "raw": "LLVM",
+          "canonical": "LLVM",
+          "justification": "assigné depuis le titre public",
+          "provenance": {
+            "source": "manual-curated",
+            "model": "human",
+            "version": "2026-10"
+          }
+        },
+        {
+          "raw": "Compilateurs",
+          "canonical": "Compilateurs",
+          "justification": "assigné depuis le titre public",
+          "provenance": {
+            "source": "manual-curated",
+            "model": "human",
+            "version": "2026-10"
+          }
+        },
+        {
+          "raw": "Rust",
+          "canonical": "Rust",
+          "justification": "assigné depuis le titre public",
+          "provenance": {
+            "source": "manual-curated",
+            "model": "human",
+            "version": "2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "DWHDjVI5juo",
+      "url": "https://www.youtube.com/watch?v=DWHDjVI5juo",
+      "title": "LLVM Tutorial #1: Introduction",
+      "channel": "Toby Ho",
+      "description": "Conférence/tutoriel YouTube sur : LLVM, Compilateurs, Tutoriels.",
+      "topics": [
+        {
+          "raw": "LLVM",
+          "canonical": "LLVM",
+          "justification": "assigné depuis le titre public",
+          "provenance": {
+            "source": "manual-curated",
+            "model": "human",
+            "version": "2026-10"
+          }
+        },
+        {
+          "raw": "Compilateurs",
+          "canonical": "Compilateurs",
+          "justification": "assigné depuis le titre public",
+          "provenance": {
+            "source": "manual-curated",
+            "model": "human",
+            "version": "2026-10"
+          }
+        },
+        {
+          "raw": "Tutoriels",
+          "canonical": "Tutoriels",
+          "justification": "assigné depuis le titre public",
+          "provenance": {
+            "source": "manual-curated",
+            "model": "human",
+            "version": "2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "brVASZu2OrE",
+      "url": "https://www.youtube.com/watch?v=brVASZu2OrE",
+      "title": "Writing A Language Compiler Part 2: Converting to LLVM",
+      "channel": "Coding with Tom",
+      "description": "Conférence/tutoriel YouTube sur : LLVM, Compilateurs, Conception de langage.",
+      "topics": [
+        {
+          "raw": "LLVM",
+          "canonical": "LLVM",
+          "justification": "assigné depuis le titre public",
+          "provenance": {
+            "source": "manual-curated",
+            "model": "human",
+            "version": "2026-10"
+          }
+        },
+        {
+          "raw": "Compilateurs",
+          "canonical": "Compilateurs",
+          "justification": "assigné depuis le titre public",
+          "provenance": {
+            "source": "manual-curated",
+            "model": "human",
+            "version": "2026-10"
+          }
+        },
+        {
+          "raw": "Conception de langage",
+          "canonical": "Conception de langage",
+          "justification": "assigné depuis le titre public",
+          "provenance": {
+            "source": "manual-curated",
+            "model": "human",
+            "version": "2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "d1uraoHM8Gg",
+      "url": "https://www.youtube.com/watch?v=d1uraoHM8Gg",
+      "title": "The Rust Programming Language",
+      "channel": "Google TechTalks",
+      "description": "Conférence/tutoriel YouTube sur : Rust, Sécurité mémoire, Systèmes.",
+      "topics": [
+        {
+          "raw": "Rust",
+          "canonical": "Rust",
+          "justification": "assigné depuis le titre public",
+          "provenance": {
+            "source": "manual-curated",
+            "model": "human",
+            "version": "2026-10"
+          }
+        },
+        {
+          "raw": "Sécurité mémoire",
+          "canonical": "Sécurité mémoire",
+          "justification": "assigné depuis le titre public",
+          "provenance": {
+            "source": "manual-curated",
+            "model": "human",
+            "version": "2026-10"
+          }
+        },
+        {
+          "raw": "Systèmes",
+          "canonical": "Systèmes",
+          "justification": "assigné depuis le titre public",
+          "provenance": {
+            "source": "manual-curated",
+            "model": "human",
+            "version": "2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "79phqVpE7cU",
+      "url": "https://www.youtube.com/watch?v=79phqVpE7cU",
+      "title": "Rust: What is Ownership and Borrowing?",
+      "channel": "Gary Explains",
+      "description": "Conférence/tutoriel YouTube sur : Rust, Ownership, Sécurité mémoire.",
+      "topics": [
+        {
+          "raw": "Rust",
+          "canonical": "Rust",
+          "justification": "assigné depuis le titre public",
+          "provenance": {
+            "source": "manual-curated",
+            "model": "human",
+            "version": "2026-10"
+          }
+        },
+        {
+          "raw": "Ownership",
+          "canonical": "Ownership",
+          "justification": "assigné depuis le titre public",
+          "provenance": {
+            "source": "manual-curated",
+            "model": "human",
+            "version": "2026-10"
+          }
+        },
+        {
+          "raw": "Sécurité mémoire",
+          "canonical": "Sécurité mémoire",
+          "justification": "assigné depuis le titre public",
+          "provenance": {
+            "source": "manual-curated",
+            "model": "human",
+            "version": "2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "g2QTnlv3gBw",
+      "url": "https://www.youtube.com/watch?v=g2QTnlv3gBw",
+      "title": "Rust's Borrow Checker Finally Makes Sense",
+      "channel": "Byte Without Bite",
+      "description": "Conférence/tutoriel YouTube sur : Rust, Ownership, Sécurité mémoire.",
+      "topics": [
+        {
+          "raw": "Rust",
+          "canonical": "Rust",
+          "justification": "assigné depuis le titre public",
+          "provenance": {
+            "source": "manual-curated",
+            "model": "human",
+            "version": "2026-10"
+          }
+        },
+        {
+          "raw": "Ownership",
+          "canonical": "Ownership",
+          "justification": "assigné depuis le titre public",
+          "provenance": {
+            "source": "manual-curated",
+            "model": "human",
+            "version": "2026-10"
+          }
+        },
+        {
+          "raw": "Sécurité mémoire",
+          "canonical": "Sécurité mémoire",
+          "justification": "assigné depuis le titre public",
+          "provenance": {
+            "source": "manual-curated",
+            "model": "human",
+            "version": "2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "VFIOSWy93H0",
+      "url": "https://www.youtube.com/watch?v=VFIOSWy93H0",
+      "title": "Understanding Ownership in Rust",
+      "channel": "Let's Get Rusty",
+      "description": "Conférence/tutoriel YouTube sur : Rust, Ownership, Tutoriels.",
+      "topics": [
+        {
+          "raw": "Rust",
+          "canonical": "Rust",
+          "justification": "assigné depuis le titre public",
+          "provenance": {
+            "source": "manual-curated",
+            "model": "human",
+            "version": "2026-10"
+          }
+        },
+        {
+          "raw": "Ownership",
+          "canonical": "Ownership",
+          "justification": "assigné depuis le titre public",
+          "provenance": {
+            "source": "manual-curated",
+            "model": "human",
+            "version": "2026-10"
+          }
+        },
+        {
+          "raw": "Tutoriels",
+          "canonical": "Tutoriels",
+          "justification": "assigné depuis le titre public",
+          "provenance": {
+            "source": "manual-curated",
+            "model": "human",
+            "version": "2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "bzja9fQWzdA",
+      "url": "https://www.youtube.com/watch?v=bzja9fQWzdA",
+      "title": "Implementing TCP in Rust (part 1)",
+      "channel": "Jon Gjengset",
+      "description": "Conférence/tutoriel YouTube sur : Rust, Réseaux, Systèmes.",
+      "topics": [
+        {
+          "raw": "Rust",
+          "canonical": "Rust",
+          "justification": "assigné depuis le titre public",
+          "provenance": {
+            "source": "manual-curated",
+            "model": "human",
+            "version": "2026-10"
+          }
+        },
+        {
+          "raw": "Réseaux",
+          "canonical": "Réseaux",
+          "justification": "assigné depuis le titre public",
+          "provenance": {
+            "source": "manual-curated",
+            "model": "human",
+            "version": "2026-10"
+          }
+        },
+        {
+          "raw": "Systèmes",
+          "canonical": "Systèmes",
+          "justification": "assigné depuis le titre public",
+          "provenance": {
+            "source": "manual-curated",
+            "model": "human",
+            "version": "2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "erJdCIti_O8",
+      "url": "https://www.youtube.com/watch?v=erJdCIti_O8",
+      "title": "RustConf 2016 - Using Generics Effectively by Without Boats",
+      "channel": "Confreaks",
+      "description": "Conférence/tutoriel YouTube sur : Rust, Génériques, Systèmes.",
+      "topics": [
+        {
+          "raw": "Rust",
+          "canonical": "Rust",
+          "justification": "assigné depuis le titre public",
+          "provenance": {
+            "source": "manual-curated",
+            "model": "human",
+            "version": "2026-10"
+          }
+        },
+        {
+          "raw": "Génériques",
+          "canonical": "Génériques",
+          "justification": "assigné depuis le titre public",
+          "provenance": {
+            "source": "manual-curated",
+            "model": "human",
+            "version": "2026-10"
+          }
+        },
+        {
+          "raw": "Systèmes",
+          "canonical": "Systèmes",
+          "justification": "assigné depuis le titre public",
+          "provenance": {
+            "source": "manual-curated",
+            "model": "human",
+            "version": "2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "skos4B5x7qE",
+      "url": "https://www.youtube.com/watch?v=skos4B5x7qE",
+      "title": "RustLatam 2019 - Without Boats: Zero-Cost Async IO",
+      "channel": "Rust Programming Language",
+      "description": "Conférence/tutoriel YouTube sur : Rust, Asynchrone, Systèmes.",
+      "topics": [
+        {
+          "raw": "Rust",
+          "canonical": "Rust",
+          "justification": "assigné depuis le titre public",
+          "provenance": {
+            "source": "manual-curated",
+            "model": "human",
+            "version": "2026-10"
+          }
+        },
+        {
+          "raw": "Asynchrone",
+          "canonical": "Asynchrone",
+          "justification": "assigné depuis le titre public",
+          "provenance": {
+            "source": "manual-curated",
+            "model": "human",
+            "version": "2026-10"
+          }
+        },
+        {
+          "raw": "Systèmes",
+          "canonical": "Systèmes",
+          "justification": "assigné depuis le titre public",
+          "provenance": {
+            "source": "manual-curated",
+            "model": "human",
+            "version": "2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "UJfF3-13aFo",
+      "url": "https://www.youtube.com/watch?v=UJfF3-13aFo",
+      "title": "A 10x Faster TypeScript with Anders Hejlsberg | BRK116",
+      "channel": "Microsoft Developer",
+      "description": "Conférence/tutoriel YouTube sur : TypeScript, Compilateurs, Performance.",
+      "topics": [
+        {
+          "raw": "TypeScript",
+          "canonical": "TypeScript",
+          "justification": "assigné depuis le titre public",
+          "provenance": {
+            "source": "manual-curated",
+            "model": "human",
+            "version": "2026-10"
+          }
+        },
+        {
+          "raw": "Compilateurs",
+          "canonical": "Compilateurs",
+          "justification": "assigné depuis le titre public",
+          "provenance": {
+            "source": "manual-curated",
+            "model": "human",
+            "version": "2026-10"
+          }
+        },
+        {
+          "raw": "Performance",
+          "canonical": "Performance",
+          "justification": "assigné depuis le titre public",
+          "provenance": {
+            "source": "manual-curated",
+            "model": "human",
+            "version": "2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "10qowKUW82U",
+      "url": "https://www.youtube.com/watch?v=10qowKUW82U",
+      "title": "TypeScript is being ported to Go | interview with Anders Hejlsberg",
+      "channel": "Michigan TypeScript",
+      "description": "Conférence/tutoriel YouTube sur : TypeScript, Compilateurs, Conception de langage.",
+      "topics": [
+        {
+          "raw": "TypeScript",
+          "canonical": "TypeScript",
+          "justification": "assigné depuis le titre public",
+          "provenance": {
+            "source": "manual-curated",
+            "model": "human",
+            "version": "2026-10"
+          }
+        },
+        {
+          "raw": "Compilateurs",
+          "canonical": "Compilateurs",
+          "justification": "assigné depuis le titre public",
+          "provenance": {
+            "source": "manual-curated",
+            "model": "human",
+            "version": "2026-10"
+          }
+        },
+        {
+          "raw": "Conception de langage",
+          "canonical": "Conception de langage",
+          "justification": "assigné depuis le titre public",
+          "provenance": {
+            "source": "manual-curated",
+            "model": "human",
+            "version": "2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "nhVA0-iDbF4",
+      "url": "https://www.youtube.com/watch?v=nhVA0-iDbF4",
+      "title": "Anders Hejlsberg: How we wrote the TypeScript compiler",
+      "channel": "OfferZen Origins",
+      "description": "Conférence/tutoriel YouTube sur : TypeScript, Compilateurs, Conception de langage.",
+      "topics": [
+        {
+          "raw": "TypeScript",
+          "canonical": "TypeScript",
+          "justification": "assigné depuis le titre public",
+          "provenance": {
+            "source": "manual-curated",
+            "model": "human",
+            "version": "2026-10"
+          }
+        },
+        {
+          "raw": "Compilateurs",
+          "canonical": "Compilateurs",
+          "justification": "assigné depuis le titre public",
+          "provenance": {
+            "source": "manual-curated",
+            "model": "human",
+            "version": "2026-10"
+          }
+        },
+        {
+          "raw": "Conception de langage",
+          "canonical": "Conception de langage",
+          "justification": "assigné depuis le titre public",
+          "provenance": {
+            "source": "manual-curated",
+            "model": "human",
+            "version": "2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "tXK50czRbdA",
+      "url": "https://www.youtube.com/watch?v=tXK50czRbdA",
+      "title": "Inside TypeScript with Anders Hejlsberg - BDL2011",
+      "channel": "Microsoft Developer",
+      "description": "Conférence/tutoriel YouTube sur : TypeScript, Conception de langage, Web.",
+      "topics": [
+        {
+          "raw": "TypeScript",
+          "canonical": "TypeScript",
+          "justification": "assigné depuis le titre public",
+          "provenance": {
+            "source": "manual-curated",
+            "model": "human",
+            "version": "2026-10"
+          }
+        },
+        {
+          "raw": "Conception de langage",
+          "canonical": "Conception de langage",
+          "justification": "assigné depuis le titre public",
+          "provenance": {
+            "source": "manual-curated",
+            "model": "human",
+            "version": "2026-10"
+          }
+        },
+        {
+          "raw": "Web",
+          "canonical": "Web",
+          "justification": "assigné depuis le titre public",
+          "provenance": {
+            "source": "manual-curated",
+            "model": "human",
+            "version": "2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "cywK3XYYJ2o",
+      "url": "https://www.youtube.com/watch?v=cywK3XYYJ2o",
+      "title": "Creator of TypeScript: 10x Faster Typescript, Why AI Won't Replace SWEs | Anders Hejlsberg",
+      "channel": "Ryan Peterman",
+      "description": "Conférence/tutoriel YouTube sur : TypeScript, Compilateurs, Performance.",
+      "topics": [
+        {
+          "raw": "TypeScript",
+          "canonical": "TypeScript",
+          "justification": "assigné depuis le titre public",
+          "provenance": {
+            "source": "manual-curated",
+            "model": "human",
+            "version": "2026-10"
+          }
+        },
+        {
+          "raw": "Compilateurs",
+          "canonical": "Compilateurs",
+          "justification": "assigné depuis le titre public",
+          "provenance": {
+            "source": "manual-curated",
+            "model": "human",
+            "version": "2026-10"
+          }
+        },
+        {
+          "raw": "Performance",
+          "canonical": "Performance",
+          "justification": "assigné depuis le titre public",
+          "provenance": {
+            "source": "manual-curated",
+            "model": "human",
+            "version": "2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "VwVg9jCtqaU",
+      "url": "https://www.youtube.com/watch?v=VwVg9jCtqaU",
+      "title": "Machine Learning Zero to Hero (Google I/O'19)",
+      "channel": "TensorFlow",
+      "description": "Conférence/tutoriel YouTube sur : Machine Learning, TensorFlow, Python.",
+      "topics": [
+        {
+          "raw": "Machine Learning",
+          "canonical": "Machine Learning",
+          "justification": "assigné depuis le titre public",
+          "provenance": {
+            "source": "manual-curated",
+            "model": "human",
+            "version": "2026-10"
+          }
+        },
+        {
+          "raw": "TensorFlow",
+          "canonical": "TensorFlow",
+          "justification": "assigné depuis le titre public",
+          "provenance": {
+            "source": "manual-curated",
+            "model": "human",
+            "version": "2026-10"
+          }
+        },
+        {
+          "raw": "Python",
+          "canonical": "Python",
+          "justification": "assigné depuis le titre public",
+          "provenance": {
+            "source": "manual-curated",
+            "model": "human",
+            "version": "2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "7nTtApoOVf8",
+      "url": "https://www.youtube.com/watch?v=7nTtApoOVf8",
+      "title": "Introduction to artificial ML neural networks",
+      "channel": "Google for Developers",
+      "description": "Conférence/tutoriel YouTube sur : Machine Learning, Réseaux de neurones, Python.",
+      "topics": [
+        {
+          "raw": "Machine Learning",
+          "canonical": "Machine Learning",
+          "justification": "assigné depuis le titre public",
+          "provenance": {
+            "source": "manual-curated",
+            "model": "human",
+            "version": "2026-10"
+          }
+        },
+        {
+          "raw": "Réseaux de neurones",
+          "canonical": "Réseaux de neurones",
+          "justification": "assigné depuis le titre public",
+          "provenance": {
+            "source": "manual-curated",
+            "model": "human",
+            "version": "2026-10"
+          }
+        },
+        {
+          "raw": "Python",
+          "canonical": "Python",
+          "justification": "assigné depuis le titre public",
+          "provenance": {
+            "source": "manual-curated",
+            "model": "human",
+            "version": "2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "xZ0Bdg5yOuk",
+      "url": "https://www.youtube.com/watch?v=xZ0Bdg5yOuk",
+      "title": "Neural networks and deep learning #AI #ML",
+      "channel": "Google Cloud Tech",
+      "description": "Conférence/tutoriel YouTube sur : Machine Learning, Réseaux de neurones, Deep Learning, Optimisation.",
+      "topics": [
+        {
+          "raw": "Machine Learning",
+          "canonical": "Machine Learning",
+          "justification": "assigné depuis le titre public",
+          "provenance": {
+            "source": "manual-curated",
+            "model": "human",
+            "version": "2026-10"
+          }
+        },
+        {
+          "raw": "Réseaux de neurones",
+          "canonical": "Réseaux de neurones",
+          "justification": "assigné depuis le titre public",
+          "provenance": {
+            "source": "manual-curated",
+            "model": "human",
+            "version": "2026-10"
+          }
+        },
+        {
+          "raw": "Deep Learning",
+          "canonical": "Deep Learning",
+          "justification": "assigné depuis le titre public",
+          "provenance": {
+            "source": "manual-curated",
+            "model": "human",
+            "version": "2026-10"
+          }
+        },
+        {
+          "raw": "Optimisation",
+          "canonical": "Optimisation",
+          "justification": "assigné depuis le titre public",
+          "provenance": {
+            "source": "manual-curated",
+            "model": "human",
+            "version": "2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "HX0GH-YJbGw",
+      "url": "https://www.youtube.com/watch?v=HX0GH-YJbGw",
+      "title": "Keynote: Rust in the Linux Kernel, Why? - Greg Kroah-Hartman",
+      "channel": "The Linux Foundation",
+      "description": "Conférence/tutoriel YouTube sur : Noyau Linux, Rust, Sécurité mémoire.",
+      "topics": [
+        {
+          "raw": "Noyau Linux",
+          "canonical": "Noyau Linux",
+          "justification": "assigné depuis le titre public",
+          "provenance": {
+            "source": "manual-curated",
+            "model": "human",
+            "version": "2026-10"
+          }
+        },
+        {
+          "raw": "Rust",
+          "canonical": "Rust",
+          "justification": "assigné depuis le titre public",
+          "provenance": {
+            "source": "manual-curated",
+            "model": "human",
+            "version": "2026-10"
+          }
+        },
+        {
+          "raw": "Sécurité mémoire",
+          "canonical": "Sécurité mémoire",
+          "justification": "assigné depuis le titre public",
+          "provenance": {
+            "source": "manual-curated",
+            "model": "human",
+            "version": "2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "0mmPTWLQPRk",
+      "url": "https://www.youtube.com/watch?v=0mmPTWLQPRk",
+      "title": "Rust in the Linux Kernel",
+      "channel": "Code Geek",
+      "description": "Conférence/tutoriel YouTube sur : Noyau Linux, Rust, Systèmes.",
+      "topics": [
+        {
+          "raw": "Noyau Linux",
+          "canonical": "Noyau Linux",
+          "justification": "assigné depuis le titre public",
+          "provenance": {
+            "source": "manual-curated",
+            "model": "human",
+            "version": "2026-10"
+          }
+        },
+        {
+          "raw": "Rust",
+          "canonical": "Rust",
+          "justification": "assigné depuis le titre public",
+          "provenance": {
+            "source": "manual-curated",
+            "model": "human",
+            "version": "2026-10"
+          }
+        },
+        {
+          "raw": "Systèmes",
+          "canonical": "Systèmes",
+          "justification": "assigné depuis le titre public",
+          "provenance": {
+            "source": "manual-curated",
+            "model": "human",
+            "version": "2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "enUkMK5JQY8",
+      "url": "https://www.youtube.com/watch?v=enUkMK5JQY8",
+      "title": "Why Rust is coming to the Linux kernel",
+      "channel": "The Pragmatic Engineer",
+      "description": "Conférence/tutoriel YouTube sur : Noyau Linux, Rust, Sécurité mémoire.",
+      "topics": [
+        {
+          "raw": "Noyau Linux",
+          "canonical": "Noyau Linux",
+          "justification": "assigné depuis le titre public",
+          "provenance": {
+            "source": "manual-curated",
+            "model": "human",
+            "version": "2026-10"
+          }
+        },
+        {
+          "raw": "Rust",
+          "canonical": "Rust",
+          "justification": "assigné depuis le titre public",
+          "provenance": {
+            "source": "manual-curated",
+            "model": "human",
+            "version": "2026-10"
+          }
+        },
+        {
+          "raw": "Sécurité mémoire",
+          "canonical": "Sécurité mémoire",
+          "justification": "assigné depuis le titre public",
+          "provenance": {
+            "source": "manual-curated",
+            "model": "human",
+            "version": "2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "hdxkt5mEnYE",
+      "url": "https://www.youtube.com/watch?v=hdxkt5mEnYE",
+      "title": "Demystifying LLVM: Writing Your First Compiler - The Good, The Bad, The Ugly - Lyle Dean",
+      "channel": "Rust Nation UK",
+      "description": "Conférence/tutoriel YouTube sur : LLVM, Rust, Compilateurs.",
+      "topics": [
+        {
+          "raw": "LLVM",
+          "canonical": "LLVM",
+          "justification": "assigné depuis le titre public",
+          "provenance": {
+            "source": "manual-curated",
+            "model": "human",
+            "version": "2026-10"
+          }
+        },
+        {
+          "raw": "Rust",
+          "canonical": "Rust",
+          "justification": "assigné depuis le titre public",
+          "provenance": {
+            "source": "manual-curated",
+            "model": "human",
+            "version": "2026-10"
+          }
+        },
+        {
+          "raw": "Compilateurs",
+          "canonical": "Compilateurs",
+          "justification": "assigné depuis le titre public",
+          "provenance": {
+            "source": "manual-curated",
+            "model": "human",
+            "version": "2026-10"
+          }
+        }
+      ]
+    }
+  ],
+  "provenance": {
+    "source": "manual-curated",
+    "model": "human",
+    "version": "2026-10"
+  }
+}
