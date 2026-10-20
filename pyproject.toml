@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "video-topic-explorer"
+version = "0.1.0"
+description = "MVP — parcours explicable de vidéos YouTube dans un graphe de sujets"
+requires-python = ">=3.10"
+dependencies = ["networkx>=3.0"]
+
+[project.optional-dependencies]
+extract = ["google-generativeai"]
+render = ["matplotlib"]
+test = ["pytest"]
+
+[tool.setuptools]
+packages = ["vte", "eval"]
