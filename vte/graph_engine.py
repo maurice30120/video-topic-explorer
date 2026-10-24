@@ -300,7 +300,11 @@ def _next_transition(
 
 
 def next_step(
-    corpus: dict[str, Any], current: str, mode: str | Mode, exclude: set[str] | None = None
+    corpus: dict[str, Any],
+    current: str,
+    mode: str | Mode | None = None,
+    radius: int | None = None,
+    exclude: set[str] | None = None,
 ) -> dict[str, Any] | None:
     """Fonction pure : (corpus figé, vidéo regardée, mode, déjà montrées) → pas suivant.
 
@@ -309,13 +313,28 @@ def next_step(
     par un chemin de sujets réel. Les vidéos déjà montrées (et la vidéo
     regardée) sont exclues : le panneau ne répète jamais une carte.
     Renvoie None quand aucune candidate ne reste — fin honnête, pas une erreur.
+
+    Le rayon est un paramètre explicite : il filtre l'éligibilité des
+    candidates, jamais la recherche de chemin. Les modes restent acceptés
+    (phase d'expand) : sans rayon explicite, le mode donne le rayon via
+    MODE_RADIUS.
     """
-    try:
-        mode = Mode(mode)
-    except ValueError:
-        raise PathfindingError(
-            f"mode inconnu : {mode!r} (attendu : {sorted(member.value for member in Mode)})"
-        ) from None
+    if mode is not None:
+        try:
+            mode = Mode(mode)
+        except ValueError:
+            raise PathfindingError(
+                f"mode inconnu : {mode!r} (attendu : {sorted(member.value for member in Mode)})"
+            ) from None
+    if radius is None:
+        if mode is None:
+            raise PathfindingError(
+                "rayon ou mode requis : le pas suivant prend un rayon explicite "
+                f"(ou un mode parmi {sorted(member.value for member in Mode)})"
+            )
+        radius = MODE_RADIUS[mode]
+    if radius < 1:
+        raise PathfindingError("le rayon de hops doit être >= 1")
     by_id = videos_by_id(corpus)
     if current not in by_id:
         raise PathfindingError(f"vidéo inconnue : {current!r}")
@@ -323,14 +342,53 @@ def next_step(
     projected = _projected(graph)
     dead = set(corpus.get("dead_topics", ()))
     seed = topics_in(graph, current)
-    allowed = _topics_within(projected, seed - dead, MODE_RADIUS[mode]) - dead
+    allowed = _topics_within(projected, seed - dead, radius) - dead
     if not allowed:
         raise PathfindingError(
             "point de départ isolé : aucun sujet vivant atteignable dans le rayon "
-            f"({MODE_RADIUS[mode]} hop(s)) ; affichez le graphe du corpus pour visualiser sa topologie"
+            f"({radius} hop(s)) ; affichez le graphe du corpus pour visualiser sa topologie"
         )
     used = set(exclude or ()) | {current}
     return _next_transition(graph, allowed, projected, current, used)
+
+
+def first_step(
+    corpus: dict[str, Any], sujet: str, exclude: set[str] | None = None
+) -> dict[str, Any] | None:
+    """Fonction pure : (corpus figé, sujet, déjà-vues) → premier pas depuis ce sujet.
+
+    Brique de la sortie de branche dirigée : elle réutilise la machinerie des
+    départs par sujet. La meilleure candidate parmi les vidéos porteuses du
+    sujet, par sujets communs décroissants puis ID croissant (règle de
+    départage unique du moteur), hors déjà-vues. Renvoie None quand aucune
+    candidate ne reste — fin honnête, pas une erreur.
+    """
+    graph = build_graph(corpus)
+    if f"topic:{sujet}" not in graph:
+        raise PathfindingError(f"sujet inconnu : {sujet!r}")
+    if sujet in corpus.get("dead_topics", ()):
+        raise PathfindingError(
+            f"sujet mort : {sujet} (porté par une seule vidéo ; il ne peut orienter aucun premier pas)"
+        )
+    used = set(exclude or ())
+    porteurs = [
+        data["video_id"]
+        for _, data in graph.nodes(data=True)
+        if data["kind"] == "video" and sujet in topics_in(graph, data["video_id"])
+    ]
+    ranked = _ranked_candidates(graph, {sujet}, [vid for vid in porteurs if vid not in used])
+    if not ranked:
+        return None
+    chosen = ranked[0]
+    return {
+        "from": None,
+        "from_node": None,
+        "to": chosen,
+        "to_node": f"video:{chosen}",
+        "topic_path": [sujet],
+        "topic_nodes": [f"topic:{sujet}"],
+        "explanation": f"sujet de départ : {sujet}",
+    }
 
 
 def _extend(
