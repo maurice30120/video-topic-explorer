@@ -89,7 +89,9 @@ def cmd_extract(args: argparse.Namespace) -> int:
 
     for video in raw_videos:
         vid = video["id"]
-        if vid in done:
+        # Cache : seules les extractions réussies (sujets figés) sont cachées ;
+        # une vidéo flaggée (extraction_error) n'est pas « déjà extraite » : elle sera réessayée.
+        if vid in done and done[vid].get("topics") and not done[vid].get("extraction_error"):
             continue
         prompt = EXTRACTION_PROMPT.format(
             title=video.get("title", ""),

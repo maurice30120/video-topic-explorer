@@ -42,7 +42,7 @@ class FakeGenerativeModel:
         raise AssertionError(f"prompt inattendu : {prompt!r}")
 
 
-def install_fake_gemini(monkeypatch, script: dict[str, object]) -> list[int]:
+def install_fake_gemini(monkeypatch, script: dict[str, object], *, set_key: bool = True) -> list[int]:
     """Injecte le faux SDK ; renvoie le compteur d'appels (à une case)."""
     counter = [0]
     fake = types.ModuleType("google.generativeai")
@@ -57,7 +57,8 @@ def install_fake_gemini(monkeypatch, script: dict[str, object]) -> list[int]:
     fake.GenerativeModel = make_model
     monkeypatch.setitem(sys.modules, "google", types.ModuleType("google"))
     monkeypatch.setitem(sys.modules, "google.generativeai", fake)
-    monkeypatch.setenv("GEMINI_API_KEY", "fake-key-tests")
+    if set_key:
+        monkeypatch.setenv("GEMINI_API_KEY", "fake-key-tests")
     return counter
 
 
@@ -182,3 +183,42 @@ def test_extract_api_failure_is_flagged_and_batch_continues(monkeypatch, tmp_pat
     assert len(by_id["dd44ee55ff66"]["topics"]) == 3  # le batch continue
     assert counter[0] == 2
     assert "quota dépassé" in capsys.readouterr().err
+
+
+def test_extract_flagged_video_is_retried_next_run(monkeypatch, tmp_path):
+    """Le cache ne fige que les extractions réussies : une vidéo flaggée
+    (extraction_error) n'est pas « déjà extraite » et est réessayée au run suivant."""
+    script = {
+        "Roslyn sous le capot": topics_payload("C Sharp", "Roslyn", "Compilateurs"),
+        "Promenade dans l'optimiseur LLVM": topics_payload("LLVM IR", "Compilateurs", "Optimisation"),
+    }
+    counter = install_fake_gemini(monkeypatch, dict(script, **{"Roslyn sous le capot": RuntimeError("quota dépassé")}))
+    out = tmp_path / "corpus.json"
+
+    assert main(["extract", str(FIXTURE_RAW), "--output", str(out), "--model", MODEL]) == 1
+    assert counter[0] == 2
+
+    # Le faux Gemini « guérit » : la vidéo flaggée est réessayée, l'autre reste cachée.
+    counter2 = install_fake_gemini(monkeypatch, script)
+    assert main(["extract", str(FIXTURE_RAW), "--output", str(out), "--model", MODEL]) == 0
+    assert counter2[0] == 1  # un seul nouvel appel : la vidéo réussie n'est pas rappelée
+
+    corpus = load_corpus(out)
+    by_id = {v["id"]: v for v in corpus["videos"]}
+    assert len(by_id["aa11bb22cc33"]["topics"]) == 3
+    assert "extraction_error" not in by_id["aa11bb22cc33"]
+    assert by_id["aa11bb22cc33"]["topics"][0]["provenance"]["version"] == MODEL_VERSION
+
+
+def test_extract_requires_gemini_api_key_from_env(monkeypatch, tmp_path, capsys):
+    """AC clé API : exclusivement via variable d'environnement — sans clé,
+    aucun appel Gemini n'est tenté et le code retour est explicite."""
+    monkeypatch.delenv("GEMINI_API_KEY", raising=False)
+    install_fake_gemini(monkeypatch, {}, set_key=False)
+    out = tmp_path / "corpus.json"
+
+    rc = main(["extract", str(FIXTURE_RAW), "--output", str(out), "--model", MODEL])
+
+    assert rc == 2
+    assert "GEMINI_API_KEY" in capsys.readouterr().err
+    assert not out.exists()  # rien n'est écrit sans clé
