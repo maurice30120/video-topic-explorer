@@ -12,6 +12,7 @@ import sys
 import pytest
 
 from vte import cli
+from vte import graph_engine
 
 from conftest import make_video
 
@@ -71,3 +72,16 @@ def test_graph_without_out_writes_default_image(chain_corpus_path, tmp_path, mon
     code = cli.main(["graph", str(chain_corpus_path)])
     assert code == 0
     assert (tmp_path / "out" / "graphe.png").is_file()
+
+def test_run_accepts_exactly_the_engine_modes(chain_corpus_path, tmp_path):
+    """Les modes acceptés par la CLI sont exactement ceux du moteur (graph_engine.Mode)."""
+    for mode in graph_engine.Mode:
+        out = tmp_path / f"run-{mode.value}.json"
+        assert cli.main(["run", str(chain_corpus_path), "--start", "a", "--mode", mode.value, "--out", str(out)]) == 0
+
+
+def test_run_rejects_mode_outside_engine_types(chain_corpus_path):
+    """Un mode absent des types du moteur est refusé par argparse (code 2)."""
+    with pytest.raises(SystemExit) as exc:
+        cli.main(["run", str(chain_corpus_path), "--start", "a", "--mode", "teleporter"])
+    assert exc.value.code == 2

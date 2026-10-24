@@ -233,7 +233,7 @@ def main(argv: list[str] | None = None) -> int:
     p = sub.add_parser("run", help="calcule un parcours (Approfondir ou Découvrir)")
     p.add_argument("corpus")
     p.add_argument("--start", required=True)
-    p.add_argument("--mode", required=True, choices=["approfondir", "decouvrir"])
+    p.add_argument("--mode", required=True, choices=[mode.value for mode in graph_engine.Mode])
     p.add_argument("--out", default=None)
     p.set_defaults(func=cmd_run)
 
