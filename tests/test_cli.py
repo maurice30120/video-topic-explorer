@@ -64,3 +64,10 @@ def test_render_without_out_writes_default_page(chain_corpus_path, tmp_path, mon
     code = cli.main(["render", str(chain_corpus_path), "--run", str(run_file)])
     assert code == 0
     assert (tmp_path / "out" / "parcours.html").is_file()
+
+def test_graph_without_out_writes_default_image(chain_corpus_path, tmp_path, monkeypatch):
+    """`graph` sans --out : code 0, image écrite à l'emplacement par défaut."""
+    monkeypatch.chdir(tmp_path)
+    code = cli.main(["graph", str(chain_corpus_path)])
+    assert code == 0
+    assert (tmp_path / "out" / "graphe.png").is_file()
