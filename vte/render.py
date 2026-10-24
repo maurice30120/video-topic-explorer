@@ -8,7 +8,7 @@ import re
 from pathlib import Path
 from typing import Any
 
-from .graph_engine import build_graph
+from .graph_engine import Mode, build_graph
 
 
 def build_html(corpus: dict[str, Any], run: dict[str, Any], graph_href: str | None = None) -> str:
@@ -152,9 +152,38 @@ def render_graph(corpus: dict[str, Any], run: dict[str, Any] | None, out: Path) 
 
 # ------------------------------------------------------------------ feed vertical
 
-MODE_LABELS = {"decouvrir": "Découvrir", "approfondir": "Approfondir"}
-MODE_SWITCH_LABELS = {"decouvrir": "Basculer en Approfondir", "approfondir": "Basculer en Découvrir"}
-_FEED_MODES = ("decouvrir", "approfondir")
+DEFAULT_FEED_MODE = Mode.DECOUVRIR
+"""Mode actif au chargement du feed (le mode du parcours publié par défaut)."""
+
+
+def _as_mode(value: str | Mode) -> Mode:
+    """Convertit une valeur en Mode ; erreur française explicite si le mode est inconnu."""
+    try:
+        return Mode(value)
+    except ValueError:
+        supported = ", ".join(member.value for member in Mode)
+        raise ValueError(
+            f"mode de parcours inconnu : {value!r} (modes supportés : {supported})"
+        ) from None
+
+
+class _ModeLabels(dict):
+    """Labels visibles indexés par Mode : un mode inconnu lève une erreur
+    française explicite (pas de KeyError brut), par membre comme par valeur."""
+
+    def __getitem__(self, key):
+        return super().__getitem__(_as_mode(key))
+
+    def __missing__(self, mode):
+        raise ValueError(f"aucun label défini pour le mode de parcours {mode.value!r}")
+
+
+MODE_LABELS = _ModeLabels({Mode.DECOUVRIR: "Découvrir", Mode.APPROFONDIR: "Approfondir"})
+MODE_SWITCH_LABELS = _ModeLabels({
+    Mode.DECOUVRIR: "Basculer en Approfondir",
+    Mode.APPROFONDIR: "Basculer en Découvrir",
+})
+_FEED_MODES = tuple(Mode)
 
 
 def _embed_url(url: str) -> str | None:
@@ -241,18 +270,17 @@ def _card_html(
     )
 
 
-def _end_card_html(run: dict[str, Any], mode: str, other_mode: str | None) -> str:
+def _end_card_html(run: dict[str, Any], mode: str) -> str:
     """Carte de fin : raison d'arrêt du moteur, rejouer, basculer de mode."""
     if run["complete"]:
         reason = f"Parcours complet : {len(run['videos'])} vidéos."
     else:
         reason = run.get("reason") or "Parcours interrompu."
-    switch_html = ""
-    if other_mode:
-        switch_html = (
-            f'<button class="action basculer" data-mode-vers="{other_mode}" type="button">'
-            f"{MODE_SWITCH_LABELS[mode]}</button>"
-        )
+    other_mode = next(member.value for member in Mode if member.value != mode)
+    switch_html = (
+        f'<button class="action basculer" data-mode-vers="{other_mode}" type="button">'
+        f"{MODE_SWITCH_LABELS[mode]}</button>"
+    )
     return (
         '<article class="carte fin">'
         '<div class="fin-contenu">'
@@ -272,13 +300,12 @@ def _parcours_html(
     run: dict[str, Any],
     mode: str,
     active: bool,
-    other_mode: str | None,
 ) -> str:
     cards = []
     for index, video_id in enumerate(run["videos"]):
         transition = next((t for t in run["transitions"] if t["to"] == video_id), None)
         cards.append(_card_html(by_id, video_id, transition, index == 0))
-    cards.append(_end_card_html(run, mode, other_mode))
+    cards.append(_end_card_html(run, mode))
     return (
         f'<section class="parcours" data-mode="{html.escape(mode, quote=True)}"'
         + ("" if active else " hidden")
@@ -463,10 +490,39 @@ _FEED_JS = """
   var toggles = Array.prototype.slice.call(document.querySelectorAll(".mode"));
   var sections = Array.prototype.slice.call(feed.querySelectorAll(".parcours"));
 
+  /* Commandes au lecteur : en file d'attente jusqu'à son onReady (API iframe
+     YouTube) — une commande envoyée avant la mise en place est ignorée par lui. */
+  var readyPlayers = [];
+  var pending = new Map();
+
   function post(iframe, func) {
+    if (readyPlayers.indexOf(iframe) === -1) {
+      if (!pending.has(iframe)) { pending.set(iframe, []); }
+      pending.get(iframe).push(func);
+      return;
+    }
     iframe.contentWindow.postMessage(
       JSON.stringify({ event: "command", func: func, args: [] }), "*");
   }
+  function playerFor(source) {
+    var frames = document.querySelectorAll("iframe");
+    for (var i = 0; i < frames.length; i += 1) {
+      if (frames[i].contentWindow === source) { return frames[i]; }
+    }
+    return null;
+  }
+  window.addEventListener("message", function (event) {
+    var player = playerFor(event.source);
+    if (!player) { return; }
+    var data;
+    try { data = JSON.parse(event.data); } catch (err) { return; }
+    if (data.event !== "onReady") { return; }
+    readyPlayers.push(player);
+    if (pending.has(player)) {
+      pending.get(player).forEach(function (func) { post(player, func); });
+      pending.delete(player);
+    }
+  });
   function players(section) {
     return Array.prototype.slice.call(section.querySelectorAll("iframe"));
   }
@@ -526,7 +582,9 @@ _FEED_JS = """
     });
   });
 
-  /* un appui sur le lecteur active ou coupe le son */
+  /* un appui sur le lecteur active ou coupe le son ; activer le son
+     démarre aussi la lecture (un lecteur jamais démarré ne doit pas
+     juste être démueté) */
   feed.addEventListener("click", function (event) {
     var lecteur = event.target.closest(".lecteur");
     if (!lecteur) { return; }
@@ -535,7 +593,12 @@ _FEED_JS = """
     if (!iframe) { return; }
     var avecSon = card.dataset.son === "1";
     card.dataset.son = avecSon ? "0" : "1";
-    post(iframe, avecSon ? "mute" : "unMute");
+    if (avecSon) {
+      post(iframe, "mute");
+    } else {
+      post(iframe, "unMute");
+      post(iframe, "playVideo");
+    }
   });
 
   /* la carte visible joue (muette), les autres se mettent en pause */
@@ -563,7 +626,7 @@ def build_feed_html(
     corpus: dict[str, Any],
     runs: dict[str, dict[str, Any]],
     graph_href: str | None = None,
-    default_mode: str = "decouvrir",
+    default_mode: str | Mode = DEFAULT_FEED_MODE,
 ) -> str:
     """Construit la page unique du feed vertical (les deux modes embarqués) et la renvoie.
 
@@ -574,11 +637,13 @@ def build_feed_html(
     from .corpus import videos_by_id
 
     by_id = videos_by_id(corpus)
-    modes = [m for m in _FEED_MODES if m in runs]
-    if not modes:
-        raise ValueError("le feed exige au moins un parcours (mode decouvrir ou approfondir)")
-    if default_mode not in modes:
-        default_mode = modes[0]
+    missing = [member.value for member in _FEED_MODES if member.value not in runs]
+    if missing:
+        raise ValueError(
+            "le feed exige les parcours des deux modes ; manquant : " + ", ".join(missing)
+        )
+    modes = [member.value for member in _FEED_MODES]
+    default_mode = _as_mode(default_mode).value
     toggles = "".join(
         f'<button class="mode" data-mode="{mode}" '
         f'aria-pressed="{"true" if mode == default_mode else "false"}" type="button">'
@@ -586,10 +651,7 @@ def build_feed_html(
         for mode in modes
     )
     sections = "\n".join(
-        _parcours_html(
-            by_id, runs[mode], mode, mode == default_mode,
-            next((m for m in modes if m != mode), None),
-        )
+        _parcours_html(by_id, runs[mode], mode, mode == default_mode)
         for mode in modes
     )
     graph_html = ""
@@ -631,7 +693,7 @@ def render_feed_html(
     runs: dict[str, dict[str, Any]],
     out: Path,
     graph_href: str | None = None,
-    default_mode: str = "decouvrir",
+    default_mode: str | Mode = DEFAULT_FEED_MODE,
 ) -> None:
     """Sauvegarde la page du feed (voir build_feed_html pour la chaîne)."""
     doc = build_feed_html(corpus, runs, graph_href, default_mode)

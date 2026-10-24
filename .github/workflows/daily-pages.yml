@@ -40,21 +40,24 @@ jobs:
       - name: Run tests
         run: python -m pytest tests/ -q
 
+      - name: "Départ par défaut du site (source unique : vte.DEFAULT_START)"
+        run: echo "DEFAULT_START=$(python -c 'from vte import DEFAULT_START; print(DEFAULT_START)')" >> "$GITHUB_ENV"
+
       - name: Build data (corpus réel + démo)
         run: |
           python scripts/make_real_corpus.py
           python scripts/make_demo_corpus.py
 
       - name: Generate parcours (run)
-        run: python -m vte.cli run data/corpus_real.json --start ghnY4S8unMM --mode decouvrir --out out/run/demo.json
+        run: python -m vte.cli run data/corpus_real.json --start "$DEFAULT_START" --mode decouvrir --out out/run/demo.json
 
       - name: Build site (feed en index.html à la racine + graphe statique)
         run: |
-          python -m vte.cli feed data/corpus_real.json --start ghnY4S8unMM --out out/site/index.html
+          python -m vte.cli feed data/corpus_real.json --out out/site/index.html
           python -m vte.cli graph data/corpus_real.json --run out/run/demo.json --out out/site/graphe.png
 
-      - name: Smoke check generated site (feed à la racine, pas de page liste)
-        run: python -m vte.cli smoke --site out/site --first-video ghnY4S8unMM
+      - name: Smoke check generated site (feed à la racine, première carte dérivée du run généré)
+        run: python -m vte.cli smoke --site out/site --run out/run/demo.json
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
@@ -68,4 +71,4 @@ jobs:
       - name: Smoke check public URL (racine = feed, retries pendant la propagation Pages)
         run: |
           python -m vte.cli smoke --url "${{ steps.deployment.outputs.page_url }}" \
-            --first-video ghnY4S8unMM --attempts 20 --delay 30
+            --run out/run/demo.json --attempts 20 --delay 30
