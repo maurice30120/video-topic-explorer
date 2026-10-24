@@ -307,14 +307,15 @@ body[data-mode="approfondir"] { --ligne: var(--ligne-ambre); --sur-ligne: #241a0
   height: 100dvh;
   display: flex;
   flex-direction: column;
+  --hauteur-barre: 56px;
 }
 
 .barre {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  padding: 0.55rem 1rem;
-  padding-top: calc(0.55rem + env(safe-area-inset-top));
+  height: var(--hauteur-barre);
+  padding: 0 1rem;
   border-bottom: 1px solid var(--trait);
   background: rgba(16, 21, 29, 0.94);
 }
@@ -350,7 +351,7 @@ body[data-mode="approfondir"] { --ligne: var(--ligne-ambre); --sur-ligne: #241a0
   scroll-behavior: smooth;
 }
 .carte {
-  min-height: 100%;
+  min-height: calc(100dvh - var(--hauteur-barre, 56px));
   scroll-snap-align: start;
   scroll-snap-stop: always;
   display: flex;
