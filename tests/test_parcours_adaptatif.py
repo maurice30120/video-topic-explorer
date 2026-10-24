@@ -2,6 +2,7 @@
 
 import http.client
 import json
+import random
 import re
 import threading
 from concurrent.futures import ThreadPoolExecutor
@@ -15,8 +16,9 @@ from vte import serve
 from vte.corpus import topics_of
 
 
-def start_server(corpus, runs_dir):
-    httpd = serve.make_server(corpus, Path(runs_dir), host="127.0.0.1", port=0)
+def start_server(corpus, runs_dir, *, rng=None):
+    options = {"rng": rng} if rng is not None else {}
+    httpd = serve.make_server(corpus, Path(runs_dir), host="127.0.0.1", port=0, **options)
     thread = threading.Thread(target=httpd.serve_forever, daemon=True)
     thread.start()
     return httpd
@@ -368,6 +370,195 @@ def post_action(httpd, cookie, state, action):
         payload={"action": action, "version": state["version"]},
     )
     return status, json.loads(body)
+
+
+@pytest.fixture
+def restart_server(tmp_path):
+    """Cycle visitable plus des vidéos d’entrée éloignées de sa dernière étape."""
+    cycle = [
+        make_video(f"{index:02d}-cycle", [f"T{index}", f"T{(index + 1) % 10}"])
+        for index in range(10)
+    ]
+    corpus = load_corpus_from_videos(
+        cycle
+        + [
+            make_video("zy-root-two-a", ["T2", "Racine secondaire deux A"]),
+            make_video("zz-root-two-b", ["T2", "Racine secondaire deux B"]),
+            make_video("zy-root-five-a", ["T5", "Racine secondaire cinq A"]),
+            make_video("zz-root-five-b", ["T5", "Racine secondaire cinq B"]),
+        ]
+    )
+    httpd = start_server(corpus, tmp_path / "runs", rng=random.Random(23))
+    httpd.corpus = corpus
+    yield httpd
+    httpd.shutdown()
+    httpd.server_close()
+
+
+def test_exhausted_interest_path_restarts_at_an_unseen_canonical_topic(restart_server, tmp_path):
+    cookie, state, _ = begin_session(restart_server)
+    shown = {state["video"]["id"]}
+    assert state["video"]["id"] == "00-cycle"
+
+    for expected_index in range(1, 10):
+        status, state = post_action(restart_server, cookie, state, "interest")
+        expected = f"{expected_index:02d}-cycle"
+        assert status == 200
+        assert state["video"]["id"] == expected
+        assert state["video"]["id"] not in shown
+        shown.add(state["video"]["id"])
+        assert_real_transition(restart_server.corpus, state["transition"])
+
+    status, restarted = post_action(restart_server, cookie, state, "interest")
+    assert status == 200
+    assert restarted["status"] == "active"
+    assert restarted["video"]["id"] not in shown
+    assert restarted["video"]["id"] in {
+        "zy-root-two-a", "zz-root-two-b", "zy-root-five-a", "zz-root-five-b"
+    }
+    shown.add(restarted["video"]["id"])
+    assert restarted["point_interet"] is None
+    assert restarted["message"] == (
+        "Tu as exploré les branches disponibles. "
+        "On repart sur un autre arbre choisi au hasard."
+    )
+    assert restarted["transition"]["kind"] == "restart"
+    assert restarted["transition"]["topic_path"] == []
+    assert "from" not in restarted["transition"]
+    assert "to" not in restarted["transition"]
+    root_topic = restarted["transition"]["root_topic"]
+    assert root_topic in restarted["video"]["topics"]
+    assert root_topic in {"T2", "T5"}
+    assert root_topic not in restart_server.corpus["dead_topics"]
+
+    duplicate_status, _, duplicate_body = request(
+        restart_server,
+        "POST",
+        "/action",
+        cookie=cookie,
+        payload={"action": "interest", "version": state["version"]},
+    )
+    duplicate = json.loads(duplicate_body)
+    assert duplicate_status == 409
+    assert duplicate["video"]["id"] == restarted["video"]["id"]
+    assert duplicate["version"] == restarted["version"]
+
+    page_status, _, page_body = request(restart_server, "GET", "/", cookie=cookie)
+    page = page_body.decode("utf-8")
+    assert page_status == 200
+    assert restarted["message"] in page
+    assert f"Nouvelle racine : {root_topic}" in page
+    assert 'data-action="interest"' in page
+    assert 'data-action="zap"' in page
+
+    replay_server = start_server(
+        restart_server.corpus,
+        tmp_path / "replay-runs",
+        rng=random.Random(23),
+    )
+    try:
+        replay_cookie, replay_state, _ = begin_session(replay_server)
+        for _ in range(9):
+            status, replay_state = post_action(
+                replay_server, replay_cookie, replay_state, "interest"
+            )
+            assert status == 200
+        status, replay = post_action(
+            replay_server, replay_cookie, replay_state, "interest"
+        )
+        assert status == 200
+        assert replay["transition"] == restarted["transition"]
+        assert replay["video"]["id"] == restarted["video"]["id"]
+    finally:
+        replay_server.shutdown()
+        replay_server.server_close()
+
+
+def test_zap_after_local_exploration_restarts_away_from_the_rejected_direction(restart_server):
+    cookie, state, _ = begin_session(restart_server)
+    seen = {state["video"]["id"]}
+    for expected_index in range(1, 10):
+        status, state = post_action(restart_server, cookie, state, "interest")
+        assert status == 200
+        assert state["video"]["id"] == f"{expected_index:02d}-cycle"
+        seen.add(state["video"]["id"])
+
+    status, restarted = post_action(restart_server, cookie, state, "zap")
+    assert status == 200
+    assert restarted["status"] == "active"
+    assert restarted["video"]["id"] not in seen
+    assert restarted["video"]["id"].startswith(("zy-root-", "zz-root-"))
+    assert restarted["point_interet"] is None
+    assert restarted["transition"]["kind"] == "restart"
+    assert restarted["transition"]["root_topic"] in {"T2", "T5"}
+    assert restarted["transition"]["root_topic"] not in {"T9", "T0"}
+    assert restarted["transition"]["topic_path"] == []
+    assert restarted["message"] == (
+        "Tu as exploré les branches disponibles. "
+        "On repart sur un autre arbre choisi au hasard."
+    )
+
+
+def test_interest_after_restart_establishes_a_new_interest_point(restart_server):
+    cookie, state, _ = begin_session(restart_server)
+    for expected_index in range(1, 10):
+        status, state = post_action(restart_server, cookie, state, "interest")
+        assert status == 200
+        assert state["video"]["id"] == f"{expected_index:02d}-cycle"
+
+    status, restarted = post_action(restart_server, cookie, state, "interest")
+    assert status == 200 and restarted["transition"]["kind"] == "restart"
+    root_video = restarted["video"]["id"]
+
+    status, continued = post_action(restart_server, cookie, restarted, "interest")
+    assert status == 200
+    assert continued["status"] == "active"
+    assert continued["video"]["id"] != root_video
+    assert continued["video"]["id"].startswith(("zy-root-", "zz-root-"))
+    assert continued["point_interet"] == root_video
+    assert continued["transition"]["kind"] == "linked"
+    assert continued["transition"]["from"] == root_video
+    assert continued["transition"]["to"] == continued["video"]["id"]
+    assert_real_transition(restart_server.corpus, continued["transition"])
+
+
+def test_all_unseen_roots_eventually_exhaust_without_repeating_a_video(restart_server):
+    cookie, state, _ = begin_session(restart_server)
+    shown = {state["video"]["id"]}
+
+    for _ in range(len(restart_server.corpus["videos"]) + 1):
+        status, result = post_action(restart_server, cookie, state, "interest")
+        assert status == 200
+        if result["status"] == "exhausted":
+            assert result["video"]["id"] == state["video"]["id"]
+            assert result["transition"] is None
+            assert "plus aucune vidéo inédite" in result["message"].lower()
+            state = result
+            break
+
+        video_id = result["video"]["id"]
+        assert video_id not in shown
+        shown.add(video_id)
+        if result["transition"]["kind"] == "linked":
+            assert_real_transition(restart_server.corpus, result["transition"])
+        else:
+            assert result["transition"]["kind"] == "restart"
+            assert result["transition"]["topic_path"] == []
+        state = result
+    else:
+        pytest.fail("le parcours doit terminer après avoir épuisé les racines admissibles")
+
+    assert state["status"] == "exhausted"
+    assert shown == {video["id"] for video in restart_server.corpus["videos"]}
+    page_status, _, page_body = request(restart_server, "GET", "/", cookie=cookie)
+    page = page_body.decode("utf-8")
+    assert page_status == 200
+    assert "plus aucune vidéo inédite" in page.lower()
+    assert "Recommencer" not in page
+    assert 'data-action="interest" disabled' in page
+    assert 'data-action="zap" disabled' in page
+
+
 
 
 def test_zaps_progress_from_a_near_branch_to_a_farther_topic(widening_server):

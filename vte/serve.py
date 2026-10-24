@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import html
 import json
+import random
 import re
 import tempfile
 import threading
@@ -64,6 +65,77 @@ def _session_payload(corpus: dict[str, Any], state: dict[str, Any]) -> dict[str,
     }
 
 
+def _random_root(
+    corpus: dict[str, Any],
+    current: str,
+    shown: set[str],
+    rejected_directions: set[str],
+    used_roots: set[str],
+    rng: random.Random,
+) -> tuple[str, str] | None:
+    """Choisit un sujet canonique qui ouvre au moins une vidéo encore inédite."""
+    by_id = videos_by_id(corpus)
+    current_topics = {topic["canonical"] for topic in by_id[current].get("topics", [])}
+    blocked = current_topics | rejected_directions | used_roots
+    dead_topics = set(corpus.get("dead_topics", ()))
+    videos_by_topic: dict[str, list[str]] = {}
+    for video in corpus["videos"]:
+        video_id = video["id"]
+        if video_id in shown or video_id == current:
+            continue
+        for topic in video.get("topics", []):
+            canonical = topic["canonical"]
+            if canonical not in blocked and canonical not in dead_topics:
+                videos_by_topic.setdefault(canonical, []).append(video_id)
+
+    roots = sorted(videos_by_topic)
+    if not roots:
+        return None
+    root = rng.choice(roots)
+    video_id = rng.choice(sorted(videos_by_topic[root]))
+    return root, video_id
+
+
+def _restart_or_finish(
+    corpus: dict[str, Any],
+    state: dict[str, Any],
+    current: str,
+    rejected_directions: set[str],
+    rng: random.Random,
+) -> None:
+    restart = _random_root(
+        corpus,
+        current,
+        state["shown"],
+        rejected_directions,
+        state["used_roots"],
+        rng,
+    )
+    state["point_interet"] = None
+    state["rejected_directions"] = set()
+    state["zaps_consecutifs"] = 0
+    if restart is None:
+        state["status"] = "exhausted"
+        state["message"] = "Plus aucune vidéo inédite n'est disponible."
+        state["transition"] = None
+        return
+
+    root_topic, next_video = restart
+    state["video_id"] = next_video
+    state["shown"].add(next_video)
+    state["used_roots"].add(root_topic)
+    state["status"] = "active"
+    state["message"] = (
+        "Tu as exploré les branches disponibles. "
+        "On repart sur un autre arbre choisi au hasard."
+    )
+    state["transition"] = {
+        "kind": "restart",
+        "root_topic": root_topic,
+        "topic_path": [],
+    }
+
+
 def _youtube_embed(url: str) -> str | None:
     """URL d'intégration YouTube ; None pour les liens extérieurs au lecteur."""
     for pattern in (
@@ -96,17 +168,21 @@ def _adaptive_video_html(video: dict[str, Any], transition: dict[str, Any] | Non
             + html.escape(video.get("url", "#"), quote=True)
             + '">ouvrir le lecteur</a></p>'
         )
-    path = (
-        " → ".join(transition["topic_path"])
-        if transition and transition.get("topic_path")
-        else "Point de départ"
-    )
+    if transition and transition.get("kind") == "restart":
+        path_label = "Nouvelle racine : " + transition["root_topic"]
+    else:
+        path = (
+            " → ".join(transition["topic_path"])
+            if transition and transition.get("topic_path")
+            else "Point de départ"
+        )
+        path_label = "Chemin de sujets : " + path
     topics = ", ".join(html.escape(topic["canonical"]) for topic in video.get("topics", []))
     return (
         f'<article class="carte active" data-video="{html.escape(video["id"], quote=True)}">'
         f'{player}<div class="legende"><h2 class="titre">{html.escape(video["title"])}</h2>'
-        f'<p class="sujets">{topics}</p><p class="chemin">Chemin de sujets : '
-        f'{html.escape(path)}</p></div></article>'
+        f'<p class="sujets">{topics}</p><p class="chemin">'
+        f'{html.escape(path_label)}</p></div></article>'
     )
 
 
@@ -222,7 +298,11 @@ body {{ background:var(--fond); color:var(--texte); font:16px/1.45 system-ui,san
     topics.textContent = video.topics.join(", ");
     var path = document.createElement("p");
     path.className = "chemin";
-    path.textContent = "Chemin de sujets : " + (data.transition ? data.transition.topic_path.join(" → ") : "Point de départ");
+    if (data.transition && data.transition.kind === "restart") {{
+      path.textContent = "Nouvelle racine : " + data.transition.root_topic;
+    }} else {{
+      path.textContent = "Chemin de sujets : " + (data.transition ? data.transition.topic_path.join(" → ") : "Point de départ");
+    }}
     legend.appendChild(title); legend.appendChild(topics); legend.appendChild(path);
     card.appendChild(legend);
     var old = root.querySelector(".carte");
@@ -317,10 +397,13 @@ def graph_png(corpus: dict[str, Any], start: str, mode: str) -> bytes:
         return out.read_bytes()
 
 
-def make_handler(corpus: dict[str, Any], runs_dir: Path) -> type[BaseHTTPRequestHandler]:
+def make_handler(
+    corpus: dict[str, Any], runs_dir: Path, rng: random.Random | None = None
+) -> type[BaseHTTPRequestHandler]:
     """Fabrique un handler lié au corpus et à l'état éphémère des sessions."""
     sessions: dict[str, dict[str, Any]] = {}
     sessions_lock = threading.Lock()
+    random_source = rng if rng is not None else random.Random()
 
     def new_session() -> tuple[str, dict[str, Any]] | None:
         start = direct_start(corpus)
@@ -335,6 +418,7 @@ def make_handler(corpus: dict[str, Any], runs_dir: Path) -> type[BaseHTTPRequest
             "status": "active",
             "transition": None,
             "rejected_directions": set(),
+            "used_roots": set(),
             "zaps_consecutifs": 0,
             "message": "",
         }
@@ -460,10 +544,13 @@ def make_handler(corpus: dict[str, Any], runs_dir: Path) -> type[BaseHTTPRequest
                                 "approfondir",
                                 exclude=state["shown"],
                                 exclude_directions=rejected,
-                                radius=(
+                                # Les zaps élargissent jusqu'au rayon Découvrir.
+                                # Au-delà, le parcours reprend à une autre racine.
+                                radius=min(
                                     graph_engine.MODE_RADIUS[graph_engine.Mode.APPROFONDIR]
                                     + zaps_consecutifs
-                                    - 1
+                                    - 1,
+                                    graph_engine.MODE_RADIUS[graph_engine.Mode.DECOUVRIR],
                                 ),
                             )
                     except graph_engine.PathfindingError as exc:
@@ -474,13 +561,10 @@ def make_handler(corpus: dict[str, Any], runs_dir: Path) -> type[BaseHTTPRequest
                                 topic["canonical"] for topic in current_video.get("topics", [])
                             } - set(corpus.get("dead_topics", ()))
                         if not alive_topics and current_video is not None:
-                            state["point_interet"] = point_interet
-                            state["rejected_directions"] = rejected
-                            state["zaps_consecutifs"] = zaps_consecutifs
                             state["version"] += 1
-                            state["status"] = "exhausted"
-                            state["message"] = "Plus aucune vidéo liée n'est disponible dans cette branche."
-                            state["transition"] = None
+                            _restart_or_finish(
+                                corpus, state, current, rejected, random_source
+                            )
                             result = _session_payload(corpus, state)
                         else:
                             result_code = 400
@@ -491,13 +575,14 @@ def make_handler(corpus: dict[str, Any], runs_dir: Path) -> type[BaseHTTPRequest
                         state["zaps_consecutifs"] = zaps_consecutifs
                         state["version"] += 1
                         if step is None:
-                            state["status"] = "exhausted"
-                            state["message"] = "Plus aucune vidéo liée n'est disponible dans cette branche."
-                            state["transition"] = None
+                            _restart_or_finish(
+                                corpus, state, current, rejected, random_source
+                            )
                         else:
                             state["video_id"] = step["to"]
                             state["shown"].add(step["to"])
                             state["transition"] = {
+                                "kind": "linked",
                                 "from": step["from"],
                                 "to": step["to"],
                                 "topic_path": list(step["topic_path"]),
@@ -595,9 +680,14 @@ def make_handler(corpus: dict[str, Any], runs_dir: Path) -> type[BaseHTTPRequest
 
 
 def make_server(
-    corpus: dict[str, Any], runs_dir: Path, host: str = "127.0.0.1", port: int = 8000
+    corpus: dict[str, Any],
+    runs_dir: Path,
+    host: str = "127.0.0.1",
+    port: int = 8000,
+    *,
+    rng: random.Random | None = None,
 ) -> HTTPServer:
-    return HTTPServer((host, port), make_handler(corpus, Path(runs_dir)))
+    return HTTPServer((host, port), make_handler(corpus, Path(runs_dir), rng=rng))
 
 
 def serve_forever(
