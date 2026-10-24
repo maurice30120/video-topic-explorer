@@ -5,6 +5,7 @@ Utilisation :
     python -m vte extract data/videos_raw.json data/corpus.json
     python -m vte run data/corpus.json --start vid-001 --mode decouvrir
     python -m vte render data/corpus.json --run data/runs/<fichier>.json --out out/parcours.html
+    python -m vte.cli feed data/corpus.json --start vid-001 --out out/site/index.html
     python -m vte graph data/corpus.json --run data/runs/<fichier>.json --out out/graphe.png
     python -m vte stats data/corpus.json
     python -m vte serve data/corpus.json --port 8000
@@ -180,6 +181,24 @@ def cmd_render(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_feed(args: argparse.Namespace) -> int:
+    """Feed vertical : les parcours des deux modes calculés ici et embarqués dans la page."""
+    from .render import render_feed_html
+
+    corpus = load_corpus(args.corpus)
+    runs: dict[str, dict[str, Any]] = {}
+    try:
+        for mode in ("decouvrir", "approfondir"):
+            runs[mode] = graph_engine.parcours(corpus, args.start, mode).to_dict()
+    except graph_engine.PathfindingError as exc:
+        print(f"ERREUR : {exc}", file=sys.stderr)
+        return 1
+    out = Path(args.out) if args.out else Path("out/site/index.html")
+    render_feed_html(corpus, runs, out, graph_href=args.graph_href)
+    print(f"feed : {out}")
+    return 0
+
+
 def cmd_graph(args: argparse.Namespace) -> int:
     from .render import render_graph_png
 
@@ -247,6 +266,13 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--run", required=True)
     p.add_argument("--out", default=None)
     p.set_defaults(func=cmd_render)
+
+    p = sub.add_parser("feed", help="page feed vertical : parcours des deux modes embarqués")
+    p.add_argument("corpus")
+    p.add_argument("--start", required=True)
+    p.add_argument("--out", default=None)
+    p.add_argument("--graph-href", default="graphe.png")
+    p.set_defaults(func=cmd_feed)
 
     p = sub.add_parser("graph", help="graphe statique avec sous-graphe surligné")
     p.add_argument("corpus")

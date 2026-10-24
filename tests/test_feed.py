@@ -184,3 +184,61 @@ def test_render_feed_html_writes_page_and_parent_dirs(rich_corpus, tmp_path):
     doc = out.read_text(encoding="utf-8")
     assert doc.startswith("<!doctype html>")
     assert 'href="graphe.png"' in doc
+
+
+def _run_cli(*args: str):
+    import subprocess
+    import sys
+
+    return subprocess.run(
+        [sys.executable, "-m", "vte.cli", *args],
+        capture_output=True, text=True,
+    )
+
+
+def test_cli_feed_computes_both_modes_and_writes_single_page(tmp_path):
+    import json
+
+    corpus_path = tmp_path / "corpus.json"
+    corpus_path.write_text(json.dumps({
+        "videos": [
+            {"id": "v1", "url": "https://e.com/1", "title": "Un",
+             "description": "d", "topics": [{"raw": "A", "canonical": "A",
+             "justification": "j", "provenance": {"source": "t", "model": "m", "version": "0"}},
+             {"raw": "B", "canonical": "B", "justification": "j",
+             "provenance": {"source": "t", "model": "m", "version": "0"}}]},
+            {"id": "v2", "url": "https://e.com/2", "title": "Deux",
+             "description": "d", "topics": [{"raw": "B", "canonical": "B",
+             "justification": "j", "provenance": {"source": "t", "model": "m", "version": "0"}}]},
+        ]
+    }), encoding="utf-8")
+    out = tmp_path / "site" / "index.html"
+    result = _run_cli("feed", str(corpus_path), "--start", "v1",
+                      "--out", str(out), "--graph-href", "graphe.png")
+    assert result.returncode == 0, result.stderr
+    doc = out.read_text(encoding="utf-8")
+
+    # les parcours des deux modes sont calculés à la génération et embarqués
+    assert doc.count("<section") == 2
+    assert '<section class="parcours" data-mode="decouvrir">' in doc
+    assert '<section class="parcours" data-mode="approfondir" hidden>' in doc
+    assert 'href="graphe.png"' in doc
+    # la page démarre sur la première vidéo du parcours Découvrir
+    assert '<article class="carte depart" data-video="v1">' in doc
+
+
+def test_cli_feed_rejects_unknown_start(tmp_path):
+    import json
+
+    corpus_path = tmp_path / "corpus.json"
+    corpus_path.write_text(json.dumps({
+        "videos": [
+            {"id": "v1", "url": "https://e.com/1", "title": "Un",
+             "description": "d", "topics": [{"raw": "A", "canonical": "A",
+             "justification": "j", "provenance": {"source": "t", "model": "m", "version": "0"}}]},
+        ]
+    }), encoding="utf-8")
+    out = tmp_path / "site" / "index.html"
+    result = _run_cli("feed", str(corpus_path), "--start", "inconnu", "--out", str(out))
+    assert result.returncode == 1
+    assert not out.exists()
