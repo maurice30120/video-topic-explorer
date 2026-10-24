@@ -122,6 +122,14 @@ def topic_radius(graph: nx.Graph, seed_topics: set[str], radius: int) -> set[str
     Les hops se comptent sur le graphe projeté sujet-sujet (deux sujets sont
     voisins s'ils partagent au moins une vidéo).
     """
+    return _topics_within(_projected(graph), seed_topics, radius)
+
+
+def _projected(graph: nx.Graph) -> nx.Graph:
+    """Graphe projeté sujet-sujet complet (construit une seule fois par run).
+
+    Deux sujets y sont voisins s'ils partagent au moins une vidéo.
+    """
     projected = nx.Graph()
     topic_nodes = {node for node, data in graph.nodes(data=True) if data["kind"] == "topic"}
     for node in topic_nodes:
@@ -131,7 +139,11 @@ def topic_radius(graph: nx.Graph, seed_topics: set[str], radius: int) -> set[str
         for i, first in enumerate(topics):
             for second in topics[i + 1 :]:
                 projected.add_edge(first, second)
+    return projected
 
+
+def _topics_within(projected: nx.Graph, seed_topics: set[str], radius: int) -> set[str]:
+    """Sujets atteignables en au plus `radius` hops dans le graphe projeté donné."""
     reachable: set[str] = set()
     for seed in seed_topics:
         seed_node = f"topic:{seed}"
@@ -141,44 +153,29 @@ def topic_radius(graph: nx.Graph, seed_topics: set[str], radius: int) -> set[str
     return {node.removeprefix("topic:") for node in reachable}
 
 
-def _candidate_explanations(
-    graph: nx.Graph,
-    from_video: str,
-    to_video: str,
-    allowed_topics: set[str],
-    topic_nodes: set[str],
-) -> list[list[str]]:
-    """Chemins de sujets réels (sur le graphe projeté) entre deux vidéos."""
-    projected = _projected_within(graph, allowed_topics, topic_nodes)
-    from_topics = sorted(
-        f"topic:{t}"
-        for t in topics_in(graph, from_video, allowed_topics)
-    )
-    to_topics = sorted(f"topic:{t}" for t in topics_in(graph, to_video, allowed_topics))
-    paths: list[list[str]] = []
-    for start in from_topics:
-        if start not in projected:
-            continue
-        lengths = nx.single_source_shortest_path_length(projected, start)
+def _shortest_topic_path(
+    projected: nx.Graph, graph: nx.Graph, from_video: str, to_video: str
+) -> list[str] | None:
+    """Plus court chemin de sujets réel entre deux vidéos, sur le graphe complet.
+
+    Le rayon du mode ne plafonne jamais cette recherche (docs/MVP.md §11) :
+    seules les candidates sont filtrées par éligibilité, jamais le chemin.
+    Le chemin affiché est choisi ici, à l'affichage — il ne participe à aucun tri.
+    """
+    from_topics = sorted(f"topic:{t}" for t in topics_in(graph, from_video))
+    to_topics = sorted(f"topic:{t}" for t in topics_in(graph, to_video))
+    best: list[str] | None = None
+    for origin in from_topics:
+        lengths = nx.single_source_shortest_path_length(projected, origin)
         for goal in to_topics:
             if goal not in lengths:
                 continue
-            for path in nx.all_shortest_paths(projected, start, goal):
-                paths.append([node.removeprefix("topic:") for node in path])
-    return paths
-
-
-def _projected_within(graph: nx.Graph, allowed_topics: set[str], topic_nodes: set[str]) -> nx.Graph:
-    projected = nx.Graph()
-    for topic in allowed_topics:
-        projected.add_node(f"topic:{topic}")
-    for video in {n for n, d in graph.nodes(data=True) if d["kind"] == "video"}:
-        topics = sorted(n for n in graph[video] if n in topic_nodes)
-        topics = [t for t in topics if t.removeprefix("topic:") in allowed_topics]
-        for i, first in enumerate(topics):
-            for second in topics[i + 1 :]:
-                projected.add_edge(first, second)
-    return projected
+            if best is None or lengths[goal] < len(best) - 1:
+                best = [
+                    node.removeprefix("topic:")
+                    for node in nx.shortest_path(projected, origin, goal)
+                ]
+    return best
 
 
 def topics_in(graph: nx.Graph, video_id: str, allowed: set[str] | None = None) -> set[str]:
@@ -219,7 +216,7 @@ def parcours(corpus: dict[str, Any], start: str, mode: str, radius: int | None =
     graph = build_graph(corpus)
     by_id = videos_by_id(corpus)
     dead = set(corpus.get("dead_topics", ()))
-    topic_nodes = {n for n, d in graph.nodes(data=True) if d["kind"] == "topic"}
+    projected = _projected(graph)  # construit une seule fois par run
 
     start_kind = StartKind.VIDEO if start in by_id else StartKind.TOPIC
     if start_kind is StartKind.TOPIC and f"topic:{start}" not in graph:
@@ -233,7 +230,7 @@ def parcours(corpus: dict[str, Any], start: str, mode: str, radius: int | None =
         seed_topics = {start}
 
     alive_seed = seed_topics - dead
-    allowed = topic_radius(graph, alive_seed, radius) - dead
+    allowed = _topics_within(projected, alive_seed, radius) - dead
     if not allowed:
         raise PathfindingError(
             "point de départ isolé : aucun sujet vivant atteignable dans le rayon "
@@ -253,7 +250,7 @@ def parcours(corpus: dict[str, Any], start: str, mode: str, radius: int | None =
             (v for v in by_id if topics_in(graph, v) & {start}),
             key=lambda v: v,
         )]
-        run = _extend(graph, corpus, chain, allowed, topic_nodes, mode, radius, start, start_kind)
+        run = _extend(graph, corpus, chain, allowed, projected, mode, radius, start, start_kind)
         run.transitions.insert(0, {
             "from": None,
             "from_node": None,
@@ -265,7 +262,7 @@ def parcours(corpus: dict[str, Any], start: str, mode: str, radius: int | None =
         })
         return run
 
-    return _extend(graph, corpus, chain, allowed, topic_nodes, mode, radius, start, start_kind)
+    return _extend(graph, corpus, chain, allowed, projected, mode, radius, start, start_kind)
 
 
 def _extend(
@@ -273,7 +270,7 @@ def _extend(
     corpus: dict[str, Any],
     chain: list[str],
     allowed: set[str],
-    topic_nodes: set[str],
+    projected: nx.Graph,
     mode: Mode,
     radius: int,
     start: str,
@@ -293,12 +290,11 @@ def _extend(
             video_topics = topics_in(graph, video_id, allowed)
             if not video_topics:
                 continue
-            paths = _candidate_explanations(graph, current, video_id, allowed, topic_nodes)
-            if not paths:
+            path = _shortest_topic_path(projected, graph, current, video_id)
+            if path is None:
                 continue
-            paths.sort(key=len)
             common = len(topics_in(graph, current) & topics_in(graph, video_id))
-            next_candidates.append((common, video_id, paths[0]))
+            next_candidates.append((common, video_id, path))
         next_candidates.sort(key=lambda c: (-c[0], c[1]))
         if not next_candidates:
             break
