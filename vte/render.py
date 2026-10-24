@@ -263,6 +263,12 @@ def build_feed_html(
     sections = "\n".join(
         _parcours_html(by_id, runs[mode], mode, mode == default_mode) for mode in modes
     )
+    toggles = "".join(
+        f'<button class="mode" data-mode="{mode}" '
+        f'aria-pressed="{"true" if mode == default_mode else "false"}" type="button">'
+        f"{MODE_LABELS[mode]}</button>"
+        for mode in modes
+    )
     doc = f"""<!doctype html>
 <html lang="fr">
 <head>
@@ -273,6 +279,9 @@ def build_feed_html(
 <body>
 <header class="barre">
 <p class="marque">Video Topic Explorer</p>
+<nav class="modes" aria-label="Mode du parcours">
+{toggles}
+</nav>
 </header>
 <main class="feed" id="feed">
 {sections}

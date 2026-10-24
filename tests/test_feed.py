@@ -100,3 +100,22 @@ def test_feed_first_card_is_departure_without_transition(chain_corpus):
     path = next(t for t in runs["decouvrir"]["transitions"] if t["to"] == second)["topic_path"]
     expected = "|".join(path)
     assert f'data-sujets="{expected}"' in doc
+
+
+def test_feed_single_page_with_pinned_mode_toggle(rich_corpus):
+    runs = both_runs(rich_corpus, "v1")
+    doc = build_feed_html(rich_corpus, runs)
+
+    # page unique : les deux parcours embarqués dans le même document
+    assert doc.count("<section") == 2
+    assert '<section class="parcours" data-mode="decouvrir">' in doc
+    assert '<section class="parcours" data-mode="approfondir" hidden>' in doc
+    for vid in runs["approfondir"]["videos"]:
+        assert f'data-video="{vid}"' in doc
+
+    # basculeur épinglé, Découvrir actif au chargement
+    assert '<nav class="modes" aria-label="Mode du parcours">' in doc
+    assert '<button class="mode" data-mode="decouvrir" aria-pressed="true"' in doc
+    assert '<button class="mode" data-mode="approfondir" aria-pressed="false"' in doc
+    assert ">Découvrir</button>" in doc
+    assert ">Approfondir</button>" in doc
