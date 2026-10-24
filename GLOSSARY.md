@@ -49,8 +49,12 @@ _Avoid_ : sujet orphelin, cul-de-sac
 Le temps de visionnage effectif d'une vidéo par un lecteur du parcours, observé dans la page elle-même. C'est le signal implicite d'appréciation d'une vidéo : rester longtemps, c'est aimer ; passer vite, c'est ne pas aimer.
 _Avoid_ : like, note, étoile, rétention YouTube Analytics
 
+**Intérêt simulé** :
+Geste de test qui exprime un intérêt ponctuel pour la vidéo courante sans mesurer sa durée réelle de visionnage.
+_Avoid_ : like, note, mesure de rétention
+
 **Point d’intérêt** :
-Une vidéo dont le visionnage a manifesté un intérêt, servant de repère actif pour approfondir les sujets. Un zap fait perdre ce point d’intérêt.
+Vidéo retenue comme repère actif après un intérêt exprimé pendant le parcours. Un zap fait perdre ce point d’intérêt.
 _Avoid_ : profil de goûts, favori
 
 **Branche voisine** :

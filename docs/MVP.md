@@ -62,7 +62,7 @@ Chaque transition affiche les sujets communs ou les sujets intermédiaires réel
 ## 5. Sorties attendues
 
 - Un **JSON local** inspectable : vidéos, sujets normalisés, liens et provenance de l'extraction.
-- Une **page HTML minimale** : sélection du point de départ, choix du mode, liste ordonnée et justifications.
+- Une **page HTML minimale** : démarrage direct sur une vidéo, intérêt simulé et remplacement immédiat par une vidéo liée, avec son chemin de sujets.
 - Une **visualisation facultative** du graphe ou du sous-graphe pertinent.
 - Des erreurs et limites présentées clairement, sans données fictives cachées.
 
@@ -82,7 +82,7 @@ Un script Python lisible (éventuellement réparti en deux ou trois petits fichi
 
 ## 7. Règles de comportement
 
-- Le **mode est sélectionné manuellement** ; ne pas inférer l'humeur.
+- Les commandes CLI gardent le choix manuel du mode ; le parcours direct réagit à l'intérêt simulé, sans inférer l'humeur ni mesurer le temps de lecture.
 - Ne pas pénaliser un sujet parce qu'une vidéo est ignorée : l'absence de clic n'est pas un jugement négatif.
 - La qualité d'une vidéo n'est pas confondue avec la proximité thématique.
 - Aucun apprentissage des goûts ni entraînement de modèle pour le MVP.

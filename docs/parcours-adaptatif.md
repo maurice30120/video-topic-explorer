@@ -1,8 +1,8 @@
-# Parcours adaptatif — conception en cours
+# Parcours adaptatif
 
 Spécification publiée : [GitHub #38](https://github.com/maurice30120/video-topic-explorer/issues/38). Copie locale : [spec-parcours-adaptatif.md](spec-parcours-adaptatif.md).
 
-Décisions confirmées pendant l’entretien du 24 octobre 2026. Ce document décrit le comportement souhaité ; il ne constate pas son implémentation.
+Décisions confirmées pendant l’entretien du 24 octobre 2026. La spécification complète est suivie dans #38 et ses sous-tickets.
 
 ## Décisions confirmées
 
@@ -26,8 +26,11 @@ Exemple : une vidéo sur l’IA intéresse la personne ; elle zappe ensuite les 
 - L’instrumentation réelle et son seuil sont différés : cette étape teste les transitions au moyen des deux boutons.
 - Politique de répétition des vidéos et comportement si aucun autre arbre n’est disponible.
 
-## Écart avec l’existant
+## Tranche #39 livrée
 
-Le feed exporté présente des parcours précalculés. Le panneau serveur utilise cinq secondes de visibilité d’une carte comme signal et ajoute la suite en fin de panneau, en conservant son mode. Ces comportements ne garantissent pas l’adaptation immédiate souhaitée.
+- La page serveur commence par une seule vidéo active et montre « Simuler un visionnage long » et « Zapper ». Le zap reste désactivé jusqu’au ticket #40.
+- L’intérêt simulé indique que la vidéo courante devient le point d’intérêt ; le serveur calcule aussitôt une candidate liée, privilégie les sujets communs et transmet son chemin réel.
+- Le point d’intérêt et les exclusions de vidéos sont limités à la session en mémoire. Aucune durée de lecture n’est mesurée, aucun like ni profil durable n’est enregistré.
+- Si le voisinage local est épuisé, la page garde la dernière vidéo et affiche une fin explicite. La reprise depuis une autre racine relève du ticket #42.
 
-L’ADR 0002 réserve la mesure de rétention à une étape ultérieure. Le bouton demandé permet de tester la réaction à un intérêt simulé ; l’instrumentation réelle reste à préciser avant de modifier la portée de cet ADR.
+Les feeds exportés en HTML restent précalculés et distincts de cette page interactive. L’ADR 0002 conserve son rôle : la mesure réelle de rétention appartient à l’évaluation ultérieure, pas à ce bouton de test.

@@ -1,10 +1,8 @@
-"""Étape suivante orientée par la vidéo regardée : moteur (next_step) et serveur (/etape, panneau).
+"""Étape suivante du moteur et ancien endpoint public /etape.
 
-Seam testé : l'état du visionnage est la vidéo sur laquelle le lecteur reste
-(rétention applicative, GLOSSARY). Le moteur expose l'étape suivante comme
-une fonction pure (corpus, vidéo regardée, mode, déjà-vues) ; le serveur la
-sert en JSON pour le panneau, qui l'appelle quand le lecteur atteint le bas
-de la colonne. Testé au niveau HTTP (http.client) comme test_serve.py.
+Le moteur expose une transition pure à partir d'une vidéo et de ses
+exclusions. Le parcours adaptatif avec actions d'intérêt et état de session
+est vérifié séparément par l'API HTTP dans test_parcours_adaptatif.py.
 """
 import http.client
 import json
@@ -156,31 +154,14 @@ def test_etape_plus_aucune_candidate(server):
     assert "erreur" in data
 
 
-# --- Serveur : le panneau à rétention sur la page d'accueil ---
+# --- Serveur : l'arrivée directe remplace le panneau précalculé ---
 
 
-def test_index_offre_le_panneau_avec_la_chaine_initiale(server):
-    """La page d'accueil embarque le panneau scroll : cartes de la chaîne initiale,
-    chaque transition porte son chemin de sujets (explicabilité)."""
+def test_index_starts_with_a_single_video(server):
+    """L'accueil ne précharge plus de cartes à faire défiler avant toute action."""
     status, body = get(server, "/")
     doc = body.decode("utf-8")
     assert status == 200
-    assert 'class="panneau"' in doc
-    cards = [line for line in doc.splitlines() if "data-video=" in line]
-    assert len(cards) >= 5, "le panneau doit embarquer une chaîne initiale de 5 cartes"
-    assert "point de départ" in doc
-    assert "→" in doc  # chemins de sujets affichés sur les transitions
-
-
-def test_index_embarque_la_logique_de_retention(server):
-    """Rétention applicative : rester sur une carte en fait le pivot ; la suite
-    est demandée depuis le pivot, pas depuis l'ordre linéaire des cartes."""
-    status, body = get(server, "/")
-    doc = body.decode("utf-8")
-    assert status == 200
-    assert "IntersectionObserver" in doc
-    assert "pivot" in doc
-    assert "/etape?from=" in doc
-    assert "SEUIL_MS" in doc
-    # les cartes portent leur vidéo pour l'observateur
-    assert 'data-video=' in doc
+    assert doc.count('class="carte active"') == 1
+    assert 'class="panneau"' not in doc
+    assert "<select" not in doc

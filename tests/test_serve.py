@@ -1,14 +1,15 @@
-"""Serveur local minimal : sélection départ/mode, parcours lancés depuis la page.
+"""Serveur local minimal : parcours direct et contrats HTTP.
 
 Seam testé (le plus haut possible) : l'interface HTTP du serveur stdlib
 (http.server), interrogée avec http.client contre un serveur éphémère
 lancé sur le port 0 — sans Selenium, sans navigateur, sans réseau externe.
-La logique serveur (dispatch départ/mode, run.json écrit par parcours lancé,
-chemins d'erreur) est testée automatiquement ; les cosmétiques de la page
-restent une vérification manuelle au sens des Testing Decisions du spec #2.
+Les routes publiques et le run.json de l'ancien endpoint /parcours sont
+testés automatiquement ; l'apparence et les boutons du parcours direct sont
+vérifiés dans le navigateur.
 """
 import http.client
 import json
+import re
 import threading
 from pathlib import Path
 
@@ -51,21 +52,18 @@ def chain_server(chain_corpus, tmp_path):
     httpd.server_close()
 
 
-def test_index_page_offers_start_and_mode_selection(server):
-    """AC #7 : la page permet de sélectionner le départ (vidéo OU sujet) et le mode."""
+def test_index_starts_directly_on_one_video_with_the_two_actions(server):
+    """La page d'accueil lance l'expérience sans grille ni choix de mode."""
     status, body = get(server, "/")
     doc = body.decode("utf-8")
     assert status == 200
-    assert '<form action="/parcours" method="get">' in doc
-    assert 'name="start"' in doc
-    assert 'name="mode"' in doc
-    # les vidéos du corpus sont proposées comme départs
-    assert '<option value="v1"' in doc
-    # les sujets du corpus sont proposés comme départs
-    assert '<option value="Roslyn"' in doc
-    # les deux modes
-    assert 'value="approfondir"' in doc
-    assert 'value="decouvrir"' in doc
+    assert doc.count('class="carte active"') == 1
+    assert 'data-video-id="v1"' in doc
+    assert "<select" not in doc
+    assert '<button class="action principal"' in doc
+    assert "Simuler un visionnage long" in doc
+    assert re.search(r'<button[^>]*data-action="zap"[^>]*disabled', doc)
+    assert "Zapper" in doc
 
 
 def test_parcours_from_page_renders_result_and_writes_run_json(server, tmp_path):
