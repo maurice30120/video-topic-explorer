@@ -183,13 +183,49 @@ def _player_html(video: dict[str, Any]) -> str:
     )
 
 
-def _card_html(by_id: dict[str, dict], video_id: str, transition: dict[str, Any] | None) -> str:
+def _stations_html(topic_path: list[str]) -> str:
+    """Ligne de sujets de la transition : une pastille par sujet, reliées."""
+    stations = "".join(
+        f'<span class="station"><span class="pastille"></span>'
+        f'<span class="nom">{html.escape(topic)}</span></span>'
+        for topic in topic_path
+    )
+    return f'<div class="ligne-sujets">{stations}</div>'
+
+
+def _card_html(
+    by_id: dict[str, dict],
+    video_id: str,
+    transition: dict[str, Any] | None,
+    departure: bool,
+) -> str:
     video = by_id[video_id]
+    channel_html = ""
+    if video.get("channel"):
+        channel_html = f'<p class="chaine">{html.escape(video["channel"])}</p>'
+    if transition and transition.get("topic_path"):
+        path_attr = html.escape("|".join(transition["topic_path"]), quote=True)
+        path_html = (
+            f'<div class="chemin" data-sujets="{path_attr}">'
+            + _stations_html(transition["topic_path"])
+            + "</div>"
+        )
+    elif departure:
+        path_html = (
+            '<div class="chemin"><div class="ligne-sujets">'
+            '<span class="station depart"><span class="pastille"></span>'
+            '<span class="nom">Départ</span></span></div></div>'
+        )
+    else:
+        path_html = ""
     return (
-        f'<article class="carte" data-video="{html.escape(video_id, quote=True)}">'
+        f'<article class="carte{" depart" if departure else ""}" '
+        f'data-video="{html.escape(video_id, quote=True)}">'
         f"{_player_html(video)}"
         '<div class="legende">'
         f'<h2 class="titre">{html.escape(video["title"])}</h2>'
+        f"{channel_html}"
+        f"{path_html}"
         "</div>"
         "</article>"
     )
@@ -199,7 +235,7 @@ def _parcours_html(by_id: dict[str, dict], run: dict[str, Any], mode: str, activ
     cards = []
     for index, video_id in enumerate(run["videos"]):
         transition = next((t for t in run["transitions"] if t["to"] == video_id), None)
-        cards.append(_card_html(by_id, video_id, transition))
+        cards.append(_card_html(by_id, video_id, transition, index == 0))
     return (
         f'<section class="parcours" data-mode="{html.escape(mode, quote=True)}"'
         + ("" if active else " hidden")
