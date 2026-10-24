@@ -119,3 +119,39 @@ Entraînement ou fine-tuning ; apprentissage comportemental ; algorithme optimis
 Les principaux risques sont la variabilité des concepts extraits, un graphe déconnecté ou trop dense, le manque de vidéos pertinentes et les limites d'accès aux données de YouTube. Garder la sortie brute de Gemini, tester sur JSON figé et éviter les appels multiples limite ces risques.
 
 **Décision go/no-go :** poursuivre seulement si les parcours apportent une valeur sensible par rapport à une simple liste thématique. Dans le cas contraire, revoir l'hypothèse ou la qualité des sujets avant d'enrichir la technologie.
+
+## 11. Décisions tranchées (grilling de conception)
+
+Le grilling du plan MVP a validé les décisions suivantes ; elles complètent les sections ci-dessus sans les remplacer.
+
+### Corpus
+
+~6 clusters de 4–5 vidéos proches, reliés par 1–2 vidéos « pont », choisis à la main. Collecte **manuelle** des métadonnées (titre, description) ; pas de clé API YouTube au MVP ; transcriptions seulement si déjà disponibles gratuitement.
+
+### Modes
+
+Même algorithme, un seul paramètre : le rayon de hops de sujets depuis l'ensemble des sujets du point de départ. **Approfondir : rayon 1. Découvrir : rayon 2–3.** Depuis une vidéo, Découvrir peut atteindre des vidéos sans sujet commun avec le départ, tant que le chemin de sujets affiché reste continu.
+
+### Parcours
+
+Un parcours est une **chaîne** : chaque vidéo partage un sujet (direct ou via un sujet intermédiaire) avec la précédente. Départage à égalité : nombre de sujets communs, puis ID de vidéo croissant. Pas de diversité forcée : les 5 premières candidates gagnent. Les **sujets morts** (une seule vidéo) restent dans le JSON et le graphe visuel mais sont exclus des candidats.
+
+### Explications
+
+Affichage **structurel** du chemin de sujets (`Roslyn → Compilateurs → LLVM`), chaque élément renvoyant aux vidéos du corpus qui portent ce sujet. Texte template fixe ; Gemini ne rédige jamais les explications. Provenance d'extraction : JSON seulement, pas dans l'UI. Graphe visuel : **statique** (PNG/SVG NetworkX), sous-graphe du parcours surligné.
+
+### Erreurs
+
+Jamais d'élargissement automatique du rayon. Parcours partiel affiché avec le motif (« 3 vidéos trouvées dans un rayon de 1 hop » ; « point de départ isolé » + suggestion d'afficher le graphe).
+
+### Sorties
+
+Chaque parcours produit un `run.json` : point de départ, mode, rayon, vidéos ordonnées, chemin de sujets et IDs des nœuds pour chaque transition. Format unique entre l'algorithme, la page HTML et le test d'évaluation.
+
+### Test de valeur (protocole pré-engagé)
+
+Test solo, **en aveugle** : les trois listes (baseline, Approfondir, Découvrir) présentées une par une dans un ordre tiré à l'avance (`eval/order.json`), explications masquées, notes saisies avant révélation (`eval/blind_draw.py`, `eval/record_scores.py`, `eval/reveal.py`). Baseline : vidéos partageant au moins un sujet avec le départ, triées par sujets communs décroissants.
+
+**Seuil go/no-go (voir [ADR-0001](adr/0001-seuil-go-no-go-pre-engage.md)) : passer en Phase 2 seulement si Découvrir bat la baseline sur « surprise utile » avec une marge ≥ 1 point en moyenne sur ~5 départs, et si aucun mode ne perd sur « cohérence ».**
+
+Le vocabulaire canonique (sujet, transition, parcours, chemin de sujets, sujet mort, etc.) est défini dans [`GLOSSARY.md`](../GLOSSARY.md).
