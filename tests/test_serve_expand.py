@@ -21,6 +21,7 @@ import pytest
 
 from vte import serve
 from vte.corpus import topics_of
+from vte.corpus import load_corpus
 
 
 def start_server(corpus, runs_dir):
@@ -220,3 +221,44 @@ def test_sortie_plus_aucune_candidate_fin_honnete(server):
     assert status == 404
     data = json.loads(body)
     assert "erreur" in data
+
+
+# --- panneau de départ (ticket #37) : le choix d'une branche du corpus arbre ---
+
+ARBRE_CORPUS = Path(__file__).resolve().parent.parent / "data" / "corpus_arbre.json"
+
+
+@pytest.fixture(scope="module")
+def arbre():
+    """Le corpus arbre figé (data/corpus_arbre.json, version arbre-2026-10)."""
+    return load_corpus(ARBRE_CORPUS)
+
+
+@pytest.fixture
+def arbre_server(arbre, tmp_path):
+    httpd = start_server(arbre, tmp_path / "runs")
+    httpd.corpus = arbre
+    yield httpd
+    httpd.shutdown()
+    httpd.server_close()
+
+
+def test_sortie_vers_une_branche_de_l_arbre_premiere_carte(arbre_server):
+    """Le panneau de départ choisit un embranchement : la sortie vers le sujet
+    cœur d'une branche du corpus arbre mène à la première carte par le
+    contrat existant — première porteuse du sujet par la règle de départage
+    unique (sujets communs décroissants puis ID croissant ; à égalité de
+    sujets communs, la plus petite ID des porteuses). Valeur attendue du
+    JSON du corpus figé, jamais du moteur."""
+    status, body = get(arbre_server, "/sortie?sujet=Roslyn")
+    assert status == 200
+    data = json.loads(body)
+    porteurs = sorted(
+        v["id"]
+        for v in arbre_server.corpus["videos"]
+        if "Roslyn" in topics_of(v)
+    )
+    assert data["from"] is None
+    assert data["to"] == porteurs[0]
+    assert data["topic_path"] == ["Roslyn"]
+    assert data["explanation"] == "sujet de départ : Roslyn"

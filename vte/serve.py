@@ -1,7 +1,8 @@
 """Serveur local minimal (stdlib uniquement) pour le parcours sensible à la rétention.
 
 Sert le panneau piloté par le visionnage (carte de départ embarquée, mesure
-de durée par carte, sélecteur de sujets et commande de sortie de branche),
+de durée par carte, écran de départ par embranchement quand le corpus
+porte ses branches, sélecteur de sujets et commande de sortie de branche),
 les points d'accès JSON du pas suivant (/etape, durée de la carte quittée,
 rayon dérivé côté serveur) et de la sortie dirigée (/sortie), la page
 du parcours complet via le moteur pur avec un run.json par parcours lancé,
@@ -19,7 +20,7 @@ from typing import Any
 from urllib.parse import parse_qs, quote_plus, urlparse
 
 from . import graph_engine
-from .corpus import videos_by_id
+from .corpus import topics_of, videos_by_id
 from .session import RAYON_PASSER_VITE, rayon_depuis_duree
 
 _RAYON_INVALIDE = object()
@@ -66,6 +67,28 @@ def card_html(video: dict[str, Any], chemin: str) -> str:
         f'<h2 class="titre">{html.escape(video["title"])}</h2>'
         f'<p class="sujets">{sujets}</p>'
         f'<a class="lien" href="{html.escape(video["url"])}">voir la vidéo</a>'
+        "</section>"
+    )
+
+
+def chooser_html(corpus: dict[str, Any]) -> str:
+    """Écran de départ (ticket #37) : la grille des embranchements du corpus
+    figé — chaque branche par son nom et son nombre de vidéos porteuses du
+    sujet. Le choix appelle le contrat de sortie existant (first_step) côté
+    client ; la première carte arrive par la sortie dirigée, puis la durée
+    reprend les commandes."""
+    boutons = []
+    for branche in corpus["branches"]:
+        nb = sum(1 for v in corpus["videos"] if branche in topics_of(v))
+        boutons.append(
+            f'<button type="button" class="choix-branche" data-sujet="{html.escape(branche)}">'
+            f'{html.escape(branche)}<span class="compte">{nb} vidéos</span></button>'
+        )
+    grille = "\n".join(boutons)
+    return (
+        '<section class="choix" id="choix">'
+        '<p class="chemin">choisissez un embranchement de départ</p>'
+        f'<div class="grille">\n{grille}\n</div>'
         "</section>"
     )
 
@@ -153,6 +176,19 @@ function changerDeBranche() {
   demanderPas("/sortie?sujet=" + encodeURIComponent(sujet) + "&exclu=" + exclus());
 }
 
+/* écran de départ (moment zéro, ticket #37) : choisir un embranchement —
+   même contrat que « changer de branche », la première carte arrive par la
+   sortie dirigée ; la navigation ne juge aucune carte, aucune durée ne
+   part avec elle */
+function choisirBranche(sujet) {
+  if (enCours || terminee) { return; }
+  var choix = document.getElementById("choix");
+  if (choix) { choix.parentNode.removeChild(choix); }
+  carteActive = null;
+  activation = null;
+  demanderPas("/sortie?sujet=" + encodeURIComponent(sujet) + "&exclu=");
+}
+
 var observer = new IntersectionObserver(function (entries) {
   entries.forEach(function (entry) {
     if (entry.intersectionRatio >= 0.6) { activer(entry.target); }
@@ -173,6 +209,9 @@ function quitter(carte) {
 }
 
 document.getElementById("changer-branche").addEventListener("click", changerDeBranche);
+Array.prototype.slice.call(document.querySelectorAll("button[data-sujet]")).forEach(function (b) {
+  b.addEventListener("click", function () { choisirBranche(b.dataset.sujet); });
+});
 cartes().forEach(function (c) { observer.observe(c); });
 """
 
@@ -188,8 +227,11 @@ def index_page(corpus: dict[str, Any], start: str | None = None) -> str:
     est dérivé côté serveur (GLOSSARY, « Rétention applicative »). Le
     sélecteur des sujets canoniques du corpus figé et la commande « changer
     de branche » portent la sortie dirigée (navigation explicite : elle ne
-    juge jamais la carte en cours). Aucune référence aux modes dans la page
-    servie (spec #27, ticket #34).
+    juge jamais la carte en cours). Sans départ, quand le corpus porte la
+    métadonnée « branches », la page sert l'écran de départ : la grille des
+    embranchements, chaque choix appelant le contrat de sortie existant
+    (ticket #37). Aucune référence aux modes dans la page servie (spec #27,
+    ticket #34).
     """
     topics = sorted({t["canonical"] for v in corpus["videos"] for t in v.get("topics", [])})
     topic_options = "\n".join(
@@ -197,6 +239,8 @@ def index_page(corpus: dict[str, Any], start: str | None = None) -> str:
     )
     if start is not None:
         cards = card_html(videos_by_id(corpus)[start], "point de départ")
+    elif corpus.get("branches"):
+        cards = chooser_html(corpus)
     else:
         cards = '<section class="carte"><p class="chemin">aucun parcours possible depuis ce corpus</p></section>'
     return f"""<!doctype html>
@@ -218,6 +262,10 @@ label {{ display: block; margin: 0.25rem 0; }}
 .sujets {{ color: #555; font-size: 0.9rem; }}
 .lien {{ display: inline-block; margin-top: 0.75rem; }}
 .conseil {{ color: #777; font-size: 0.85rem; margin: 0.5rem 0 0; }}
+.choix {{ max-width: 560px; margin: 0 auto; padding: 1.5rem 1rem; }}
+.choix .grille {{ display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 0.5rem; }}
+.choix-branche {{ display: flex; justify-content: space-between; gap: 0.5rem; padding: 0.6rem 0.9rem; font: inherit; background: #fff; border: 1px solid #e0d8cc; cursor: pointer; }}
+.choix-branche .compte {{ color: #a0642a; font-size: 0.85rem; white-space: nowrap; }}
 .message {{ color: #a33; font-size: 0.85rem; margin: 0.25rem 0 0; }}
 </style>
 </head>
@@ -303,7 +351,16 @@ def make_handler(corpus: dict[str, Any], runs_dir: Path) -> type[BaseHTTPRequest
         def do_GET(self) -> None:
             parsed = urlparse(self.path)
             if parsed.path == "/":
-                self._send_html(200, index_page(corpus, panel_start(corpus)))
+                query = parse_qs(parsed.query)
+                start = (query.get("start") or [None])[0]
+                if start not in videos_by_id(corpus):
+                    start = None
+                if start is None and corpus.get("branches"):
+                    # moment zéro (ticket #37) : sans départ, l'écran de
+                    # départ présente les embranchements du corpus figé.
+                    self._send_html(200, index_page(corpus, None))
+                else:
+                    self._send_html(200, index_page(corpus, start if start is not None else panel_start(corpus)))
             elif parsed.path == "/etape":
                 self._handle_etape(parse_qs(parsed.query))
             elif parsed.path == "/sortie":

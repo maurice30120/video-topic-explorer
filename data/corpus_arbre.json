@@ -3859,6 +3859,27 @@
       ]
     }
   ],
+  "branches": [
+    "Roslyn",
+    "Compilateurs",
+    "Rust",
+    "TypeScript",
+    "Machine Learning",
+    "Noyau Linux",
+    "Asynchrone",
+    "Architecture",
+    "Sécurité",
+    "Bases de données",
+    "Accessibilité",
+    "Graphisme",
+    "Éditeurs",
+    "Tests",
+    "Musique",
+    "Fun",
+    "Science",
+    "Mathématiques",
+    "Cuisine"
+  ],
   "dead_topics": [
     "Histoire de l'informatique"
   ]

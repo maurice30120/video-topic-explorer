@@ -166,3 +166,29 @@ def test_corpus_arbre_json_figé_coherent_avec_le_moteur():
             counts[topic["canonical"]] = counts.get(topic["canonical"], 0) + 1
     dead = set(corpus.get("dead_topics", ()))
     assert dead == {t for t, n in counts.items() if n < 2}
+
+
+def test_le_corpus_arbre_expose_les_branches_en_metadonnee_de_premier_niveau():
+    """« branches » porte les 19 noms de branches du corpus arbre, pour le
+    panneau de départ (ticket #37) : le curioeur choisit son embranchement
+    au moment zéro. Source de vérité indépendante : la conception du corpus
+    (CORES, miroir de scripts/make_arbre_corpus.py), pas le moteur. Les
+    vidéos, elles, restent strictement inchangées (96, topologie figée
+    arbre-2026-10) — seules les métadonnées gagnent la liste."""
+    corpus = json.loads(ARBRE_CORPUS.read_text(encoding="utf-8"))
+    assert corpus["branches"] == list(CORES.values())
+    assert len(corpus["videos"]) == 96
+
+
+def test_chaque_branche_est_un_sujet_coeur_porte_par_ses_videos_plus_ses_ponts():
+    """Chaque nom de branche exposé est un vrai sujet cœur du corpus figé :
+    présent sur les 4 vidéos de sa branche et sur les ponts qui la relient
+    — le compte attendu par la grille de départ vient du JSON, jamais du
+    moteur."""
+    corpus = json.loads(ARBRE_CORPUS.read_text(encoding="utf-8"))
+    counts: dict[str, int] = {}
+    for video in corpus["videos"]:
+        for topic in video["topics"]:
+            counts[topic["canonical"]] = counts.get(topic["canonical"], 0) + 1
+    for branche in corpus["branches"]:
+        assert counts[branche] >= 4, branche
