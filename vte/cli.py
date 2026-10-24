@@ -146,7 +146,7 @@ def cmd_extract(args: argparse.Namespace) -> int:
 def cmd_run(args: argparse.Namespace) -> int:
     corpus = load_corpus(args.corpus)
     try:
-        run = graph_engine.parcours(corpus, args.start, args.mode, args.radius)
+        run = graph_engine.parcours(corpus, args.start, args.mode)
     except graph_engine.PathfindingError as exc:
         print(f"ERREUR : {exc}", file=sys.stderr)
         return 1
@@ -229,7 +229,6 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("corpus")
     p.add_argument("--start", required=True)
     p.add_argument("--mode", required=True, choices=["approfondir", "decouvrir"])
-    p.add_argument("--radius", type=int, default=None)
     p.add_argument("--out", default=None)
     p.set_defaults(func=cmd_run)
 
