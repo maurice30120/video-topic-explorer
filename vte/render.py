@@ -614,3 +614,16 @@ def build_feed_html(
 </html>
 """
     return doc
+
+
+def render_feed_html(
+    corpus: dict[str, Any],
+    runs: dict[str, dict[str, Any]],
+    out: Path,
+    graph_href: str | None = None,
+    default_mode: str = "decouvrir",
+) -> None:
+    """Sauvegarde la page du feed (voir build_feed_html pour la chaîne)."""
+    doc = build_feed_html(corpus, runs, graph_href, default_mode)
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(doc, encoding="utf-8")

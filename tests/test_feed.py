@@ -4,7 +4,7 @@ Une page unique, une carte par vidéo avec lecteur intégré, chemin de sujets
 en légende, basculeur de mode, carte de fin. Sans Gemini, sans UI, sans réseau.
 """
 from vte import graph_engine
-from vte.render import build_feed_html
+from vte.render import build_feed_html, render_feed_html
 
 
 def both_runs(corpus: dict, start: str) -> dict:
@@ -174,3 +174,13 @@ def test_feed_shell_mobile_first_snap_focus_and_reduced_motion(rich_corpus):
     assert '<body data-mode="decouvrir">' in doc
     # indication du geste son, en français
     assert "Un appui sur la vidéo active le son." in doc
+
+
+def test_render_feed_html_writes_page_and_parent_dirs(rich_corpus, tmp_path):
+    runs = both_runs(rich_corpus, "v1")
+    out = tmp_path / "site" / "index.html"
+    render_feed_html(rich_corpus, runs, out, graph_href="graphe.png")
+    assert out.exists()
+    doc = out.read_text(encoding="utf-8")
+    assert doc.startswith("<!doctype html>")
+    assert 'href="graphe.png"' in doc
