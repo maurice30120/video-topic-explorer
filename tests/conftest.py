@@ -7,9 +7,6 @@ import pytest
 
 from vte.corpus import load_corpus
 
-TOPIC = '{"raw": "%s", "canonical": "%s", "justification": "fixture", "provenance": {"source": "fixture", "model": "test", "version": "0"}}'
-
-
 def make_topic(label: str) -> dict:
     return {"raw": label, "canonical": label, "justification": "fixture",
             "provenance": {"source": "fixture", "model": "test", "version": "0"}}
