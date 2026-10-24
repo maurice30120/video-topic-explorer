@@ -57,7 +57,7 @@ jobs:
         if: steps.raw.outputs.present == 'true'
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-        run: python -m vte.cli extract data/videos_raw.json --output data/corpus.json
+        run: python -m vte.cli extract data/videos_raw.json --output data/corpus_real.json
 
       - name: Tests sur le corpus régénéré
         if: steps.raw.outputs.present == 'true'
