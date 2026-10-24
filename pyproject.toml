@@ -15,4 +15,4 @@ render = ["matplotlib"]
 test = ["pytest"]
 
 [tool.setuptools]
-packages = ["vte", "eval"]
+packages = ["vte"]
