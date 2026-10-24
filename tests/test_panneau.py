@@ -8,8 +8,11 @@ exact où la carte courante est quittée — ``GET /etape?from=…&duree=…&exc
 le rayon étant dérivé côté serveur —, le sélecteur des sujets canoniques
 réels du corpus figé et la commande « changer de branche » qui pilote
 ``GET /sortie?sujet=…&exclu=…`` (navigation explicite : la sortie ne juge
-jamais la carte en cours). Aucune référence aux modes Approfondir/Découvrir
-ne reste dans la page servie.
+jamais la carte en cours). Seule la carte de départ est embarquée — chaque
+carte suivante arrive via ``GET /etape`` au départ de la précédente, la
+première carte oriente donc le premier pas via sa durée (spec #27,
+stories 2-5). Aucune référence aux modes Approfondir/Découvrir ne reste
+dans la page servie.
 
 Jamais testé ici (Testing Decisions du spec #27) : l'observateur
 d'intersection en conditions réelles, les vraies millisecondes, le
@@ -123,12 +126,18 @@ def test_la_fin_honnete_est_explicite_dans_la_page(server):
     assert "fin honnête" in doc
 
 
-def test_la_chaine_initiale_est_embarquee_avec_les_chemins_de_sujets(server):
-    """La page embarque le panneau scroll : cartes de la chaîne initiale,
-    chaque transition porte son chemin de sujets (explicabilité)."""
+def test_seule_la_carte_de_depart_est_embarquee(server):
+    """La page embarque uniquement la carte de départ (plus le sélecteur) :
+    chaque carte suivante arrive via GET /etape?from=…&duree=…&exclu=… au
+    départ de la carte précédente, à partir de la première — la durée de
+    visionnage de la première carte oriente le premier pas (spec #27,
+    stories 2-5 : l'ordre linéaire des cartes déjà défilées n'oriente
+    jamais rien)."""
     doc = index_doc(server)
     assert 'class="panneau"' in doc
     cards = [line for line in doc.splitlines() if "data-video=" in line]
-    assert len(cards) >= 5, "le panneau doit embarquer une chaîne initiale de 5 cartes"
+    assert len(cards) == 1, "le panneau doit embarquer une seule carte : le point de départ"
     assert "point de départ" in doc
-    assert "→" in doc  # chemins de sujets affichés sur les transitions
+    # le câblage du pas suivant est présent : les cartes suivantes arrivent via /etape
+    assert "/etape?from=" in doc
+    assert "→" in doc  # chemins de sujets affichés sur chaque carte ajoutée

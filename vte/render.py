@@ -9,6 +9,7 @@ from pathlib import Path
 from typing import Any
 
 from .graph_engine import build_graph
+from .session import RAYON_PASSER_VITE
 
 
 def build_html(corpus: dict[str, Any], run: dict[str, Any], graph_href: str | None = None) -> str:
@@ -152,13 +153,15 @@ def render_graph(corpus: dict[str, Any], run: dict[str, Any] | None, out: Path) 
 
 # ------------------------------------------------------------------ feed vertical
 
-RAYON_FEED = 3
+RAYON_FEED = RAYON_PASSER_VITE
 """Rayon de la chaîne servie par la page feed statique.
 
 La page feed est un aperçu statique (spec #27, Implementation Decisions) :
-une seule chaîne au rayon 3, celui de « passer vite ». La rétention ne vit
-que dans le panneau servi — c'est lui qui dérive le rayon de chaque pas de
-la durée de visionnage réelle.
+une seule chaîne au rayon de « passer vite » (concept distinct de l'aperçu
+statique, aujourd'hui égal au rayon du mapping binaire — la valeur vit une
+seule fois dans session.RAYON_PASSER_VITE). La rétention ne vit que dans
+le panneau servi — c'est lui qui dérive le rayon de chaque pas de la durée
+de visionnage réelle.
 """
 
 

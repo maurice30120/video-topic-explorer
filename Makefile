@@ -41,7 +41,7 @@ real: ## Régénère le corpus réel data/corpus_real.json
 demo: ## Génère le corpus de démo fictif data/corpus_demo.json
 	$(PY) scripts/make_demo_corpus.py
 
-arbre: ## Régénère le corpus arbre étoffé data/corpus_arbre.json (69 vidéos, 14 branches)
+arbre: ## Régénère le corpus arbre étoffé data/corpus_arbre.json (96 vidéos, 19 branches × 4 vidéos + ponts, version arbre-2026-10)
 	$(PY) scripts/make_arbre_corpus.py
 
 panneau: ## Panneau à rétention sur le corpus arbre (http://127.0.0.1:8200)

@@ -1,6 +1,6 @@
 """Serveur local minimal (stdlib uniquement) pour le parcours sensible à la rétention.
 
-Sert le panneau piloté par le visionnage (chaîne initiale embarquée, mesure
+Sert le panneau piloté par le visionnage (carte de départ embarquée, mesure
 de durée par carte, sélecteur de sujets et commande de sortie de branche),
 les points d'accès JSON du pas suivant (/etape, durée de la carte quittée,
 rayon dérivé côté serveur) et de la sortie dirigée (/sortie), la page
@@ -20,19 +20,7 @@ from urllib.parse import parse_qs, quote_plus, urlparse
 
 from . import graph_engine
 from .corpus import videos_by_id
-
-SEUIL_MS = 5000
-
-
-def rayon_depuis_duree(duree_ms: int) -> int:
-    """Rétention applicative → rayon du pas suivant (mapping binaire, spec #27).
-
-    Rester longtemps (durée ≥ SEUIL_MS) c'est aimer : le pas reste dans le
-    voisinage immédiat (rayon 1). Passer vite (durée < SEUIL_MS) c'est ne pas
-    aimer : le pas s'éloigne (rayon 3). Pas de bande intermédiaire.
-    """
-    return 1 if duree_ms >= SEUIL_MS else 3
-
+from .session import RAYON_PASSER_VITE, rayon_depuis_duree
 
 _RAYON_INVALIDE = object()
 """Sentinelle : le paramètre rayon est présent mais n'est pas un entier."""
@@ -50,21 +38,23 @@ def _parse_rayon(query: dict[str, list[str]]) -> int | None | object:
         return _RAYON_INVALIDE
 
 
-def panel_start(corpus: dict[str, Any]) -> tuple[str | None, graph_engine.Run | None]:
+def panel_start(corpus: dict[str, Any]) -> str | None:
     """Départ du panneau : la vidéo par défaut si présente, sinon la première
-    vidéo (triée par id) qui donne un parcours — l'index reste utile sur tout corpus figé."""
+    vidéo (triée par id) qui donne un premier pas — l'index reste utile sur tout corpus figé."""
     from . import DEFAULT_START
 
     ids = [video["id"] for video in corpus["videos"]]
     candidates = ([DEFAULT_START] if DEFAULT_START in ids else []) + sorted(ids)
     for candidate in candidates:
         try:
-            # rayon 3 (« passer vite ») : la chaîne initiale embarquée couvre large,
-            # le pilotage par la durée reprend dès la première carte quittée.
-            return candidate, graph_engine.parcours(corpus, candidate, 3)
+            # Seule la carte de départ est embarquée : chaque carte suivante
+            # arrive via /etape au départ de la précédente, la première carte
+            # oriente donc le premier pas via sa durée (spec #27, stories 2-5).
+            graph_engine.next_step(corpus, candidate, radius=RAYON_PASSER_VITE)
+            return candidate
         except graph_engine.PathfindingError:
             continue
-    return None, None
+    return None
 
 
 def card_html(video: dict[str, Any], chemin: str) -> str:
@@ -134,10 +124,9 @@ function arreterHonnetement() {
    entre son activation et son départ ; la demande part au moment exact
    où la carte courante est quittée, avec sa durée — le serveur dérive
    le rayon (rester longtemps = rayon 1, passer vite = rayon 3) */
-function pasSuivant(depuis, duree) {
-  if (enCours || terminee) { return; }
+function demanderPas(url) {
   enCours = true;
-  fetch("/etape?from=" + encodeURIComponent(depuis) + "&duree=" + duree + "&exclu=" + exclus())
+  fetch(url)
     .then(function (reponse) {
       if (reponse.status === 404) { arreterHonnetement(); return null; }
       if (!reponse.ok) { return reponse.json().then(function (data) { throw new Error(data.erreur); }); }
@@ -148,6 +137,11 @@ function pasSuivant(depuis, duree) {
     .finally(function () { enCours = false; });
 }
 
+function pasSuivant(depuis, duree) {
+  if (enCours || terminee) { return; }
+  demanderPas("/etape?from=" + encodeURIComponent(depuis) + "&duree=" + duree + "&exclu=" + exclus());
+}
+
 /* sortie de branche dirigée : navigation explicite, distincte de la
    rétention — elle ne juge jamais la carte en cours, la durée en cours
    est abandonnée, jamais envoyée : ni zap ni like */
@@ -156,16 +150,7 @@ function changerDeBranche() {
   var sujet = selecteur.value;
   carteActive = null;
   activation = null;
-  enCours = true;
-  fetch("/sortie?sujet=" + encodeURIComponent(sujet) + "&exclu=" + exclus())
-    .then(function (reponse) {
-      if (reponse.status === 404) { arreterHonnetement(); return null; }
-      if (!reponse.ok) { return reponse.json().then(function (data) { throw new Error(data.erreur); }); }
-      return reponse.json();
-    })
-    .then(function (data) { if (data) { ajouterCarte(data); } })
-    .catch(function (erreur) { message.textContent = erreur.message; })
-    .finally(function () { enCours = false; });
+  demanderPas("/sortie?sujet=" + encodeURIComponent(sujet) + "&exclu=" + exclus());
 }
 
 var observer = new IntersectionObserver(function (entries) {
@@ -192,13 +177,14 @@ cartes().forEach(function (c) { observer.observe(c); });
 """
 
 
-def index_page(corpus: dict[str, Any], start: str | None = None, run: graph_engine.Run | None = None) -> str:
+def index_page(corpus: dict[str, Any], start: str | None = None) -> str:
     """Panneau du parcours sensible à la rétention : le feed piloté par le visionnage.
 
-    La page embarque la chaîne initiale du moteur (chemins de sujets affichés
-    sur chaque transition) ; la durée de visionnage de chaque carte se mesure
-    entre son activation et son départ, et le pas suivant est demandé au
-    moment exact où la carte courante est quittée, avec sa durée — le rayon
+    La page embarque uniquement la carte de départ (plus le sélecteur) ;
+    chaque carte suivante arrive via GET /etape?from=…&duree=…&exclu=… au
+    départ de la carte précédente, à partir de la première — la durée de
+    visionnage de la première carte oriente donc le premier pas. La durée
+    se mesure entre l'activation et le départ de chaque carte, et le rayon
     est dérivé côté serveur (GLOSSARY, « Rétention applicative »). Le
     sélecteur des sujets canoniques du corpus figé et la commande « changer
     de branche » portent la sortie dirigée (navigation explicite : elle ne
@@ -209,12 +195,8 @@ def index_page(corpus: dict[str, Any], start: str | None = None, run: graph_engi
     topic_options = "\n".join(
         f'<option value="{html.escape(t)}">{html.escape(t)}</option>' for t in topics
     )
-    if run is not None:
-        by_id = {v["id"]: v for v in corpus["videos"]}
-        cards = "\n".join(
-            card_html(by_id[vid], "point de départ" if i == 0 else run.transitions[i - 1]["explanation"])
-            for i, vid in enumerate(run.videos)
-        )
+    if start is not None:
+        cards = card_html(videos_by_id(corpus)[start], "point de départ")
     else:
         cards = '<section class="carte"><p class="chemin">aucun parcours possible depuis ce corpus</p></section>'
     return f"""<!doctype html>
@@ -321,8 +303,7 @@ def make_handler(corpus: dict[str, Any], runs_dir: Path) -> type[BaseHTTPRequest
         def do_GET(self) -> None:
             parsed = urlparse(self.path)
             if parsed.path == "/":
-                start, run = panel_start(corpus)
-                self._send_html(200, index_page(corpus, start, run))
+                self._send_html(200, index_page(corpus, panel_start(corpus)))
             elif parsed.path == "/etape":
                 self._handle_etape(parse_qs(parsed.query))
             elif parsed.path == "/sortie":
