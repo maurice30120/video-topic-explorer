@@ -5,7 +5,7 @@ Utilisation :
     python -m vte extract data/videos_raw.json data/corpus.json
     python -m vte run data/corpus.json --start vid-001 --mode decouvrir
     python -m vte render data/corpus.json --run data/runs/<fichier>.json --out out/parcours.html
-    python -m vte graph data/corpus.json --run data/runs/<fichier>.json --out out/graphe.png
+    python -m vte graph data/corpus.json --run data/runs/<fichier>.json --out out/graphe.png (ou .svg)
     python -m vte stats data/corpus.json
     python -m vte serve data/corpus.json --port 8000
 """

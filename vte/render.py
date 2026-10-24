@@ -1,4 +1,4 @@
-"""Rendus : page HTML minimale et graphe statique (PNG) avec sous-graphe surligné."""
+"""Rendus : page HTML minimale et graphe statique (PNG/SVG) avec sous-graphe surligné."""
 
 from __future__ import annotations
 
