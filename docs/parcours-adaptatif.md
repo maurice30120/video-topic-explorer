@@ -25,12 +25,13 @@ Exemple : une vidéo sur l’IA intéresse la personne ; elle zappe ensuite les 
 
 - L’instrumentation réelle et son seuil sont différés : cette étape teste les transitions au moyen des deux boutons.
 
-## Tranches #39 et #40 livrées
+## Tranches #39 à #41 livrées
 
 - La page serveur commence par une seule vidéo active et montre « Simuler un visionnage long » et « Zapper ». Chaque action remplace immédiatement la vidéo et affiche un chemin réel.
 - L’intérêt simulé fait de la vidéo quittée le nouveau point d’intérêt et privilégie ses sujets communs. Un zap efface ce repère et cherche depuis la vidéo quittée une direction différente de celle qui vient d’être rejetée.
 - Le serveur garde les directions rejetées séparément des vidéos déjà montrées ; toutes deux restent limitées à la session en mémoire. Un nouvel intérêt rétablit le repère et efface les rejets précédents.
-- Aucune durée de lecture n’est mesurée, aucun like ni profil durable n’est enregistré. L’élargissement après plusieurs zaps relève de #41 ; la reprise depuis une autre racine relève de #42.
+- Chaque zap consécutif augmente d’un hop le rayon autour des sujets non rejetés de la vidéo courante. Un intérêt remet ce rayon à sa valeur locale et efface les directions rejetées.
+- Aucune durée de lecture n’est mesurée, aucun like ni profil durable n’est enregistré. La reprise depuis une autre racine relève de #42.
 - Si aucune candidate locale ne reste, la page garde la dernière vidéo et affiche une fin explicite.
 
 Les feeds exportés en HTML restent précalculés et distincts de cette page interactive. L’ADR 0002 conserve son rôle : la mesure réelle de rétention appartient à l’évaluation ultérieure, pas à ce bouton de test.

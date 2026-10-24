@@ -335,6 +335,7 @@ def make_handler(corpus: dict[str, Any], runs_dir: Path) -> type[BaseHTTPRequest
             "status": "active",
             "transition": None,
             "rejected_directions": set(),
+            "zaps_consecutifs": 0,
             "message": "",
         }
         with sessions_lock:
@@ -429,6 +430,9 @@ def make_handler(corpus: dict[str, Any], runs_dir: Path) -> type[BaseHTTPRequest
                     current = state["video_id"]
                     rejected = set(state["rejected_directions"])
                     point_interet = current if action == "interest" else None
+                    zaps_consecutifs = (
+                        0 if action == "interest" else state["zaps_consecutifs"] + 1
+                    )
                     try:
                         if action == "interest":
                             rejected.clear()
@@ -456,6 +460,11 @@ def make_handler(corpus: dict[str, Any], runs_dir: Path) -> type[BaseHTTPRequest
                                 "approfondir",
                                 exclude=state["shown"],
                                 exclude_directions=rejected,
+                                radius=(
+                                    graph_engine.MODE_RADIUS[graph_engine.Mode.APPROFONDIR]
+                                    + zaps_consecutifs
+                                    - 1
+                                ),
                             )
                     except graph_engine.PathfindingError as exc:
                         current_video = videos_by_id(corpus).get(current)
@@ -467,6 +476,7 @@ def make_handler(corpus: dict[str, Any], runs_dir: Path) -> type[BaseHTTPRequest
                         if not alive_topics and current_video is not None:
                             state["point_interet"] = point_interet
                             state["rejected_directions"] = rejected
+                            state["zaps_consecutifs"] = zaps_consecutifs
                             state["version"] += 1
                             state["status"] = "exhausted"
                             state["message"] = "Plus aucune vidéo liée n'est disponible dans cette branche."
@@ -478,6 +488,7 @@ def make_handler(corpus: dict[str, Any], runs_dir: Path) -> type[BaseHTTPRequest
                     else:
                         state["point_interet"] = point_interet
                         state["rejected_directions"] = rejected
+                        state["zaps_consecutifs"] = zaps_consecutifs
                         state["version"] += 1
                         if step is None:
                             state["status"] = "exhausted"

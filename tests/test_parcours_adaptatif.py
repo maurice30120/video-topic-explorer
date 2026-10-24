@@ -337,3 +337,96 @@ def test_first_zap_explores_and_a_later_interest_restores_the_pivot(branch_serve
     assert interest["video"]["id"] == "e-after-zap-interest"
     assert interest["point_interet"] == "c-old-pivot"
     assert_real_transition(branch_server.corpus, interest["transition"])
+
+
+@pytest.fixture
+def widening_server(tmp_path):
+    """Réseau où la direction proche mène à une vidéo, puis à un sujet plus éloigné."""
+    corpus = load_corpus_from_videos([
+        make_video("00-start", ["A", "C", "X"]),
+        make_video("01-pivot", ["A", "D", "M"]),
+        make_video("02-current", ["D", "B"]),
+        make_video("03-near", ["B", "C"]),
+        make_video("04-far", ["B", "Z", "Y", "R"]),
+        make_video("08-close", ["Y", "R", "M"]),
+        make_video("06-farther", ["R", "S"]),
+        make_video("09-relay", ["M", "Q", "X", "Z"]),
+    ])
+    httpd = start_server(corpus, tmp_path / "runs")
+    httpd.corpus = corpus
+    yield httpd
+    httpd.shutdown()
+    httpd.server_close()
+
+
+def post_action(httpd, cookie, state, action):
+    status, _, body = request(
+        httpd,
+        "POST",
+        "/action",
+        cookie=cookie,
+        payload={"action": action, "version": state["version"]},
+    )
+    return status, json.loads(body)
+
+
+def test_zaps_progress_from_a_near_branch_to_a_farther_topic(widening_server):
+    cookie, state, _ = begin_session(widening_server)
+    seen = {state["video"]["id"]}
+
+    status, state = post_action(widening_server, cookie, state, "interest")
+    assert status == 200 and state["video"]["id"] == "01-pivot"
+    seen.add(state["video"]["id"])
+    status, state = post_action(widening_server, cookie, state, "interest")
+    assert status == 200 and state["video"]["id"] == "02-current"
+    seen.add(state["video"]["id"])
+
+    status, state = post_action(widening_server, cookie, state, "zap")
+    assert status == 200
+    assert state["video"]["id"] == "03-near"
+    assert state["point_interet"] is None
+    assert_real_transition(widening_server.corpus, state["transition"])
+    seen.add(state["video"]["id"])
+
+    status, state = post_action(widening_server, cookie, state, "zap")
+    assert status == 200
+    assert state["video"]["id"] == "04-far"
+    assert state["point_interet"] is None
+    assert state["transition"]["topic_path"] == ["C", "X", "Z"]
+    assert_real_transition(widening_server.corpus, state["transition"])
+    assert state["video"]["id"] not in seen
+    seen.add(state["video"]["id"])
+
+    status, state = post_action(widening_server, cookie, state, "interest")
+    assert status == 200
+    assert state["transition"]["from"] == "04-far"
+    # 08-close partage deux sujets avec le point d’intérêt, contre un pour
+    # 06-farther et 09-relay ; le classement par sujets communs l’emporte.
+    assert state["video"]["id"] == "08-close"
+    assert state["point_interet"] == "04-far"
+    assert state["transition"]["topic_path"] == ["R"]
+    assert_real_transition(widening_server.corpus, state["transition"])
+
+    # Le premier zap après cet intérêt repart au rayon local : le sujet éloigné
+    # 06-farther reste hors portée et la transition s'arrête sur 09-relay.
+    status, state = post_action(widening_server, cookie, state, "zap")
+    assert status == 200
+    assert state["transition"]["from"] == "08-close"
+    assert state["video"]["id"] == "09-relay"
+    assert state["point_interet"] is None
+    assert state["transition"]["topic_path"] == ["M"]
+    assert_real_transition(widening_server.corpus, state["transition"])
+
+
+def test_repeated_zaps_without_an_initial_interest_keep_exploring(branch_server):
+    cookie, state, _ = begin_session(branch_server)
+    seen = {state["video"]["id"]}
+
+    for expected in ("c-old-pivot", "e-after-zap-interest"):
+        status, state = post_action(branch_server, cookie, state, "zap")
+        assert status == 200
+        assert state["video"]["id"] == expected
+        assert state["point_interet"] is None
+        assert state["video"]["id"] not in seen
+        assert_real_transition(branch_server.corpus, state["transition"])
+        seen.add(state["video"]["id"])

@@ -353,6 +353,7 @@ def next_step(
     exclude: set[str] | None = None,
     *,
     exclude_directions: set[str] | None = None,
+    radius: int | None = None,
 ) -> dict[str, Any] | None:
     """Fonction pure : (corpus figé, vidéo regardée, mode, déjà montrées) → pas suivant.
 
@@ -360,8 +361,9 @@ def next_step(
     d'un sujet de la vidéo regardée et aboutit à un sujet de la vidéo suggérée,
     par un chemin de sujets réel. Les vidéos déjà montrées (et la vidéo
     regardée) sont exclues : le panneau ne répète jamais une carte. Les sujets
-    de `exclude_directions` ne peuvent apparaître dans le chemin sortant, ce qui
-    permet d'explorer une branche différente après un zap.
+    de `exclude_directions` ne servent ni de graine au rayon ni de nœud dans le
+    chemin sortant, ce qui évite de poursuivre une direction rejetée. `radius`
+    remplace le rayon du mode lorsque le parcours doit élargir une recherche.
     Renvoie None quand aucune candidate ne reste — fin honnête, pas une erreur.
     """
     try:
@@ -370,18 +372,26 @@ def next_step(
         raise PathfindingError(
             f"mode inconnu : {mode!r} (attendu : {sorted(member.value for member in Mode)})"
         ) from None
+    if radius is None:
+        radius = MODE_RADIUS[mode]
+    if isinstance(radius, bool) or not isinstance(radius, int) or radius < 1:
+        raise PathfindingError("le rayon de hops doit être un entier >= 1")
     by_id = videos_by_id(corpus)
     if current not in by_id:
         raise PathfindingError(f"vidéo inconnue : {current!r}")
     graph = build_graph(corpus)
     projected = _projected(graph)
     dead = set(corpus.get("dead_topics", ()))
-    seed = topics_in(graph, current)
-    allowed = _topics_within(projected, seed - dead, MODE_RADIUS[mode]) - dead
+    seed = topics_in(graph, current) - dead
+    if exclude_directions:
+        seed -= exclude_directions
+    if not seed:
+        return None
+    allowed = _topics_within(projected, seed, radius) - dead
     if not allowed:
         raise PathfindingError(
             "point de départ isolé : aucun sujet vivant atteignable dans le rayon "
-            f"({MODE_RADIUS[mode]} hop(s)) ; affichez le graphe du corpus pour visualiser sa topologie"
+            f"({radius} hop(s)) ; affichez le graphe du corpus pour visualiser sa topologie"
         )
     used = set(exclude or ()) | {current}
     return _next_transition(
