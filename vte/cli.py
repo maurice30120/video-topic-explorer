@@ -189,8 +189,8 @@ def cmd_feed(args: argparse.Namespace) -> int:
     corpus = load_corpus(args.corpus)
     runs: dict[str, dict[str, Any]] = {}
     try:
-        for mode in ("decouvrir", "approfondir"):
-            runs[mode] = graph_engine.parcours(corpus, args.start, mode).to_dict()
+        for mode in graph_engine.Mode:
+            runs[mode.value] = graph_engine.parcours(corpus, args.start, mode).to_dict()
     except graph_engine.PathfindingError as exc:
         print(f"ERREUR : {exc}", file=sys.stderr)
         return 1

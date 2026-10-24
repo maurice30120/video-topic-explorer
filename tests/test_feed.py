@@ -3,15 +3,33 @@
 Une page unique, une carte par vidéo avec lecteur intégré, chemin de sujets
 en légende, basculeur de mode, carte de fin. Sans Gemini, sans UI, sans réseau.
 """
+import pytest
+
 from vte import graph_engine
-from vte.render import build_feed_html, render_feed_html
+from vte.graph_engine import Mode
+from vte.render import MODE_LABELS, MODE_SWITCH_LABELS, build_feed_html, render_feed_html
 
 
 def both_runs(corpus: dict, start: str) -> dict:
     return {
         mode: graph_engine.parcours(corpus, start, mode).to_dict()
-        for mode in ("decouvrir", "approfondir")
+        for mode in (Mode.DECOUVRIR.value, Mode.APPROFONDIR.value)
     }
+
+
+def test_mode_labels_are_indexed_by_engine_mode_and_reject_unknown():
+    # les labels couvrent exactement les membres du moteur, sans liste dupliquée
+    assert set(MODE_LABELS) == set(Mode)
+    assert set(MODE_SWITCH_LABELS) == set(Mode)
+    # indexation par membre ou par valeur
+    assert MODE_LABELS[Mode.DECOUVRIR] == "Découvrir"
+    assert MODE_LABELS["approfondir"] == "Approfondir"
+    assert MODE_SWITCH_LABELS["decouvrir"] == "Basculer en Approfondir"
+    # un mode inconnu lève une erreur française explicite, pas un KeyError brut
+    with pytest.raises(ValueError, match="mode de parcours inconnu"):
+        MODE_LABELS["inconnu"]
+    with pytest.raises(ValueError, match="mode de parcours inconnu"):
+        MODE_SWITCH_LABELS["inconnu"]
 
 
 def test_feed_card_per_video_with_embedded_player(rich_corpus):

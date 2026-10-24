@@ -19,10 +19,13 @@ MAX_PATH = 5
 
 
 class Mode(str, Enum):
-    """Mode de parcours : Approfondir (rayon 1) ou Découvrir (rayon 3)."""
+    """Mode de parcours : Découvrir (rayon 3) ou Approfondir (rayon 1).
 
-    APPROFONDIR = "approfondir"
+    L'ordre de déclaration est l'ordre d'affichage du feed (Découvrir d'abord).
+    """
+
     DECOUVRIR = "decouvrir"
+    APPROFONDIR = "approfondir"
 
 
 class StartKind(str, Enum):

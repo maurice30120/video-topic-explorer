@@ -20,7 +20,9 @@ from urllib.error import HTTPError, URLError
 from urllib.parse import urljoin
 from urllib.request import urlopen
 
-DEFAULT_MODE = "decouvrir"
+from .render import DEFAULT_FEED_MODE
+
+DEFAULT_MODE = DEFAULT_FEED_MODE.value
 
 
 class SmokeCheckError(Exception):

@@ -8,7 +8,7 @@ import re
 from pathlib import Path
 from typing import Any
 
-from .graph_engine import build_graph
+from .graph_engine import Mode, build_graph
 
 
 def build_html(corpus: dict[str, Any], run: dict[str, Any], graph_href: str | None = None) -> str:
@@ -152,9 +152,38 @@ def render_graph(corpus: dict[str, Any], run: dict[str, Any] | None, out: Path) 
 
 # ------------------------------------------------------------------ feed vertical
 
-MODE_LABELS = {"decouvrir": "Découvrir", "approfondir": "Approfondir"}
-MODE_SWITCH_LABELS = {"decouvrir": "Basculer en Approfondir", "approfondir": "Basculer en Découvrir"}
-_FEED_MODES = ("decouvrir", "approfondir")
+DEFAULT_FEED_MODE = Mode.DECOUVRIR
+"""Mode actif au chargement du feed (le mode du parcours publié par défaut)."""
+
+
+def _as_mode(value: str | Mode) -> Mode:
+    """Convertit une valeur en Mode ; erreur française explicite si le mode est inconnu."""
+    try:
+        return Mode(value)
+    except ValueError:
+        supported = ", ".join(member.value for member in Mode)
+        raise ValueError(
+            f"mode de parcours inconnu : {value!r} (modes supportés : {supported})"
+        ) from None
+
+
+class _ModeLabels(dict):
+    """Labels visibles indexés par Mode : un mode inconnu lève une erreur
+    française explicite (pas de KeyError brut), par membre comme par valeur."""
+
+    def __getitem__(self, key):
+        return super().__getitem__(_as_mode(key))
+
+    def __missing__(self, mode):
+        raise ValueError(f"aucun label défini pour le mode de parcours {mode.value!r}")
+
+
+MODE_LABELS = _ModeLabels({Mode.DECOUVRIR: "Découvrir", Mode.APPROFONDIR: "Approfondir"})
+MODE_SWITCH_LABELS = _ModeLabels({
+    Mode.DECOUVRIR: "Basculer en Approfondir",
+    Mode.APPROFONDIR: "Basculer en Découvrir",
+})
+_FEED_MODES = tuple(Mode)
 
 
 def _embed_url(url: str) -> str | None:
@@ -563,7 +592,7 @@ def build_feed_html(
     corpus: dict[str, Any],
     runs: dict[str, dict[str, Any]],
     graph_href: str | None = None,
-    default_mode: str = "decouvrir",
+    default_mode: str | Mode = DEFAULT_FEED_MODE,
 ) -> str:
     """Construit la page unique du feed vertical (les deux modes embarqués) et la renvoie.
 
@@ -574,9 +603,10 @@ def build_feed_html(
     from .corpus import videos_by_id
 
     by_id = videos_by_id(corpus)
-    modes = [m for m in _FEED_MODES if m in runs]
+    modes = [member.value for member in _FEED_MODES if member.value in runs]
     if not modes:
         raise ValueError("le feed exige au moins un parcours (mode decouvrir ou approfondir)")
+    default_mode = _as_mode(default_mode).value
     if default_mode not in modes:
         default_mode = modes[0]
     toggles = "".join(
@@ -631,7 +661,7 @@ def render_feed_html(
     runs: dict[str, dict[str, Any]],
     out: Path,
     graph_href: str | None = None,
-    default_mode: str = "decouvrir",
+    default_mode: str | Mode = DEFAULT_FEED_MODE,
 ) -> None:
     """Sauvegarde la page du feed (voir build_feed_html pour la chaîne)."""
     doc = build_feed_html(corpus, runs, graph_href, default_mode)
