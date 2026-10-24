@@ -96,3 +96,46 @@ def test_extract_enriches_corpus_with_real_provenance(monkeypatch, tmp_path):
             assert provenance["model"] == MODEL
             assert provenance["version"] == MODEL_VERSION
             assert provenance["version"] != "cached"
+
+
+def test_extract_normalizes_alias_end_to_end(monkeypatch, tmp_path):
+    """« C Sharp » -> « C# » : libellé brut conservé, canonique fusionné,
+    à travers le chemin complet de l'extracteur (réponse brute -> corpus)."""
+    install_fake_gemini(monkeypatch, {
+        "Roslyn sous le capot": topics_payload("C Sharp", "Roslyn", "Compilateurs"),
+        "Promenade dans l'optimiseur LLVM": topics_payload("LLVM IR", "Compilateurs", "Optimisation"),
+    })
+    out = tmp_path / "corpus.json"
+
+    rc = main(["extract", str(FIXTURE_RAW), "--output", str(out), "--model", MODEL])
+
+    assert rc == 0
+    corpus = load_corpus(out)
+    by_id = {v["id"]: v for v in corpus["videos"]}
+    aliases = {t["raw"]: t["canonical"] for t in by_id["aa11bb22cc33"]["topics"]}
+    assert aliases["C Sharp"] == "C#"
+    aliases = {t["raw"]: t["canonical"] for t in by_id["dd44ee55ff66"]["topics"]}
+    assert aliases["LLVM IR"] == "LLVM"
+    # load_corpus revalide la cohérence raw/canonical : le corpus reste chargeable.
+
+
+def test_extract_cache_never_recalls_an_extracted_video(monkeypatch, tmp_path):
+    """AC cache : une vidéo déjà extraite ne déclenche jamais de nouvel appel.
+
+    Second run sur le même corpus : zéro appel Gemini supplémentaire,
+    et la provenance d'origine est conservée telle quelle.
+    """
+    script = {
+        "Roslyn sous le capot": topics_payload("C Sharp", "Roslyn", "Compilateurs"),
+        "Promenade dans l'optimiseur LLVM": topics_payload("LLVM IR", "Compilateurs", "Optimisation"),
+    }
+    counter = install_fake_gemini(monkeypatch, script)
+    out = tmp_path / "corpus.json"
+
+    assert main(["extract", str(FIXTURE_RAW), "--output", str(out), "--model", MODEL]) == 0
+    assert counter[0] == 2
+    before = json.loads(out.read_text(encoding="utf-8"))
+
+    assert main(["extract", str(FIXTURE_RAW), "--output", str(out), "--model", MODEL]) == 0
+    assert counter[0] == 2  # aucun nouvel appel Gemini
+    assert json.loads(out.read_text(encoding="utf-8")) == before  # provenance d'origine intacte
