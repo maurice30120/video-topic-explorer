@@ -1,7 +1,8 @@
 name: Daily Pages
 
-# Construit les data, prépare le site statique et déploie sur GitHub Pages.
-# Un cron planifié ne s'exécute que sur la branche par défaut.
+# Construit les data, produit le même site que le pipeline push (feed en
+# index.html à la racine + graphe statique), déploie sur GitHub Pages puis
+# contrôle de fumée. Un cron planifié ne s'exécute que sur la branche par défaut.
 
 on:
   schedule:
@@ -39,22 +40,24 @@ jobs:
       - name: Run tests
         run: python -m pytest tests/ -q
 
+      - name: "Départ par défaut du site (source unique : vte.DEFAULT_START)"
+        run: echo "DEFAULT_START=$(python -c 'from vte import DEFAULT_START; print(DEFAULT_START)')" >> "$GITHUB_ENV"
+
       - name: Build data (corpus réel + démo)
         run: |
           python scripts/make_real_corpus.py
           python scripts/make_demo_corpus.py
 
       - name: Generate parcours (run)
-        run: |
-          python -m vte.cli run data/corpus_real.json --start ghnY4S8unMM --mode decouvrir --out out/run/demo.json
-          python -m vte.cli run data/corpus_real.json --start ghnY4S8unMM --mode approfondir --out out/run/demo-approfondir.json
+        run: python -m vte.cli run data/corpus_real.json --start "$DEFAULT_START" --mode decouvrir --out out/run/demo.json
 
-      - name: Render static site
+      - name: Build site (feed en index.html à la racine + graphe statique)
         run: |
-          python -m vte.cli render data/corpus_real.json --run out/run/demo.json --out out/site/parcours.html
-          python -m vte.cli render data/corpus_real.json --run out/run/demo-approfondir.json --out out/site/parcours-approfondir.html
+          python -m vte.cli feed data/corpus_real.json --out out/site/index.html
           python -m vte.cli graph data/corpus_real.json --run out/run/demo.json --out out/site/graphe.png
-          cp out/site/parcours.html out/site/index.html
+
+      - name: Smoke check generated site (feed à la racine, première carte dérivée du run généré)
+        run: python -m vte.cli smoke --site out/site --run out/run/demo.json
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
@@ -64,3 +67,8 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
+      - name: Smoke check public URL (racine = feed, retries pendant la propagation Pages)
+        run: |
+          python -m vte.cli smoke --url "${{ steps.deployment.outputs.page_url }}" \
+            --run out/run/demo.json --attempts 20 --delay 30

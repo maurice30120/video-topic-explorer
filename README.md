@@ -20,8 +20,10 @@ Noyau Linux + ponts inter-clusters.
 python scripts/make_real_corpus.py                                          # régénère data/corpus_real.json
 python -m vte.cli run data/corpus_real.json --start ghnY4S8unMM --mode decouvrir --out data/runs/demo.json
 python -m vte.cli render data/corpus_real.json --run data/runs/demo.json --out out/parcours.html
-python -m vte.cli graph data/corpus_real.json --run data/runs/demo.json --out out/graphe.png
+python -m vte.cli graph data/corpus_real.json --run data/runs/demo.json --out out/graphe.png  # ou .svg : PNG/SVG selon l'extension
 python -m vte.cli baseline data/corpus_real.json --start ghnY4S8unMM
+python -m vte.cli feed data/corpus_real.json --out out/site/index.html  # départ par défaut : vte.DEFAULT_START (ghnY4S8unMM)python -m vte.cli stats data/corpus_real.json                                # composantes, sujets morts, densité
+python -m vte.cli serve data/corpus_real.json --port 8000                    # page locale : sélection, parcours, graphe
 ```
 
 ## Démarrage rapide (corpus de démonstration fictif)
@@ -30,6 +32,39 @@ python -m vte.cli baseline data/corpus_real.json --start ghnY4S8unMM
 python scripts/make_demo_corpus.py                 # ~35 vidéos fictives en 6 clusters + ponts
 python -m vte.cli run data/corpus_demo.json --start vid-001 --mode decouvrir --out data/runs/demo.json
 ```
+
+## Provenance des sujets du corpus réel : manuelle aujourd'hui, Gemini pour la prochaine version
+
+**Décision (auditable)** : la version courante de `data/corpus_real.json`
+(provenance `manual-curated`, `version 2026-10`) a des sujets **assignés à la
+main** depuis les titres publics, pas extraits par Gemini. C'est un substitut
+honnête et explicite — chaque sujet porte sa provenance — rendu nécessaire
+par le ticket #5 (extraction Gemini) au moment du curatage. Le corpus reste
+figé par version ([GLOSSARY.md](GLOSSARY.md), « Corpus ») : une réextraction
+crée une **nouvelle version**, jamais une mise à jour du corpus en cours
+d'évaluation.
+
+**Le chemin d'extraction est prêt et testé** (`tests/test_extract.py`), sans
+être exécuté sur le corpus réel dans cet environnement (pas de
+`GEMINI_API_KEY`, pas de SDK installé — aucun appel réseau ici) :
+
+```bash
+# 1. Ingestion manuelle des métadonnées (aucune clé API YouTube)
+python -m vte.cli ingest mes_videos.json --output data/videos_raw.json
+
+# 2. Extraction Gemini, une seule fois, mise en cache immédiat
+#    (GEMINI_API_KEY via variable d'environnement, jamais commise)
+export GEMINI_API_KEY=...
+python -m vte.cli extract data/videos_raw.json --output data/corpus_gemini.json
+```
+
+Pour produire la **prochaine version du corpus** : réutiliser les 35
+métadonnées de `data/corpus_real.json` (id, url, titre, chaîne, description)
+dans `data/videos_raw.json`, puis lancer `extract` vers un **nouveau fichier**
+(ex. `data/corpus_gemini.json`) — pas vers `corpus_real.json`. Chaque sujet
+y portera `provenance: {source: gemini, model: ..., version: ...}` ; les
+échecs sont flaggés `extraction_error` et jamais acceptés en silence ; le
+résultat est figé et jamais rappelé pendant les parcours.
 
 ## Flux réel
 

@@ -161,3 +161,110 @@ def load_corpus_from_videos(videos):
     corpus = load_corpus(path)
     Path(path).unlink()
     return corpus
+
+def test_tiebreak_is_common_topics_then_id_only():
+    """Departage spec : sujets communs decroissant, puis ID croissant — rien d'autre.
+
+    Depuis c, y et z sont a egalite de sujets communs (0) ; z a un chemin de
+    sujets plus court ([P, R]) mais un ID plus grand : l'ID doit gagner,
+    la longueur du chemin ne participe pas au departage.
+    """
+    corpus = load_corpus_from_videos([
+        make_video("s", ["A"]),
+        make_video("br", ["A", "P", "R"]),
+        make_video("c", ["P", "Q"]),
+        make_video("z", ["R", "S"]),
+        make_video("y", ["S"]),
+    ])
+    run = graph_engine.parcours(corpus, "s", "decouvrir")
+    assert run.videos == ["s", "br", "c", "y", "z"]
+
+
+def test_run_transitions_carry_explicit_node_ids(chain_corpus):
+    """run.json : chaque transition porte les IDs de noeuds du graphe biparti."""
+    run = graph_engine.parcours(chain_corpus, "a", "decouvrir")
+    graph = graph_engine.build_graph(chain_corpus)
+    for transition in run.transitions:
+        assert transition["from_node"] == f"video:{transition['from']}"
+        assert transition["to_node"] == f"video:{transition['to']}"
+        assert transition["topic_nodes"] == [f"topic:{t}" for t in transition["topic_path"]]
+        for node in [transition["from_node"], transition["to_node"], *transition["topic_nodes"]]:
+            assert graph.has_node(node), f"noeud inexistant dans le graphe : {node}"
+
+
+def test_run_topic_start_first_transition_node_ids(rich_corpus):
+    """Depart par sujet : la premiere transition part de None, le noeud sujet reste explicite."""
+    run = graph_engine.parcours(rich_corpus, "Roslyn", "approfondir")
+    first = run.transitions[0]
+    assert first["from"] is None
+    assert first["from_node"] is None
+    assert first["to_node"] == f"video:{first['to']}"
+    assert first["topic_nodes"] == ["topic:Roslyn"]
+
+
+def test_transition_valid_by_real_path_outside_start_radius():
+    """Ticket #19 : la candidate reste dans le rayon, le chemin de sujets ne l'est pas.
+
+    C est a 2 hops du sujet de depart A (hors du rayon 1 d'Approfondir), mais
+    t et u se suivent par le chemin reel [C] : la transition reste valide et
+    affiche ce chemin — le rayon ne plafonne que l'eligibilite des
+    candidates, jamais la recherche de chemin.
+    """
+    corpus = load_corpus_from_videos([
+        make_video("s", ["A"]),
+        make_video("w", ["A", "B"]),
+        make_video("q", ["A", "X"]),
+        make_video("t", ["C", "X"]),
+        make_video("u", ["B", "C"]),
+    ])
+    graph = graph_engine.build_graph(corpus)
+    assert "C" not in graph_engine.topic_radius(graph, {"A"}, 1)
+    run = graph_engine.parcours(corpus, "s", "approfondir")
+    steps = {(t["from"], t["to"]): t["topic_path"] for t in run.transitions}
+    assert steps[("t", "u")] == ["C"]
+
+
+def test_mode_and_startkind_minimal_types():
+    """Ticket #19 : types dedies minimaux, table unique mode -> rayon de hops."""
+    assert graph_engine.Mode("approfondir") is graph_engine.Mode.APPROFONDIR
+    assert graph_engine.Mode("decouvrir") is graph_engine.Mode.DECOUVRIR
+    assert graph_engine.MODE_RADIUS == {
+        graph_engine.Mode.APPROFONDIR: 1,
+        graph_engine.Mode.DECOUVRIR: 3,
+    }
+    assert graph_engine.StartKind.VIDEO == "video"
+    assert graph_engine.StartKind.TOPIC == "topic"
+
+
+def test_parcours_accepts_mode_string_or_member(chain_corpus):
+    """Les chaînes restent acceptees ; le run porte le type et se serialize tel quel."""
+    by_string = graph_engine.parcours(chain_corpus, "a", "decouvrir")
+    by_member = graph_engine.parcours(chain_corpus, "a", graph_engine.Mode.DECOUVRIR)
+    assert by_string.to_dict() == by_member.to_dict()
+    assert by_member.mode == "decouvrir"
+    assert by_member.to_dict()["mode"] == "decouvrir"
+
+
+def test_unknown_mode_lists_valid_modes(chain_corpus):
+    with pytest.raises(graph_engine.PathfindingError) as exc:
+        graph_engine.parcours(chain_corpus, "a", "vagabonder")
+    message = str(exc.value)
+    assert "vagabonder" in message
+    assert "approfondir" in message
+    assert "decouvrir" in message
+
+
+def test_topic_start_first_video_follows_extension_sort_rule():
+    """Ticket #19 : la premiere video d'un depart par sujet suit la regle commune.
+
+    Tous les porteurs du sujet de depart ont un sujet commun avec lui ; a
+    egalite, l'ID croissant gagne — la meme regle de tri que chaque extension.
+    """
+    corpus = load_corpus_from_videos([
+        make_video("z", ["A", "B"]),
+        make_video("m", ["A", "B"]),
+        make_video("b", ["A", "B"]),
+    ])
+    run = graph_engine.parcours(corpus, "A", "approfondir")
+    assert run.start_kind == "topic"
+    assert run.videos[0] == "b"

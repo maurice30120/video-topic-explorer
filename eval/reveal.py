@@ -2,11 +2,13 @@
 
 Go (Phase 2) seulement si Découvrir bat la baseline sur « surprise utile »
 avec une marge >= 1 point en moyenne sur ~5 départs, et si aucun mode ne perd
-sur « cohérence ».
+sur « cohérence ». Les moyennes de « clarté » sont calculées et affichées,
+mais le seuil pré-engagé ne porte que sur surprise utile et cohérence.
 """
 
 import argparse
 import json
+from fractions import Fraction
 from pathlib import Path
 
 from record_scores import scores_complete
@@ -16,7 +18,8 @@ MARGIN = 1.0
 
 def reveal(order_path: str, scores_path: str, mapping_path: str) -> dict:
     order = json.loads(Path(order_path).read_text(encoding="utf-8"))
-    scores = json.loads(Path(scores_path).read_text(encoding="utf-8"))
+    scores_file = Path(scores_path)
+    scores = json.loads(scores_file.read_text(encoding="utf-8")) if scores_file.exists() else {}
     mapping = json.loads(Path(mapping_path).read_text(encoding="utf-8"))
 
     missing = scores_complete(order, scores)
@@ -24,12 +27,13 @@ def reveal(order_path: str, scores_path: str, mapping_path: str) -> dict:
         raise SystemExit(f"notation incomplète ({missing}) ; la révélation est refusée.")
 
     buckets: dict[str, list[dict]] = {}
-    for letter, kind in mapping.items():
-        buckets.setdefault(kind, []).append(scores[letter])
+    for letter, entry in mapping.items():
+        buckets.setdefault(entry["origine"], []).append(scores[letter])
 
-    def avg(kind, criterion):
-        rows = buckets.get(kind, [])
-        return sum(row[criterion] for row in rows) / len(rows) if rows else 0.0
+    def avg(origine, criterion):
+        rows = buckets.get(origine, [])
+        # Fraction : une marge vraie de 1 ne doit jamais être rejetée par un arrondi.
+        return Fraction(sum(row[criterion] for row in rows), len(rows)) if rows else Fraction(0)
 
     surprise_baseline = avg("baseline", "surprise")
     surprise_decouvrir = avg("decouvrir", "surprise")
@@ -38,6 +42,13 @@ def reveal(order_path: str, scores_path: str, mapping_path: str) -> dict:
     coherence_decouvrir = avg("decouvrir", "coherence")
 
     surprise_margin = surprise_decouvrir - surprise_baseline
+    comparaisons = {
+        mode: {
+            criterion: float(avg(mode, criterion) - avg("baseline", criterion))
+            for criterion in ("coherence", "surprise", "clarte")
+        }
+        for mode in ("approfondir", "decouvrir")
+    }
     go = (
         surprise_margin >= MARGIN
         and coherence_approfondir >= coherence_baseline
@@ -48,13 +59,15 @@ def reveal(order_path: str, scores_path: str, mapping_path: str) -> dict:
     return {
         "moyennes": {
             "coherence": {
-                "baseline": coherence_baseline,
-                "approfondir": coherence_approfondir,
-                "decouvrir": coherence_decouvrir,
+                "baseline": float(coherence_baseline),
+                "approfondir": float(coherence_approfondir),
+                "decouvrir": float(coherence_decouvrir),
             },
-            "surprise": {"baseline": surprise_baseline, "decouvrir": surprise_decouvrir},
+            "surprise": {"baseline": float(surprise_baseline), "decouvrir": float(surprise_decouvrir)},
+            "clarte": {origine: float(avg(origine, "clarte")) for origine in ("baseline", "approfondir", "decouvrir")},
         },
-        "marge_surprise": surprise_margin,
+        "marge_surprise": float(surprise_margin),
+        "comparaisons": comparaisons,
         "seuil": {"marge_min": MARGIN, "adr": "docs/adr/0001-seuil-go-no-go-pre-engage.md"},
         "decision": decision,
         "correspondance": mapping,
