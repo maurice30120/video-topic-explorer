@@ -3,7 +3,7 @@
 Utilisation :
     python -m vte ingest data/videos_raw.json
     python -m vte extract data/videos_raw.json data/corpus.json
-    python -m vte run data/corpus.json --start vid-001 --mode decouvrir
+    python -m vte run data/corpus.json --start vid-001 --rayon 3
     python -m vte render data/corpus.json --run data/runs/<fichier>.json --out out/parcours.html
     python -m vte.cli feed data/corpus.json --out out/site/index.html (--start optionnel, défaut vte.DEFAULT_START)
     python -m vte graph data/corpus.json --run data/runs/<fichier>.json --out out/graphe.png (ou .svg)
@@ -153,11 +153,11 @@ def cmd_extract(args: argparse.Namespace) -> int:
 def cmd_run(args: argparse.Namespace) -> int:
     corpus = load_corpus(args.corpus)
     try:
-        run = graph_engine.parcours(corpus, args.start, args.mode)
+        run = graph_engine.parcours(corpus, args.start, args.rayon)
     except graph_engine.PathfindingError as exc:
         print(f"ERREUR : {exc}", file=sys.stderr)
         return 1
-    out = Path(args.out) if args.out else Path("data/runs") / f"{args.start}-{args.mode}.json"
+    out = Path(args.out) if args.out else Path("data/runs") / f"{args.start}-r{args.rayon}.json"
     graph_engine.save_run(run, out)
     print(json.dumps(run.to_dict(), ensure_ascii=False, indent=2))
     print(f"run : {out}")
@@ -183,19 +183,17 @@ def cmd_render(args: argparse.Namespace) -> int:
 
 
 def cmd_feed(args: argparse.Namespace) -> int:
-    """Feed vertical : les parcours des deux modes calculés ici et embarqués dans la page."""
-    from .render import render_feed_html
+    """Feed vertical : une seule chaîne au rayon 3, calculée ici et embarquée dans la page."""
+    from .render import RAYON_FEED, render_feed_html
 
     corpus = load_corpus(args.corpus)
-    runs: dict[str, dict[str, Any]] = {}
     try:
-        for mode in graph_engine.Mode:
-            runs[mode.value] = graph_engine.parcours(corpus, args.start, mode).to_dict()
+        run = graph_engine.parcours(corpus, args.start, RAYON_FEED).to_dict()
     except graph_engine.PathfindingError as exc:
         print(f"ERREUR : {exc}", file=sys.stderr)
         return 1
     out = Path(args.out) if args.out else Path("out/site/index.html")
-    render_feed_html(corpus, runs, out, graph_href=args.graph_href)
+    render_feed_html(corpus, run, out, graph_href=args.graph_href)
     print(f"feed : {out}")
     return 0
 
@@ -284,10 +282,10 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--model", default="gemini-1.5-flash")
     p.set_defaults(func=cmd_extract)
 
-    p = sub.add_parser("run", help="calcule un parcours (Approfondir ou Découvrir)")
+    p = sub.add_parser("run", help="calcule un parcours au rayon de hops de sujets donné")
     p.add_argument("corpus")
     p.add_argument("--start", required=True)
-    p.add_argument("--mode", required=True, choices=[mode.value for mode in graph_engine.Mode])
+    p.add_argument("--rayon", type=int, required=True, help="rayon de hops de sujets depuis le départ (>= 1)")
     p.add_argument("--out", default=None)
     p.set_defaults(func=cmd_run)
 
@@ -302,7 +300,7 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--out", default=None)
     p.set_defaults(func=cmd_render)
 
-    p = sub.add_parser("feed", help="page feed vertical : parcours des deux modes embarqués")
+    p = sub.add_parser("feed", help="page feed vertical : une chaîne au rayon 3, aperçu statique")
     p.add_argument("corpus")
     p.add_argument("--start", default=DEFAULT_START, help=f"vidéo de départ (défaut : {DEFAULT_START}, voir vte.DEFAULT_START)")
     p.add_argument("--out", default=None)
@@ -320,7 +318,7 @@ def main(argv: list[str] | None = None) -> int:
     p.set_defaults(func=cmd_stats)
 
     p = sub.add_parser("serve", help="page locale : sélection, parcours, graphe à la demande")
-    p.add_argument("corpus")
+    p.add_argument("corpus", nargs="?", default="data/corpus_real.json", help="chemin du corpus (défaut : data/corpus_real.json)")
     p.add_argument("--runs-dir", default="data/runs")
     p.add_argument("--host", default="127.0.0.1")
     p.add_argument("--port", type=int, default=8000)

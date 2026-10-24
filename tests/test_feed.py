@@ -1,49 +1,58 @@
 """Tests du feed vertical (build_feed_html / render_feed_html) : seam rendus.
 
-Une page unique, une carte par vidéo avec lecteur intégré, chemin de sujets
-en légende, basculeur de mode, carte de fin. Sans Gemini, sans UI, sans réseau.
+Une page unique, une seule chaîne au rayon 3 — un aperçu statique signalé
+comme tel (la rétention ne vit que dans le panneau servi, spec #27) —, une
+carte par vidéo avec lecteur intégré, chemin de sujets en légende, carte de
+fin. Aucune référence aux modes (ticket #35). Sans Gemini, sans UI, sans réseau.
 """
 import pytest
 
 from vte import graph_engine
-from vte.graph_engine import Mode
-from vte.render import MODE_LABELS, MODE_SWITCH_LABELS, build_feed_html, render_feed_html
+from vte.render import RAYON_FEED, build_feed_html, render_feed_html
 
 
-def both_runs(corpus: dict, start: str) -> dict:
-    return {
-        mode: graph_engine.parcours(corpus, start, mode).to_dict()
-        for mode in (Mode.DECOUVRIR.value, Mode.APPROFONDIR.value)
-    }
+def feed_run(corpus: dict, start: str) -> dict:
+    return graph_engine.parcours(corpus, start, RAYON_FEED).to_dict()
 
 
-def test_mode_labels_are_indexed_by_engine_mode_and_reject_unknown():
-    # les labels couvrent exactement les membres du moteur, sans liste dupliquée
-    assert set(MODE_LABELS) == set(Mode)
-    assert set(MODE_SWITCH_LABELS) == set(Mode)
-    # indexation par membre ou par valeur
-    assert MODE_LABELS[Mode.DECOUVRIR] == "Découvrir"
-    assert MODE_LABELS["approfondir"] == "Approfondir"
-    assert MODE_SWITCH_LABELS["decouvrir"] == "Basculer en Approfondir"
-    # un mode inconnu lève une erreur française explicite, pas un KeyError brut
-    with pytest.raises(ValueError, match="mode de parcours inconnu"):
-        MODE_LABELS["inconnu"]
-    with pytest.raises(ValueError, match="mode de parcours inconnu"):
-        MODE_SWITCH_LABELS["inconnu"]
+def test_le_rayon_du_feed_statique_est_3():
+    """La chaîne statique sert le rayon 3, celui de « passer vite »."""
+    assert RAYON_FEED == 3
 
 
 def test_feed_card_per_video_with_embedded_player(rich_corpus):
-    runs = both_runs(rich_corpus, "v1")
-    doc = build_feed_html(rich_corpus, runs)
+    run = feed_run(rich_corpus, "v1")
+    doc = build_feed_html(rich_corpus, run)
 
     assert doc.startswith("<!doctype html>")
     assert 'lang="fr"' in doc
-    for video_id in runs["decouvrir"]["videos"]:
+    for video_id in run["videos"]:
         assert f'data-video="{video_id}"' in doc
         assert f"https://www.youtube-nocookie.com/embed/x{video_id}?" in doc
-    assert doc.count("<iframe") == len(runs["decouvrir"]["videos"]) + len(
-        runs["approfondir"]["videos"]
-    )
+    assert doc.count("<iframe") == len(run["videos"])
+
+
+def test_feed_une_seule_chaine_annoncee_comme_apercu_statique(rich_corpus):
+    """Ticket #35 : une seule chaîne embarquée, signalée comme aperçu statique —
+    la rétention ne vit que dans le panneau servi."""
+    run = feed_run(rich_corpus, "v1")
+    doc = build_feed_html(rich_corpus, run)
+
+    assert doc.count("<section") == 1
+    assert '<section class="parcours">' in doc
+    assert "Aperçu statique" in doc
+    assert "la rétention ne vit que dans le panneau servi" in doc
+
+
+def test_feed_aucune_reference_aux_modes(rich_corpus):
+    """Ticket #35 : ni boutons, ni basculeur, ni attribut data-mode dans la page."""
+    doc = build_feed_html(rich_corpus, feed_run(rich_corpus, "v1"))
+    low = doc.lower()
+    assert "approfondir" not in low
+    assert "decouvrir" not in low
+    assert "basculer" not in low
+    assert "data-mode" not in doc
+    assert "mode" not in doc
 
 
 def test_feed_transition_topic_path_in_caption_escaped(tmp_path):
@@ -84,20 +93,16 @@ def test_feed_transition_topic_path_in_caption_escaped(tmp_path):
             },
         ]
     }
-    runs = {
-        mode: {
-            "start": "x", "start_kind": "video", "mode": mode,
-            "radius": 1 if mode == "approfondir" else 3,
-            "videos": ["x", "y", "z"],
-            "transitions": [
-                {"from": "x", "to": "y", "topic_path": ["T&<>", "S"]},
-                {"from": "y", "to": "z", "topic_path": ["S"]},
-            ],
-            "complete": True, "reason": None,
-        }
-        for mode in ("decouvrir", "approfondir")
+    run = {
+        "start": "x", "start_kind": "video", "radius": RAYON_FEED,
+        "videos": ["x", "y", "z"],
+        "transitions": [
+            {"from": "x", "to": "y", "topic_path": ["T&<>", "S"]},
+            {"from": "y", "to": "z", "topic_path": ["S"]},
+        ],
+        "complete": True, "reason": None,
     }
-    doc = build_feed_html(corpus, runs)
+    doc = build_feed_html(corpus, run)
 
     # chemin de sujets de chaque transition, en légende, échappé
     assert "T&amp;&lt;&gt;" in doc
@@ -109,80 +114,54 @@ def test_feed_transition_topic_path_in_caption_escaped(tmp_path):
 
 
 def test_feed_first_card_is_departure_without_transition(chain_corpus):
-    runs = both_runs(chain_corpus, "a")
-    doc = build_feed_html(chain_corpus, runs)
-    first, second = runs["decouvrir"]["videos"][:2]
+    run = feed_run(chain_corpus, "a")
+    doc = build_feed_html(chain_corpus, run)
+    first, second = run["videos"][:2]
     assert f'<article class="carte depart" data-video="{first}">' in doc
     assert 'class="station depart"' in doc
     # la deuxième carte porte bien le chemin de sa transition
-    path = next(t for t in runs["decouvrir"]["transitions"] if t["to"] == second)["topic_path"]
+    path = next(t for t in run["transitions"] if t["to"] == second)["topic_path"]
     expected = "|".join(path)
     assert f'data-sujets="{expected}"' in doc
 
 
-def test_feed_single_page_with_pinned_mode_toggle(rich_corpus):
-    runs = both_runs(rich_corpus, "v1")
-    doc = build_feed_html(rich_corpus, runs)
-
-    # page unique : les deux parcours embarqués dans le même document
-    assert doc.count("<section") == 2
-    assert '<section class="parcours" data-mode="decouvrir">' in doc
-    assert '<section class="parcours" data-mode="approfondir" hidden>' in doc
-    for vid in runs["approfondir"]["videos"]:
-        assert f'data-video="{vid}"' in doc
-
-    # basculeur épinglé, Découvrir actif au chargement
-    assert '<nav class="modes" aria-label="Mode du parcours">' in doc
-    assert '<button class="mode" data-mode="decouvrir" aria-pressed="true"' in doc
-    assert '<button class="mode" data-mode="approfondir" aria-pressed="false"' in doc
-    assert ">Découvrir</button>" in doc
-    assert ">Approfondir</button>" in doc
-
-
-def test_feed_end_card_shows_reason_replay_and_mode_switch(chain_corpus):
+def test_feed_end_card_shows_reason_and_replay(chain_corpus):
     import html as html_module
 
-    runs = both_runs(chain_corpus, "a")
-    doc = build_feed_html(chain_corpus, runs)
+    run = feed_run(chain_corpus, "a")
+    doc = build_feed_html(chain_corpus, run)
 
     assert '<article class="carte fin">' in doc
     assert "Fin du parcours" in doc
-    for run in runs.values():
-        assert html_module.escape(run["reason"]) in doc
+    assert html_module.escape(run["reason"]) in doc
     assert ">Revoir le parcours</button>" in doc
-    assert ">Basculer en Approfondir</button>" in doc
-    assert ">Basculer en Découvrir</button>" in doc
+    # ticket #35 : plus aucune bascule de mode
+    assert "Basculer" not in doc
 
 
 def test_feed_end_card_complete_run_announces_completion(rich_corpus):
-    runs = both_runs(rich_corpus, "v1")
-    doc = build_feed_html(rich_corpus, runs)
-    assert runs["decouvrir"]["complete"] is True
+    run = feed_run(rich_corpus, "v1")
+    doc = build_feed_html(rich_corpus, run)
+    assert run["complete"] is True
     assert "Parcours complet : 5 vidéos." in doc
 
 
-def test_feed_requires_runs_for_both_modes(rich_corpus):
-    runs = both_runs(rich_corpus, "v1")
-    del runs["approfondir"]
-
-    with pytest.raises(ValueError, match="approfondir"):
-        build_feed_html(rich_corpus, runs)
-
-
 def test_feed_discreet_graph_link(rich_corpus):
-    runs = both_runs(rich_corpus, "v1")
-    doc = build_feed_html(rich_corpus, runs, graph_href="graphe.png")
+    run = feed_run(rich_corpus, "v1")
+    doc = build_feed_html(rich_corpus, run, graph_href="graphe.png")
     assert '<a class="graphe" href="graphe.png">' in doc
-    doc_sans_graphe = build_feed_html(rich_corpus, runs)
+    doc_sans_graphe = build_feed_html(rich_corpus, run)
     assert 'class="graphe"' not in doc_sans_graphe
 
 
 def test_feed_shell_mobile_first_snap_focus_and_reduced_motion(rich_corpus):
-    runs = both_runs(rich_corpus, "v1")
-    doc = build_feed_html(rich_corpus, runs, graph_href="graphe.png")
+    run = feed_run(rich_corpus, "v1")
+    doc = build_feed_html(rich_corpus, run, graph_href="graphe.png")
 
-    # colonne verticale centrée ~480px, identique au mobile
+    # mobile : colonne verticale centrée ~480px ; écran large : salle de
+    # projection ~1100px, bornée par la hauteur disponible
     assert "480px" in doc
+    assert "1100px" in doc
     # défilement aimanté carte par carte
     assert "scroll-snap-type: y mandatory" in doc
     assert "scroll-snap-align: start" in doc
@@ -196,8 +175,8 @@ def test_feed_shell_mobile_first_snap_focus_and_reduced_motion(rich_corpus):
     assert "pauseVideo" in doc
     assert "unMute" in doc
     assert "mute" in doc
-    # départ direct sur le parcours du mode par défaut
-    assert '<body data-mode="decouvrir">' in doc
+    # l'aperçu statique est annoncé dans la barre
+    assert "Aperçu statique" in doc
     # indication du geste son, en français
     assert "Un appui sur la vidéo active le son." in doc
 
@@ -207,17 +186,19 @@ def _feed_js(doc: str) -> str:
 
 
 def test_feed_player_commands_queue_until_on_ready(rich_corpus):
-    js = _feed_js(build_feed_html(rich_corpus, both_runs(rich_corpus, "v1")))
+    js = _feed_js(build_feed_html(rich_corpus, feed_run(rich_corpus, "v1")))
     # le lecteur YouTube signale sa mise en place par onReady ; la page écoute
     assert 'addEventListener("message"' in js
     assert "onReady" in js
     # les commandes passent par une file d'attente vidée à la mise en place
     assert "pending" in js
     assert "readyPlayers" in js
+    # le canal ne s'ouvre que si la page salue chaque lecteur « listening »
+    assert '"listening"' in js
 
 
 def test_feed_tap_starts_playback_and_unmutes(rich_corpus):
-    js = _feed_js(build_feed_html(rich_corpus, both_runs(rich_corpus, "v1")))
+    js = _feed_js(build_feed_html(rich_corpus, feed_run(rich_corpus, "v1")))
     tap = js[js.index('feed.addEventListener("click"'):]
     # activer le son démarre aussi la lecture, pas seulement le démutage
     assert 'post(iframe, "unMute")' in tap
@@ -227,9 +208,9 @@ def test_feed_tap_starts_playback_and_unmutes(rich_corpus):
 
 
 def test_render_feed_html_writes_page_and_parent_dirs(rich_corpus, tmp_path):
-    runs = both_runs(rich_corpus, "v1")
+    run = feed_run(rich_corpus, "v1")
     out = tmp_path / "site" / "index.html"
-    render_feed_html(rich_corpus, runs, out, graph_href="graphe.png")
+    render_feed_html(rich_corpus, run, out, graph_href="graphe.png")
     assert out.exists()
     doc = out.read_text(encoding="utf-8")
     assert doc.startswith("<!doctype html>")
@@ -246,7 +227,7 @@ def _run_cli(*args: str):
     )
 
 
-def test_cli_feed_computes_both_modes_and_writes_single_page(tmp_path):
+def test_cli_feed_computes_the_single_chain_and_writes_single_page(tmp_path):
     import json
 
     corpus_path = tmp_path / "corpus.json"
@@ -268,12 +249,14 @@ def test_cli_feed_computes_both_modes_and_writes_single_page(tmp_path):
     assert result.returncode == 0, result.stderr
     doc = out.read_text(encoding="utf-8")
 
-    # les parcours des deux modes sont calculés à la génération et embarqués
-    assert doc.count("<section") == 2
-    assert '<section class="parcours" data-mode="decouvrir">' in doc
-    assert '<section class="parcours" data-mode="approfondir" hidden>' in doc
+    # une seule chaîne au rayon 3 est calculée à la génération et embarquée
+    assert doc.count("<section") == 1
+    assert '<section class="parcours">' in doc
+    assert "mode" not in doc
     assert 'href="graphe.png"' in doc
-    # la page démarre sur la première vidéo du parcours Découvrir
+    # l'aperçu statique est annoncé, la rétention ne vit que dans le panneau servi
+    assert "Aperçu statique" in doc
+    # la page démarre sur la première vidéo de la chaîne
     assert '<article class="carte depart" data-video="v1">' in doc
 
 

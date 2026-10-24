@@ -1,7 +1,9 @@
 """Graphe biparti vidéo-sujet et moteur de parcours — fonction pure.
 
-Le mode se réduit à un rayon de hops de sujets compté depuis l'ensemble des
-sujets du point de départ : Approfondir = 1, Découvrir = 2-3.
+Le rayon de hops de sujets, compté depuis l'ensemble des sujets vivants du
+point de départ, est un paramètre explicite de chaque pas et du parcours
+complet (spec #27) : il est dérivé de la rétention applicative côté session
+ou serveur — l'ancien enum de mode et sa table mode → rayon sont supprimés.
 """
 
 from __future__ import annotations
@@ -18,24 +20,11 @@ from .corpus import CorpusError, videos_by_id
 MAX_PATH = 5
 
 
-class Mode(str, Enum):
-    """Mode de parcours : Découvrir (rayon 3) ou Approfondir (rayon 1).
-
-    L'ordre de déclaration est l'ordre d'affichage du feed (Découvrir d'abord).
-    """
-
-    DECOUVRIR = "decouvrir"
-    APPROFONDIR = "approfondir"
-
-
 class StartKind(str, Enum):
     """Nature du point de départ : une vidéo ou un sujet."""
 
     VIDEO = "video"
     TOPIC = "topic"
-
-
-MODE_RADIUS: dict[Mode, int] = {Mode.APPROFONDIR: 1, Mode.DECOUVRIR: 3}
 
 
 class PathfindingError(ValueError):
@@ -48,7 +37,6 @@ class Run:
 
     start: str
     start_kind: StartKind
-    mode: Mode
     radius: int
     videos: list[str] = field(default_factory=list)
     transitions: list[dict[str, Any]] = field(default_factory=list)
@@ -59,7 +47,6 @@ class Run:
         return {
             "start": self.start,
             "start_kind": self.start_kind.value,
-            "mode": self.mode.value,
             "radius": self.radius,
             "videos": self.videos,
             "transitions": self.transitions,
@@ -147,7 +134,7 @@ def _shortest_topic_path(
 ) -> list[str] | None:
     """Plus court chemin de sujets réel entre deux vidéos, sur le graphe complet.
 
-    Le rayon du mode ne plafonne jamais cette recherche (docs/MVP.md §11) :
+    Le rayon ne plafonne jamais cette recherche (docs/MVP.md §11) :
     seules les candidates sont filtrées par éligibilité, jamais le chemin.
     Le chemin affiché est choisi ici, à l'affichage — il ne participe à aucun tri.
     """
@@ -195,27 +182,42 @@ def _ranked_candidates(
     return [video_id for _, video_id in scored]
 
 
-def parcours(corpus: dict[str, Any], start: str, mode: str | Mode, radius: int | None = None) -> Run:
-    """Fonction pure : (corpus figé, point de départ, mode) → run.
+def _transition(
+    from_video: str | None, to_video: str, topic_path: list[str], explanation: str
+) -> dict[str, Any]:
+    """Forme unique du pas : départ (None pour un départ par sujet), arrivée,
+    nœuds, chemin de sujets réel et son explication."""
+    return {
+        "from": from_video,
+        "from_node": None if from_video is None else f"video:{from_video}",
+        "to": to_video,
+        "to_node": f"video:{to_video}",
+        "topic_path": topic_path,
+        "topic_nodes": [f"topic:{t}" for t in topic_path],
+        "explanation": explanation,
+    }
 
+
+def parcours(corpus: dict[str, Any], start: str, radius: int | None) -> Run:
+    """Fonction pure : (corpus figé, point de départ, rayon explicite) → run.
+
+    - Le rayon est un paramètre explicite (spec #27) : il filtre
+      l'éligibilité des candidates par rapport au départ, jamais la
+      recherche de chemin.
     - Chaque vidéo suggérée suit la précédente par un chemin de sujets
       réellement présent dans le graphe complet (direct ou via sujets
-      intermédiaires) ; le rayon ne filtre que l'éligibilité des
-      candidates par rapport au départ, jamais la recherche de chemin.
+      intermédiaires).
     - Cinq vidéos distinctes maximum, jamais de doublon.
     - Départage unique : sujets communs décroissants, puis ID croissant —
       la longueur du chemin de sujets n'y intervient jamais.
     - Jamais d'élargissement automatique du rayon.
     - Sujets morts exclus des candidats ; parcours partiel avec motif.
     """
-    try:
-        mode = Mode(mode)
-    except ValueError:
-        raise PathfindingError(
-            f"mode inconnu : {mode!r} (attendu : {sorted(member.value for member in Mode)})"
-        ) from None
     if radius is None:
-        radius = MODE_RADIUS[mode]
+        raise PathfindingError(
+            "rayon requis : le parcours complet prend un rayon explicite "
+            "(dérivé de la rétention côté session, spec #27)"
+        )
     if radius < 1:
         raise PathfindingError("le rayon de hops doit être >= 1")
 
@@ -250,19 +252,110 @@ def parcours(corpus: dict[str, Any], start: str, mode: str | Mode, radius: int |
                 [video_id for video_id in by_id if start in topics_in(graph, video_id)],
             )[0]
         ]
-        run = _extend(graph, chain, allowed, projected, mode, radius, start, start_kind)
-        run.transitions.insert(0, {
-            "from": None,
-            "from_node": None,
-            "to": chain[0],
-            "to_node": f"video:{chain[0]}",
-            "topic_path": [start],
-            "topic_nodes": [f"topic:{start}"],
-            "explanation": f"sujet de départ : {start}",
-        })
+        run = _extend(graph, chain, allowed, projected, radius, start, start_kind)
+        run.transitions.insert(0, _transition(None, chain[0], [start], f"sujet de départ : {start}"))
         return run
 
-    return _extend(graph, chain, allowed, projected, mode, radius, start, start_kind)
+    return _extend(graph, chain, allowed, projected, radius, start, start_kind)
+
+
+def _next_transition(
+    graph: nx.Graph, allowed: set[str], projected: nx.Graph, current: str, used: set[str]
+) -> dict[str, Any] | None:
+    """Pas unique : la prochaine vidéo orientée par la vidéo courante, hors « used ».
+
+    Même éligibilité (rayon depuis le départ) et même départage (sujets communs
+    décroissants puis ID croissant) que le parcours complet ; None si épuisé.
+    """
+    paths: dict[str, list[str]] = {}
+    for node, data in graph.nodes(data=True):
+        if data["kind"] != "video" or data["video_id"] in used:
+            continue
+        video_id = data["video_id"]
+        if not topics_in(graph, video_id, allowed):
+            continue  # le rayon filtre l'éligibilité, jamais la recherche de chemin
+        path = _shortest_topic_path(projected, graph, current, video_id)
+        if path is not None:
+            paths[video_id] = path
+    ranked = _ranked_candidates(graph, topics_in(graph, current), paths)
+    if not ranked:
+        return None
+    chosen = ranked[0]
+    best = paths[chosen]
+    return _transition(current, chosen, best, " → ".join(best))
+
+
+def next_step(
+    corpus: dict[str, Any],
+    current: str,
+    radius: int | None = None,
+    exclude: set[str] | None = None,
+) -> dict[str, Any] | None:
+    """Fonction pure : (corpus figé, vidéo regardée, rayon, déjà montrées) → pas suivant.
+
+    Le visionnage de la vidéo courante oriente la suggestion : le pas part
+    d'un sujet de la vidéo regardée et aboutit à un sujet de la vidéo suggérée,
+    par un chemin de sujets réel. Les vidéos déjà montrées (et la vidéo
+    regardée) sont exclues : le panneau ne répète jamais une carte.
+    Renvoie None quand aucune candidate ne reste — fin honnête, pas une erreur.
+
+    Le rayon est un paramètre explicite (spec #27) : le serveur le dérive de
+    la durée de visionnage de la carte quittée (rétention applicative). Il
+    filtre l'éligibilité des candidates, jamais la recherche de chemin.
+    """
+    if radius is None:
+        raise PathfindingError(
+            "rayon requis : le pas suivant prend un rayon explicite "
+            "(dérivé de la durée de visionnage, spec #27)"
+        )
+    if radius < 1:
+        raise PathfindingError("le rayon de hops doit être >= 1")
+    by_id = videos_by_id(corpus)
+    if current not in by_id:
+        raise PathfindingError(f"vidéo inconnue : {current!r}")
+    graph = build_graph(corpus)
+    projected = _projected(graph)
+    dead = set(corpus.get("dead_topics", ()))
+    seed = topics_in(graph, current)
+    allowed = _topics_within(projected, seed - dead, radius) - dead
+    if not allowed:
+        raise PathfindingError(
+            "point de départ isolé : aucun sujet vivant atteignable dans le rayon "
+            f"({radius} hop(s)) ; affichez le graphe du corpus pour visualiser sa topologie"
+        )
+    used = set(exclude or ()) | {current}
+    return _next_transition(graph, allowed, projected, current, used)
+
+
+def first_step(
+    corpus: dict[str, Any], sujet: str, exclude: set[str] | None = None
+) -> dict[str, Any] | None:
+    """Fonction pure : (corpus figé, sujet, déjà-vues) → premier pas depuis ce sujet.
+
+    Brique de la sortie de branche dirigée : elle réutilise la machinerie des
+    départs par sujet. La meilleure candidate parmi les vidéos porteuses du
+    sujet, par sujets communs décroissants puis ID croissant (règle de
+    départage unique du moteur), hors déjà-vues. Renvoie None quand aucune
+    candidate ne reste — fin honnête, pas une erreur.
+    """
+    graph = build_graph(corpus)
+    if f"topic:{sujet}" not in graph:
+        raise PathfindingError(f"sujet inconnu : {sujet!r}")
+    if sujet in corpus.get("dead_topics", ()):
+        raise PathfindingError(
+            f"sujet mort : {sujet} (porté par une seule vidéo ; il ne peut orienter aucun premier pas)"
+        )
+    used = set(exclude or ())
+    porteurs = [
+        data["video_id"]
+        for _, data in graph.nodes(data=True)
+        if data["kind"] == "video" and sujet in topics_in(graph, data["video_id"])
+    ]
+    ranked = _ranked_candidates(graph, {sujet}, [vid for vid in porteurs if vid not in used])
+    if not ranked:
+        return None
+    chosen = ranked[0]
+    return _transition(None, chosen, [sujet], f"sujet de départ : {sujet}")
 
 
 def _extend(
@@ -270,44 +363,23 @@ def _extend(
     chain: list[str],
     allowed: set[str],
     projected: nx.Graph,
-    mode: Mode,
     radius: int,
     start: str,
     start_kind: StartKind,
 ) -> Run:
     """Étend la chaîne vidéo par vidéo jusqu'à MAX_PATH ou épuisement des candidates."""
-    run = Run(start=start, start_kind=start_kind, mode=mode, radius=radius)
+    run = Run(start=start, start_kind=start_kind, radius=radius)
     used = set(chain)
     current = chain[-1]
 
     while len(chain) < MAX_PATH:
-        paths: dict[str, list[str]] = {}
-        for node, data in graph.nodes(data=True):
-            if data["kind"] != "video" or data["video_id"] in used:
-                continue
-            video_id = data["video_id"]
-            if not topics_in(graph, video_id, allowed):
-                continue  # le rayon filtre l'éligibilité, jamais la recherche de chemin
-            path = _shortest_topic_path(projected, graph, current, video_id)
-            if path is not None:
-                paths[video_id] = path
-        ranked = _ranked_candidates(graph, topics_in(graph, current), paths)
-        if not ranked:
+        transition = _next_transition(graph, allowed, projected, current, used)
+        if transition is None:
             break
-        chosen = ranked[0]
-        best = paths[chosen]
-        run.transitions.append({
-            "from": current,
-            "from_node": f"video:{current}",
-            "to": chosen,
-            "to_node": f"video:{chosen}",
-            "topic_path": best,
-            "topic_nodes": [f"topic:{t}" for t in best],
-            "explanation": " → ".join(best),
-        })
-        chain.append(chosen)
-        used.add(chosen)
-        current = chosen
+        run.transitions.append(transition)
+        chain.append(transition["to"])
+        used.add(transition["to"])
+        current = transition["to"]
 
     run.videos = list(chain)
     if len(chain) >= MAX_PATH:
@@ -316,7 +388,7 @@ def _extend(
         run.complete = False
         run.reason = (
             f"parcours partiel : plus aucune vidéo atteignable par chemin de sujets "
-            f"de rayon {radius} depuis la dernière vidéo (topologie du corpus ou mode)"
+            f"de rayon {radius} depuis la dernière vidéo (topologie du corpus)"
         )
     return run
 

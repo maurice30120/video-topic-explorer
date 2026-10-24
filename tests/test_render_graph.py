@@ -19,7 +19,7 @@ HIGHLIGHT_TOPIC_COLOR = "#e6550d"
 
 def test_svg_output_is_wellformed_with_highlighted_subgraph(rich_corpus, tmp_path):
     run = {
-        "start": "v1", "start_kind": "video", "mode": "decouvrir",
+        "start": "v1", "start_kind": "video",
         "radius": 3,
         "videos": ["v1", "v2", "v3"],
         "transitions": [
@@ -79,7 +79,7 @@ def test_smoke_cli_graph_renders_wellformed_svg(tmp_path):
     }), encoding="utf-8")
     run_path = tmp_path / "run.json"
     result = _run_cli("run", str(corpus_path), "--start", "v1",
-                      "--mode", "approfondir", "--out", str(run_path))
+                      "--rayon", "1", "--out", str(run_path))
     assert result.returncode == 0, result.stderr
 
     svg_path = tmp_path / "graphe.svg"

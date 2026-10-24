@@ -1,9 +1,11 @@
 """Révélation : compare les notes en aveugle et applique le seuil go/no-go de l'ADR-0001.
 
-Go (Phase 2) seulement si Découvrir bat la baseline sur « surprise utile »
-avec une marge >= 1 point en moyenne sur ~5 départs, et si aucun mode ne perd
-sur « cohérence ». Les moyennes de « clarté » sont calculées et affichées,
-mais le seuil pré-engagé ne porte que sur surprise utile et cohérence.
+Go (Phase 2) seulement si le parcours sensible à la rétention bat la
+baseline sur « surprise utile » avec une marge >= 1 point en moyenne sur
+~5 départs, et s'il ne perd pas sur « cohérence » (ADR-0001 amendée le
+2026-10-24 : seuil et barème pré-engagés inchangés). Les moyennes de
+« clarté » sont calculées et affichées, mais le seuil pré-engagé ne porte
+que sur surprise utile et cohérence.
 """
 
 import argparse
@@ -36,23 +38,20 @@ def reveal(order_path: str, scores_path: str, mapping_path: str) -> dict:
         return Fraction(sum(row[criterion] for row in rows), len(rows)) if rows else Fraction(0)
 
     surprise_baseline = avg("baseline", "surprise")
-    surprise_decouvrir = avg("decouvrir", "surprise")
+    surprise_parcours = avg("parcours", "surprise")
     coherence_baseline = avg("baseline", "coherence")
-    coherence_approfondir = avg("approfondir", "coherence")
-    coherence_decouvrir = avg("decouvrir", "coherence")
+    coherence_parcours = avg("parcours", "coherence")
 
-    surprise_margin = surprise_decouvrir - surprise_baseline
+    surprise_margin = surprise_parcours - surprise_baseline
     comparaisons = {
-        mode: {
-            criterion: float(avg(mode, criterion) - avg("baseline", criterion))
+        "parcours": {
+            criterion: float(avg("parcours", criterion) - avg("baseline", criterion))
             for criterion in ("coherence", "surprise", "clarte")
         }
-        for mode in ("approfondir", "decouvrir")
     }
     go = (
         surprise_margin >= MARGIN
-        and coherence_approfondir >= coherence_baseline
-        and coherence_decouvrir >= coherence_baseline
+        and coherence_parcours >= coherence_baseline
     )
     decision = "GO — poursuivre en Phase 2" if go else "NO-GO — revoir l'hypothèse ou la qualité des sujets"
 
@@ -60,11 +59,10 @@ def reveal(order_path: str, scores_path: str, mapping_path: str) -> dict:
         "moyennes": {
             "coherence": {
                 "baseline": float(coherence_baseline),
-                "approfondir": float(coherence_approfondir),
-                "decouvrir": float(coherence_decouvrir),
+                "parcours": float(coherence_parcours),
             },
-            "surprise": {"baseline": float(surprise_baseline), "decouvrir": float(surprise_decouvrir)},
-            "clarte": {origine: float(avg(origine, "clarte")) for origine in ("baseline", "approfondir", "decouvrir")},
+            "surprise": {"baseline": float(surprise_baseline), "parcours": float(surprise_parcours)},
+            "clarte": {origine: float(avg(origine, "clarte")) for origine in ("baseline", "parcours")},
         },
         "marge_surprise": float(surprise_margin),
         "comparaisons": comparaisons,

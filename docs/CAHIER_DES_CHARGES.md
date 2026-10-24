@@ -46,6 +46,12 @@
 
 ## 4. Navigation et modes
 
+> **Amendement — 2026-10-24 (spec #27).** Les deux modes manuels ci-dessous
+> ont disparu du produit : le **parcours sensible à la rétention** les
+> remplace — la durée de visionnage de la dernière carte quittée décide du
+> rayon du pas suivant ([ADR-0003](adr/0003-rayon-derive-de-la-retention.md)).
+> Les items historiques de cette vision ne sont pas réécrits.
+
 - **[VALIDÉ]** Deux modes initiaux :
   - **Approfondir :** explorer des sujets proches et progresser en profondeur.
   - **Découvrir :** passer progressivement vers des sujets voisins puis plus éloignés, en conservant des transitions intelligibles.

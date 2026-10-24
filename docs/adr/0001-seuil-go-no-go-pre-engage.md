@@ -6,3 +6,7 @@ Le test de valeur du MVP est mené en solo et à l'aveugle (listes non étiquet�
 
 - Le seuil est écrit dans `docs/MVP.md` avant tout test ; le changer après consultation des résultats invalide le test.
 - Un échec impose de revoir l'hypothèse ou la qualité des sujets extraits avant tout enrichissement technologique.
+
+## Amendement — 2026-10-24
+
+Le feed n'a plus de modes : le **parcours sensible à la rétention** ([ADR-0003](0003-rayon-derive-de-la-retention.md)) prend la place du parcours Découvrir dans le barème ci-dessus — c'est lui qui doit battre la baseline sur « surprise utile » avec la marge pré-engagée, et ne pas perdre contre la baseline sur « cohérence ». Le seuil et le barème pré-engagés (critères, marges, départs) restent inchangés ; le texte original n'est pas réécrit.

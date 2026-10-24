@@ -68,9 +68,9 @@ PARCOURS_STARTS = [
 
 
 @pytest.mark.parametrize("start", PARCOURS_STARTS)
-@pytest.mark.parametrize("mode", ["approfondir", "decouvrir"])
-def test_real_parcours_chain_invariants(real_corpus, start, mode):
-    run = graph_engine.parcours(real_corpus, start, mode)
+@pytest.mark.parametrize("rayon", [1, 3])
+def test_real_parcours_chain_invariants(real_corpus, start, rayon):
+    run = graph_engine.parcours(real_corpus, start, rayon)
     assert run.videos[0] == start
     assert len(run.videos) == len(set(run.videos))
     assert len(run.videos) <= 5
@@ -89,14 +89,15 @@ def test_real_parcours_chain_invariants(real_corpus, start, mode):
 
 @pytest.mark.parametrize("start", PARCOURS_STARTS)
 def test_real_parcours_reproducible(real_corpus, start):
-    first = graph_engine.parcours(real_corpus, start, "decouvrir")
-    second = graph_engine.parcours(real_corpus, start, "decouvrir")
+    first = graph_engine.parcours(real_corpus, start, 3)
+    second = graph_engine.parcours(real_corpus, start, 3)
     assert first.to_dict() == second.to_dict()
 
 
-def test_real_modes_use_expected_radius(real_corpus):
-    assert graph_engine.parcours(real_corpus, "ghnY4S8unMM", "approfondir").radius == 1
-    assert graph_engine.parcours(real_corpus, "ghnY4S8unMM", "decouvrir").radius == 3
+def test_real_rayon_explicite_porte_par_le_run(real_corpus):
+    """Ticket #35 : le rayon explicite est porté par le run, jamais un mode."""
+    assert graph_engine.parcours(real_corpus, "ghnY4S8unMM", 1).radius == 1
+    assert graph_engine.parcours(real_corpus, "ghnY4S8unMM", 3).radius == 3
 
 
 def test_real_dead_topics_excluded_from_runs(real_corpus):
@@ -104,7 +105,7 @@ def test_real_dead_topics_excluded_from_runs(real_corpus):
     dead = {t for t in real_corpus["dead_topics"]}
     assert dead, "le corpus réel devrait contenir au moins un sujet mort"
     for start in PARCOURS_STARTS:
-        run = graph_engine.parcours(real_corpus, start, "decouvrir")
+        run = graph_engine.parcours(real_corpus, start, 3)
         for transition in run.transitions:
             for topic in transition["topic_path"]:
                 assert topic not in dead
@@ -131,7 +132,7 @@ def test_real_baseline_sorted_by_common_topics(real_corpus):
 
 
 def test_real_run_json_serializable(real_corpus, tmp_path):
-    run = graph_engine.parcours(real_corpus, "ghnY4S8unMM", "decouvrir")
+    run = graph_engine.parcours(real_corpus, "ghnY4S8unMM", 3)
     graph_engine.save_run(run, tmp_path / "run.json")
     loaded = json.loads((tmp_path / "run.json").read_text(encoding="utf-8"))
     assert loaded == run.to_dict()

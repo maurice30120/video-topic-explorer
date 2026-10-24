@@ -2,12 +2,13 @@
 
 Deux niveaux, un seul contrat :
 - check_site_content : le contenu (une page de feed, première carte = première
-  vidéo du parcours par défaut, lecteur intégré, chemin de sujets) ;
+  vidéo du parcours servi, lecteur intégré, chemin de sujets) ;
 - check_site_dir / check_deployed_url : le site local généré par la CI, puis
   l'URL publique une fois GitHub Pages propagé (avec retries).
 
-Le parcours par défaut du site est « Découvrir » (mode par défaut du feed) :
-la première carte attendue est la carte de départ de ce parcours. Cette
+La page feed servie est un aperçu statique : une seule chaîne au rayon 3,
+annoncée comme telle (la rétention ne vit que dans le panneau servi). La
+première carte attendue est la carte de départ de cette chaîne. Cette
 première vidéo n'est jamais ressaisie à la main : elle est dérivée du
 run.json généré en amont (vte.smoke.first_video_from_run).
 """
@@ -21,11 +22,6 @@ from typing import Callable
 from urllib.error import HTTPError, URLError
 from urllib.parse import urljoin
 from urllib.request import urlopen
-
-from .render import DEFAULT_FEED_MODE
-
-DEFAULT_MODE = DEFAULT_FEED_MODE.value
-
 
 class SmokeCheckError(Exception):
     """Le site ne répond pas au contrat du feed publié (messages en français)."""
@@ -64,8 +60,8 @@ def check_site_content(doc: str, first_video: str) -> None:
         problems.append("la page n'est pas le feed (conteneur #feed absent)")
     if "<ol>" in doc or "chemin de sujets :" in doc:
         problems.append("la page ressemble à l'ancienne page liste, pas au feed")
-    if f'<body data-mode="{DEFAULT_MODE}"' not in doc:
-        problems.append(f"le mode par défaut du feed n'est pas {DEFAULT_MODE}")
+    if "Aperçu statique" not in doc or "la rétention ne vit que dans le panneau servi" not in doc:
+        problems.append("le feed n'est pas annoncé comme aperçu statique (la rétention ne vit que dans le panneau servi)")
 
     first_card_marker = f'<article class="carte depart" data-video="{first_video}">'
     first_card_at = doc.find(first_card_marker)

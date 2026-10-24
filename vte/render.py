@@ -8,7 +8,8 @@ import re
 from pathlib import Path
 from typing import Any
 
-from .graph_engine import Mode, build_graph
+from .graph_engine import build_graph
+from .session import RAYON_PASSER_VITE
 
 
 def build_html(corpus: dict[str, Any], run: dict[str, Any], graph_href: str | None = None) -> str:
@@ -60,7 +61,7 @@ def build_html(corpus: dict[str, Any], run: dict[str, Any], graph_href: str | No
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<title>Parcours — {html.escape(run['start'])} ({html.escape(run['mode'])})</title>
+<title>Parcours — {html.escape(run['start'])}</title>
 <style>
 body {{ font-family: sans-serif; margin: 2rem; }}
 .transition {{ color: #555; margin-left: 1rem; }}
@@ -73,7 +74,7 @@ ol li {{ margin: 0.75rem 0; }}
 </head>
 <body>
 <h1>Parcours depuis {html.escape(run['start'])}</h1>
-<p>mode : <strong>{html.escape(run['mode'])}</strong> — rayon : {run['radius']} hop(s)</p>
+<p>rayon : {run['radius']} hop(s) de sujets</p>
 <ol>
 {chr(10).join(items)}
 </ol>
@@ -152,38 +153,16 @@ def render_graph(corpus: dict[str, Any], run: dict[str, Any] | None, out: Path) 
 
 # ------------------------------------------------------------------ feed vertical
 
-DEFAULT_FEED_MODE = Mode.DECOUVRIR
-"""Mode actif au chargement du feed (le mode du parcours publié par défaut)."""
+RAYON_FEED = RAYON_PASSER_VITE
+"""Rayon de la chaîne servie par la page feed statique.
 
-
-def _as_mode(value: str | Mode) -> Mode:
-    """Convertit une valeur en Mode ; erreur française explicite si le mode est inconnu."""
-    try:
-        return Mode(value)
-    except ValueError:
-        supported = ", ".join(member.value for member in Mode)
-        raise ValueError(
-            f"mode de parcours inconnu : {value!r} (modes supportés : {supported})"
-        ) from None
-
-
-class _ModeLabels(dict):
-    """Labels visibles indexés par Mode : un mode inconnu lève une erreur
-    française explicite (pas de KeyError brut), par membre comme par valeur."""
-
-    def __getitem__(self, key):
-        return super().__getitem__(_as_mode(key))
-
-    def __missing__(self, mode):
-        raise ValueError(f"aucun label défini pour le mode de parcours {mode.value!r}")
-
-
-MODE_LABELS = _ModeLabels({Mode.DECOUVRIR: "Découvrir", Mode.APPROFONDIR: "Approfondir"})
-MODE_SWITCH_LABELS = _ModeLabels({
-    Mode.DECOUVRIR: "Basculer en Approfondir",
-    Mode.APPROFONDIR: "Basculer en Découvrir",
-})
-_FEED_MODES = tuple(Mode)
+La page feed est un aperçu statique (spec #27, Implementation Decisions) :
+une seule chaîne au rayon de « passer vite » (concept distinct de l'aperçu
+statique, aujourd'hui égal au rayon du mapping binaire — la valeur vit une
+seule fois dans session.RAYON_PASSER_VITE). La rétention ne vit que dans
+le panneau servi — c'est lui qui dérive le rayon de chaque pas de la durée
+de visionnage réelle.
+"""
 
 
 def _embed_url(url: str) -> str | None:
@@ -270,17 +249,12 @@ def _card_html(
     )
 
 
-def _end_card_html(run: dict[str, Any], mode: str) -> str:
-    """Carte de fin : raison d'arrêt du moteur, rejouer, basculer de mode."""
+def _end_card_html(run: dict[str, Any]) -> str:
+    """Carte de fin : raison d'arrêt du moteur, rejouer."""
     if run["complete"]:
         reason = f"Parcours complet : {len(run['videos'])} vidéos."
     else:
         reason = run.get("reason") or "Parcours interrompu."
-    other_mode = next(member.value for member in Mode if member.value != mode)
-    switch_html = (
-        f'<button class="action basculer" data-mode-vers="{other_mode}" type="button">'
-        f"{MODE_SWITCH_LABELS[mode]}</button>"
-    )
     return (
         '<article class="carte fin">'
         '<div class="fin-contenu">'
@@ -288,31 +262,19 @@ def _end_card_html(run: dict[str, Any], mode: str) -> str:
         f'<p class="raison">{html.escape(reason)}</p>'
         '<div class="actions">'
         '<button class="action rejouer" type="button">Revoir le parcours</button>'
-        f"{switch_html}"
         "</div>"
         "</div>"
         "</article>"
     )
 
 
-def _parcours_html(
-    by_id: dict[str, dict],
-    run: dict[str, Any],
-    mode: str,
-    active: bool,
-) -> str:
+def _parcours_html(by_id: dict[str, dict], run: dict[str, Any]) -> str:
     cards = []
     for index, video_id in enumerate(run["videos"]):
         transition = next((t for t in run["transitions"] if t["to"] == video_id), None)
         cards.append(_card_html(by_id, video_id, transition, index == 0))
-    cards.append(_end_card_html(run, mode))
-    return (
-        f'<section class="parcours" data-mode="{html.escape(mode, quote=True)}"'
-        + ("" if active else " hidden")
-        + ">"
-        + "".join(cards)
-        + "</section>"
-    )
+    cards.append(_end_card_html(run))
+    return '<section class="parcours">' + "".join(cards) + "</section>"
 
 
 _FEED_CSS = """
@@ -322,7 +284,6 @@ _FEED_CSS = """
   --texte: #e9edf3;
   --discret: #97a1b2;
   --ligne: #45d0b8;
-  --ligne-ambre: #e8a33d;
   --sur-ligne: #0c2019;
 }
 * { box-sizing: border-box; }
@@ -336,8 +297,6 @@ body {
   font-family: "Overpass", "Avenir Next", "Segoe UI", system-ui, sans-serif;
   line-height: 1.45;
 }
-body[data-mode="approfondir"] { --ligne: var(--ligne-ambre); --sur-ligne: #241a0b; }
-
 .page {
   width: min(480px, 100%);
   height: 100dvh;
@@ -356,26 +315,7 @@ body[data-mode="approfondir"] { --ligne: var(--ligne-ambre); --sur-ligne: #241a0
   background: rgba(16, 21, 29, 0.94);
 }
 .marque { margin: 0; font-size: 0.78rem; font-weight: 800; color: var(--discret); }
-.modes {
-  display: flex;
-  gap: 0.2rem;
-  margin-left: auto;
-  padding: 0.18rem;
-  border: 1px solid var(--trait);
-  border-radius: 999px;
-}
-.mode {
-  border: 0;
-  padding: 0.32rem 0.85rem;
-  border-radius: 999px;
-  font: inherit;
-  font-size: 0.78rem;
-  font-weight: 600;
-  color: var(--discret);
-  background: transparent;
-  cursor: pointer;
-}
-.mode[aria-pressed="true"] { background: var(--ligne); color: var(--sur-ligne); }
+.apercu { margin: 0; font-size: 0.72rem; color: var(--discret); }
 .graphe { font-size: 0.78rem; color: var(--discret); text-decoration: none; }
 .graphe:hover { color: var(--texte); }
 
@@ -475,6 +415,26 @@ body[data-mode="approfondir"] { --ligne: var(--ligne-ambre); --sur-ligne: #241a0
 :focus-visible { outline: 2px solid var(--ligne); outline-offset: 2px; }
 :focus:not(:focus-visible) { outline: none; }
 
+/* Écran large : salle de projection — le lecteur occupe la hauteur
+   disponible, la légende garde une mesure lisible sous l'écran. */
+@media (min-width: 720px) {
+  .page {
+    width: min(1100px, 94vw, calc((100dvh - 280px) * 16 / 9));
+  }
+  .carte { padding: 0 1.5rem; }
+  .lecteur {
+    flex: 1 1 auto;
+    min-height: 0;
+    aspect-ratio: auto;
+    margin-top: 1.25rem;
+    border-radius: 14px;
+  }
+  .legende { max-width: 46rem; padding-top: 1rem; }
+  .titre { font-size: 1.3rem; }
+  .chaine { font-size: 0.9rem; }
+  .fin-contenu { max-width: 34rem; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .feed { scroll-behavior: auto; }
 }
@@ -485,10 +445,7 @@ _FEED_JS = """
   "use strict";
   var feed = document.getElementById("feed");
   if (!feed) { return; }
-  var body = document.body;
   var reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
-  var toggles = Array.prototype.slice.call(document.querySelectorAll(".mode"));
-  var sections = Array.prototype.slice.call(feed.querySelectorAll(".parcours"));
 
   /* Commandes au lecteur : en file d'attente jusqu'à son onReady (API iframe
      YouTube) — une commande envoyée avant la mise en place est ignorée par lui. */
@@ -523,13 +480,17 @@ _FEED_JS = """
       pending.delete(player);
     }
   });
-  function players(section) {
-    return Array.prototype.slice.call(section.querySelectorAll("iframe"));
+  /* le lecteur YouTube n'envoie onReady qu'après un salut « listening » ;
+     sans lui, le canal postMessage reste fermé et aucune commande —
+     lecture, pause, son — ne partirait jamais */
+  function openChannel(iframe, id) {
+    iframe.contentWindow.postMessage(
+      JSON.stringify({ event: "listening", id: id, channel: "widget" }), "*");
   }
-  function pauseSection(section) {
-    players(section).forEach(function (iframe) { post(iframe, "pauseVideo"); });
-  }
-
+  Array.prototype.slice.call(document.querySelectorAll("iframe")).forEach(function (iframe, index) {
+    openChannel(iframe, index + 1);
+    iframe.addEventListener("load", function () { openChannel(iframe, index + 1); });
+  });
   var activeCard = null;
   function setActive(card) {
     if (activeCard === card) { return; }
@@ -547,33 +508,6 @@ _FEED_JS = """
     }
   }
 
-  function sectionOf(mode) {
-    for (var i = 0; i < sections.length; i += 1) {
-      if (sections[i].dataset.mode === mode) { return sections[i]; }
-    }
-    return null;
-  }
-  function showMode(mode) {
-    var target = sectionOf(mode);
-    if (!target) { return; }
-    sections.forEach(function (section) {
-      section.hidden = section.dataset.mode !== mode;
-      if (section.hidden) { pauseSection(section); }
-    });
-    toggles.forEach(function (button) {
-      button.setAttribute("aria-pressed", String(button.dataset.mode === mode));
-    });
-    body.dataset.mode = mode;
-    feed.scrollTo({ top: 0, behavior: reduced.matches ? "auto" : "smooth" });
-    setActive(target.querySelector(".carte"));
-  }
-
-  toggles.forEach(function (button) {
-    button.addEventListener("click", function () { showMode(button.dataset.mode); });
-  });
-  Array.prototype.slice.call(document.querySelectorAll(".basculer")).forEach(function (button) {
-    button.addEventListener("click", function () { showMode(button.dataset.modeVers); });
-  });
   Array.prototype.slice.call(document.querySelectorAll(".rejouer")).forEach(function (button) {
     button.addEventListener("click", function () {
       var first = button.closest(".parcours").querySelector(".carte");
@@ -605,17 +539,14 @@ _FEED_JS = """
   if ("IntersectionObserver" in window) {
     var observer = new IntersectionObserver(function (entries) {
       entries.forEach(function (entry) {
-        if (entry.intersectionRatio >= 0.55 &&
-            !entry.target.closest(".parcours").hidden) {
-          setActive(entry.target);
-        }
+        if (entry.intersectionRatio >= 0.55) { setActive(entry.target); }
       });
     }, { threshold: [0.55] });
     Array.prototype.slice.call(feed.querySelectorAll(".carte")).forEach(function (card) {
       observer.observe(card);
     });
   } else {
-    var visible = feed.querySelector(".parcours:not([hidden]) .carte");
+    var visible = feed.querySelector(".parcours .carte");
     if (visible) { setActive(visible); }
   }
 })();
@@ -624,36 +555,19 @@ _FEED_JS = """
 
 def build_feed_html(
     corpus: dict[str, Any],
-    runs: dict[str, dict[str, Any]],
+    run: dict[str, Any],
     graph_href: str | None = None,
-    default_mode: str | Mode = DEFAULT_FEED_MODE,
 ) -> str:
-    """Construit la page unique du feed vertical (les deux modes embarqués) et la renvoie.
+    """Construit la page du feed vertical (une seule chaîne, aperçu statique) et la renvoie.
 
-    Les parcours des deux modes sont rendus côté serveur et embarqués : le
-    basculeur ne fait que changer la section visible, sans rechargement ni
-    réimplémentation du moteur en JavaScript.
+    La chaîne au rayon RAYON_FEED est rendue côté serveur et embarquée : la
+    page servie est un aperçu statique — la rétention ne vit que dans le
+    panneau servi, qui dérive le rayon de chaque pas de la durée réelle.
     """
     from .corpus import videos_by_id
 
     by_id = videos_by_id(corpus)
-    missing = [member.value for member in _FEED_MODES if member.value not in runs]
-    if missing:
-        raise ValueError(
-            "le feed exige les parcours des deux modes ; manquant : " + ", ".join(missing)
-        )
-    modes = [member.value for member in _FEED_MODES]
-    default_mode = _as_mode(default_mode).value
-    toggles = "".join(
-        f'<button class="mode" data-mode="{mode}" '
-        f'aria-pressed="{"true" if mode == default_mode else "false"}" type="button">'
-        f"{MODE_LABELS[mode]}</button>"
-        for mode in modes
-    )
-    sections = "\n".join(
-        _parcours_html(by_id, runs[mode], mode, mode == default_mode)
-        for mode in modes
-    )
+    section = _parcours_html(by_id, run)
     graph_html = ""
     if graph_href:
         graph_html = f'<a class="graphe" href="{html.escape(graph_href, quote=True)}">Graphe</a>'
@@ -668,17 +582,15 @@ def build_feed_html(
 <link href="https://fonts.googleapis.com/css2?family=Overpass:wght@400;600;800&amp;display=swap" rel="stylesheet">
 <style>{_FEED_CSS}</style>
 </head>
-<body data-mode="{html.escape(default_mode, quote=True)}">
+<body>
 <div class="page">
 <header class="barre">
 <p class="marque">Video Topic Explorer</p>
-<nav class="modes" aria-label="Mode du parcours">
-{toggles}
-</nav>
+<p class="apercu">Aperçu statique — la rétention ne vit que dans le panneau servi.</p>
 {graph_html}
 </header>
 <main class="feed" id="feed">
-{sections}
+{section}
 </main>
 </div>
 <script>{_FEED_JS}</script>
@@ -690,12 +602,11 @@ def build_feed_html(
 
 def render_feed_html(
     corpus: dict[str, Any],
-    runs: dict[str, dict[str, Any]],
+    run: dict[str, Any],
     out: Path,
     graph_href: str | None = None,
-    default_mode: str | Mode = DEFAULT_FEED_MODE,
 ) -> None:
     """Sauvegarde la page du feed (voir build_feed_html pour la chaîne)."""
-    doc = build_feed_html(corpus, runs, graph_href, default_mode)
+    doc = build_feed_html(corpus, run, graph_href)
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(doc, encoding="utf-8")

@@ -1,7 +1,8 @@
 """Tests du protocole d'évaluation en aveugle (ticket #8, ADR-0001).
 
-Vérifie au seam public des trois scripts eval/ : le tirage figé des 15 listes
-(3 origines x ~5 départs), le masquage des origines et des explications,
+Vérifie au seam public des trois scripts eval/ : le tirage figé des 10 listes
+(2 origines x ~5 départs — baseline et parcours sensible à la rétention,
+ADR-0001 amendée le 2026-10-24), le masquage des origines et des explications,
 la notation à l'aveugle sur trois critères (cohérence, surprise utile, clarté),
 le refus de révélation avant notation complète, le seuil pré-engagé de
 l'ADR-0001, et le cycle complet sur le corpus réel.
@@ -20,9 +21,9 @@ from conftest import make_video, load_corpus_from_videos
 
 EVAL_DIR = Path(__file__).resolve().parent.parent / "eval"
 REAL_CORPUS = Path(__file__).resolve().parent.parent / "data" / "corpus_real.json"
-KINDS = ("baseline", "approfondir", "decouvrir")
+ORIGINES = ("baseline", "parcours")
 CRITERIA = ("coherence", "surprise", "clarte")
-LEAK_STRINGS = ("baseline", "approfondir", "decouvrir", "kind", "origine", "mode", "transitions", "topic_path")
+LEAK_STRINGS = ("baseline", "parcours", "kind", "origine", "mode", "transitions", "topic_path")
 
 
 def load_eval(name: str):
@@ -34,7 +35,7 @@ def load_eval(name: str):
 
 @pytest.fixture
 def protocol_corpus():
-    """Corpus dense : chaque départ éligible donne trois listes de même longueur (4)."""
+    """Corpus dense : chaque départ éligible donne deux listes de même longueur (4)."""
     return load_corpus_from_videos([
         make_video("v1", ["C#", ".NET"]),
         make_video("v2", [".NET", "Roslyn"]),
@@ -58,19 +59,19 @@ def draw(protocol_corpus, seed=20261020, starts=STARTS):
 
 
 class TestBlindDraw:
-    def test_freezes_three_lists_per_start(self, protocol_corpus):
+    def test_freezes_two_lists_per_start(self, protocol_corpus):
         order, mapping = draw(protocol_corpus)
         letters = sorted(order["letters"])
-        assert len(letters) == len(STARTS) * 3
+        assert len(letters) == len(STARTS) * 2
         for letter in letters:
             entry = mapping[letter]
             assert entry["start"] in STARTS
-            assert entry["origine"] in KINDS
+            assert entry["origine"] in ORIGINES
         per_start = {start: [] for start in STARTS}
         for letter, entry in mapping.items():
             per_start[entry["start"]].append(entry["origine"])
         for start in STARTS:
-            assert sorted(per_start[start]) == sorted(KINDS)
+            assert sorted(per_start[start]) == sorted(ORIGINES)
 
     def test_order_payload_masks_origins_and_explanations(self, protocol_corpus):
         order, _ = draw(protocol_corpus)
@@ -92,7 +93,8 @@ class TestBlindDraw:
             if entry["origine"] == "baseline":
                 expected = graph_engine.baseline(protocol_corpus, entry["start"])[:4]
             else:
-                run = graph_engine.parcours(protocol_corpus, entry["start"], entry["origine"])
+                blind_draw = load_eval("blind_draw")
+                run = graph_engine.parcours(protocol_corpus, entry["start"], blind_draw.RAYON_PARCOURS)
                 expected = run.videos[1:5]
             assert [video["id"] for video in payload["videos"]] == expected
 
@@ -120,14 +122,14 @@ class TestBlindDraw:
             make_video("c1", ["Concurrency", "Pipelines"]),
             make_video("c2", ["Channels", "Patterns"]),
         ])
-        lengths = {kind: len(blind_draw._blind_list(corpus, "s", kind)) for kind in KINDS}
+        lengths = {origine: len(blind_draw._blind_list(corpus, "s", origine)) for origine in ORIGINES}
         assert len(set(lengths.values())) > 1, "garde-fou : le départ de test est bien inégal"
         assert "s" not in blind_draw.eligible_starts(corpus)
         with pytest.raises(SystemExit, match="longueur"):
             blind_draw.build_protocol(corpus, seed=7, starts=["s"])
 
     def test_auto_draw_lists_share_length_per_start(self, protocol_corpus):
-        """Aucune fuite d'origine par la longueur sur un tirage complet (3 x 5 listes)."""
+        """Aucune fuite d'origine par la longueur sur un tirage complet (2 x 5 listes)."""
         blind_draw = load_eval("blind_draw")
         order, mapping = blind_draw.build_protocol(protocol_corpus, seed=20261020, count=5)
         per_start = {}
@@ -220,7 +222,7 @@ class TestReveal:
 
     def test_refuses_incomplete_scoring_including_clarte(self, tmp_path):
         reveal = load_eval("reveal")
-        mapping = {"A": {"start": "v1", "origine": "baseline"}, "B": {"start": "v1", "origine": "decouvrir"}}
+        mapping = {"A": {"start": "v1", "origine": "baseline"}, "B": {"start": "v1", "origine": "parcours"}}
         scores = {"A": {"coherence": 4, "surprise": 2, "clarte": 5},
                   "B": {"coherence": 4, "surprise": 4}}
         paths = self.write_inputs(tmp_path, ["A", "B"], mapping, scores)
@@ -230,7 +232,7 @@ class TestReveal:
     def test_refuses_scoring_not_yet_started(self, tmp_path):
         """Révélation lancée avant toute notation : refus propre, pas de traceback."""
         reveal = load_eval("reveal")
-        mapping = {"A": {"start": "v1", "origine": "baseline"}, "B": {"start": "v1", "origine": "decouvrir"}}
+        mapping = {"A": {"start": "v1", "origine": "baseline"}, "B": {"start": "v1", "origine": "parcours"}}
         order = {
             "order": ["A", "B"],
             "letters": {letter: {"start": "v1", "videos": [{"id": "v2", "title": "Vidéo v2"}]} for letter in "AB"},
@@ -245,29 +247,25 @@ class TestReveal:
         reveal = load_eval("reveal")
         mapping = {
             "A": {"start": "v1", "origine": "baseline"},
-            "B": {"start": "v1", "origine": "approfondir"},
-            "C": {"start": "v2", "origine": "baseline"},
-            "D": {"start": "v2", "origine": "approfondir"},
-            "E": {"start": "v1", "origine": "decouvrir"},
-            "F": {"start": "v2", "origine": "decouvrir"},
+            "B": {"start": "v2", "origine": "baseline"},
+            "C": {"start": "v1", "origine": "parcours"},
+            "D": {"start": "v2", "origine": "parcours"},
         }
         scores = {
             "A": {"coherence": 4, "surprise": 2, "clarte": 3},
-            "B": {"coherence": 4, "surprise": 3, "clarte": 3},
-            "C": {"coherence": 4, "surprise": 2, "clarte": 3},
-            "D": {"coherence": 4, "surprise": 3, "clarte": 3},
-            "E": {"coherence": 4, "surprise": 4, "clarte": 5},
-            "F": {"coherence": 4, "surprise": 4, "clarte": 5},
+            "B": {"coherence": 4, "surprise": 2, "clarte": 3},
+            "C": {"coherence": 4, "surprise": 4, "clarte": 5},
+            "D": {"coherence": 4, "surprise": 4, "clarte": 5},
         }
         paths = self.write_inputs(tmp_path, sorted(mapping), mapping, scores)
         result = reveal.reveal(*paths)
         assert result["marge_surprise"] == 2.0
         assert result["decision"].startswith("GO")
         assert result["seuil"]["adr"] == "docs/adr/0001-seuil-go-no-go-pre-engage.md"
-        for kind in KINDS:
-            assert kind in result["moyennes"]["clarte"]
-            assert kind in result["moyennes"]["coherence"]
-        assert result["moyennes"]["clarte"]["decouvrir"] == 5.0
+        for origine in ORIGINES:
+            assert origine in result["moyennes"]["clarte"]
+            assert origine in result["moyennes"]["coherence"]
+        assert result["moyennes"]["clarte"]["parcours"] == 5.0
 
     def test_clarte_reported_but_outside_the_formula(self, tmp_path):
         """AC #24 : la clarté est rapportée pour information, hors formule de
@@ -276,41 +274,35 @@ class TestReveal:
         reveal = load_eval("reveal")
         mapping = {
             "A": {"start": "v1", "origine": "baseline"},
-            "B": {"start": "v1", "origine": "approfondir"},
-            "C": {"start": "v1", "origine": "decouvrir"},
+            "B": {"start": "v1", "origine": "parcours"},
         }
         scores = {
             "A": {"coherence": 4, "surprise": 2, "clarte": 5},
-            "B": {"coherence": 4, "surprise": 3, "clarte": 1},
-            "C": {"coherence": 4, "surprise": 4, "clarte": 1},
+            "B": {"coherence": 4, "surprise": 4, "clarte": 1},
         }
-        paths = self.write_inputs(tmp_path, ["A", "B", "C"], mapping, scores)
+        paths = self.write_inputs(tmp_path, ["A", "B"], mapping, scores)
         result = reveal.reveal(*paths)
         assert result["decision"].startswith("GO")
-        assert result["moyennes"]["clarte"]["decouvrir"] == 1.0
-        assert result["comparaisons"]["decouvrir"]["clarte"] == -4.0
+        assert result["moyennes"]["clarte"]["parcours"] == 1.0
+        assert result["comparaisons"]["parcours"]["clarte"] == -4.0
 
-    def test_reports_per_mode_comparisons_vs_baseline(self, tmp_path):
-        """La révélation rapporte la comparaison (parcours vs baseline) par mode,
-        sur les trois critères — la clarté pour information, hors formule."""
+    def test_reports_parcours_comparisons_vs_baseline(self, tmp_path):
+        """La révélation rapporte la comparaison du parcours sensible à la
+        rétention contre la baseline, sur les trois critères — la clarté pour
+        information, hors formule (ADR-0001 amendée : un seul parcours)."""
         reveal = load_eval("reveal")
         mapping = {
             "A": {"start": "v1", "origine": "baseline"},
-            "B": {"start": "v1", "origine": "approfondir"},
-            "C": {"start": "v1", "origine": "decouvrir"},
+            "B": {"start": "v1", "origine": "parcours"},
         }
         scores = {
             "A": {"coherence": 4, "surprise": 2, "clarte": 5},
-            "B": {"coherence": 5, "surprise": 3, "clarte": 4},
-            "C": {"coherence": 4, "surprise": 4, "clarte": 3},
+            "B": {"coherence": 5, "surprise": 4, "clarte": 3},
         }
-        paths = self.write_inputs(tmp_path, ["A", "B", "C"], mapping, scores)
+        paths = self.write_inputs(tmp_path, ["A", "B"], mapping, scores)
         result = reveal.reveal(*paths)
-        assert result["comparaisons"]["approfondir"] == {
-            "coherence": 1.0, "surprise": 1.0, "clarte": -1.0,
-        }
-        assert result["comparaisons"]["decouvrir"] == {
-            "coherence": 0.0, "surprise": 2.0, "clarte": -2.0,
+        assert result["comparaisons"]["parcours"] == {
+            "coherence": 1.0, "surprise": 2.0, "clarte": -2.0,
         }
         assert result["decision"].startswith("GO")
 
@@ -322,12 +314,9 @@ class TestReveal:
             "A": {"start": "v1", "origine": "baseline"},
             "B": {"start": "v1", "origine": "baseline"},
             "C": {"start": "v1", "origine": "baseline"},
-            "D": {"start": "v1", "origine": "approfondir"},
-            "E": {"start": "v1", "origine": "approfondir"},
-            "F": {"start": "v1", "origine": "approfondir"},
-            "G": {"start": "v1", "origine": "decouvrir"},
-            "H": {"start": "v1", "origine": "decouvrir"},
-            "I": {"start": "v1", "origine": "decouvrir"},
+            "D": {"start": "v1", "origine": "parcours"},
+            "E": {"start": "v1", "origine": "parcours"},
+            "F": {"start": "v1", "origine": "parcours"},
         }
         scores = {
             "A": {"coherence": 4, "surprise": 2, "clarte": 3},
@@ -335,10 +324,7 @@ class TestReveal:
             "C": {"coherence": 4, "surprise": 1, "clarte": 3},
             "D": {"coherence": 4, "surprise": 3, "clarte": 3},
             "E": {"coherence": 4, "surprise": 3, "clarte": 3},
-            "F": {"coherence": 4, "surprise": 3, "clarte": 3},
-            "G": {"coherence": 4, "surprise": 3, "clarte": 3},
-            "H": {"coherence": 4, "surprise": 3, "clarte": 3},
-            "I": {"coherence": 4, "surprise": 2, "clarte": 3},
+            "F": {"coherence": 4, "surprise": 2, "clarte": 3},
         }
         paths = self.write_inputs(tmp_path, sorted(mapping), mapping, scores)
         result = reveal.reveal(*paths)
@@ -349,15 +335,13 @@ class TestReveal:
         reveal = load_eval("reveal")
         mapping = {
             "A": {"start": "v1", "origine": "baseline"},
-            "B": {"start": "v1", "origine": "approfondir"},
-            "C": {"start": "v1", "origine": "decouvrir"},
+            "B": {"start": "v1", "origine": "parcours"},
         }
         scores = {
             "A": {"coherence": 4, "surprise": 3, "clarte": 3},
             "B": {"coherence": 4, "surprise": 3, "clarte": 3},
-            "C": {"coherence": 4, "surprise": 3, "clarte": 3},
         }
-        paths = self.write_inputs(tmp_path, ["A", "B", "C"], mapping, scores)
+        paths = self.write_inputs(tmp_path, ["A", "B"], mapping, scores)
         result = reveal.reveal(*paths)
         assert result["marge_surprise"] == 0.0
         assert result["decision"].startswith("NO-GO")
@@ -366,15 +350,13 @@ class TestReveal:
         reveal = load_eval("reveal")
         mapping = {
             "A": {"start": "v1", "origine": "baseline"},
-            "B": {"start": "v1", "origine": "approfondir"},
-            "C": {"start": "v1", "origine": "decouvrir"},
+            "B": {"start": "v1", "origine": "parcours"},
         }
         scores = {
             "A": {"coherence": 4, "surprise": 2, "clarte": 3},
-            "B": {"coherence": 4, "surprise": 3, "clarte": 3},
-            "C": {"coherence": 3, "surprise": 5, "clarte": 3},
+            "B": {"coherence": 3, "surprise": 5, "clarte": 3},
         }
-        paths = self.write_inputs(tmp_path, ["A", "B", "C"], mapping, scores)
+        paths = self.write_inputs(tmp_path, ["A", "B"], mapping, scores)
         result = reveal.reveal(*paths)
         assert result["marge_surprise"] == 3.0
         assert result["decision"].startswith("NO-GO")
@@ -397,7 +379,7 @@ class TestEndToEndRealCorpus:
         )
         order = json.loads(order_path.read_text(encoding="utf-8"))
         mapping = json.loads(mapping_path.read_text(encoding="utf-8"))
-        assert len(order["letters"]) == 15
+        assert len(order["letters"]) == 10
         assert len(order["starts"]) == 5
 
         scripted = iter(
@@ -412,6 +394,6 @@ class TestEndToEndRealCorpus:
         assert result["decision"].startswith(("GO", "NO-GO"))
         assert result["marge_surprise"] == 0.0
         assert result["moyennes"]["clarte"]["baseline"] == 4.0
-        for kind in KINDS:
-            per_start = [e for e in mapping.values() if e["origine"] == kind]
+        for origine in ORIGINES:
+            per_start = [e for e in mapping.values() if e["origine"] == origine]
             assert len(per_start) == 5

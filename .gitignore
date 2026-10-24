@@ -17,3 +17,6 @@ __pycache__/
 venv/
 .DS_Store
 out/
+
+!data/corpus_arbre.json
+!data/corpus_elargi.json

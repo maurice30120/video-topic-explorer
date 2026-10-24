@@ -16,3 +16,6 @@ test = ["pytest"]
 
 [tool.setuptools]
 packages = ["vte"]
+
+[project.scripts]
+vte = "vte.cli:main"

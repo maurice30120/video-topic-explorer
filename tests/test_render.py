@@ -20,19 +20,20 @@ def write_run(run: graph_engine.Run) -> dict:
     return run.to_dict()
 
 
-def test_html_page_contains_title_start_and_mode(rich_corpus, tmp_path):
-    run = graph_engine.parcours(rich_corpus, "v1", "decouvrir")
+def test_html_page_contains_title_start_and_rayon(rich_corpus, tmp_path):
+    run = graph_engine.parcours(rich_corpus, "v1", 3)
     out = tmp_path / "parcours.html"
     render_html(rich_corpus, write_run(run), out)
     doc = out.read_text(encoding="utf-8")
     assert doc.startswith("<!doctype html>")
     assert "<h1>Parcours depuis v1</h1>" in doc
-    assert "mode : <strong>decouvrir</strong>" in doc
-    assert f"rayon : {run.radius} hop(s)" in doc
+    assert "<title>Parcours — v1</title>" in doc
+    assert f"rayon : {run.radius} hop(s) de sujets" in doc
+    assert "mode" not in doc  # ticket #35 : la page ne parle plus en modes
 
 
 def test_html_lists_run_videos_with_url_and_id(rich_corpus, tmp_path):
-    run = graph_engine.parcours(rich_corpus, "v1", "approfondir")
+    run = graph_engine.parcours(rich_corpus, "v1", 1)
     out = tmp_path / "parcours.html"
     render_html(rich_corpus, write_run(run), out)
     doc = out.read_text(encoding="utf-8")
@@ -44,7 +45,7 @@ def test_html_lists_run_videos_with_url_and_id(rich_corpus, tmp_path):
 
 
 def test_html_transitions_show_topic_path_with_anchors(chain_corpus, tmp_path):
-    run = graph_engine.parcours(chain_corpus, "a", "decouvrir")
+    run = graph_engine.parcours(chain_corpus, "a", 3)
     out = tmp_path / "parcours.html"
     render_html(chain_corpus, write_run(run), out)
     doc = out.read_text(encoding="utf-8")
@@ -76,7 +77,7 @@ def test_html_escapes_titles_and_topics(tmp_path):
         ]
     }
     run = {
-        "start": "x", "start_kind": "video", "mode": "approfondir",
+        "start": "x", "start_kind": "video",
         "radius": 1, "videos": ["x"], "transitions": [],
         "complete": False, "reason": "corpus trop petit",
     }
@@ -91,7 +92,7 @@ def test_html_escapes_titles_and_topics(tmp_path):
 
 def test_html_incomplete_run_shows_reason(rich_corpus, tmp_path):
     corpus = {"videos": [v for v in rich_corpus["videos"] if v["id"] == "v1"]}
-    run = graph_engine.parcours(corpus, "v1", "approfondir")
+    run = graph_engine.parcours(corpus, "v1", 1)
     out = tmp_path / "page.html"
     render_html(corpus, write_run(run), out)
     doc = out.read_text(encoding="utf-8")
@@ -101,7 +102,7 @@ def test_html_incomplete_run_shows_reason(rich_corpus, tmp_path):
 
 
 def test_html_topic_directory_lists_all_corpus_topics(chain_corpus, tmp_path):
-    run = graph_engine.parcours(chain_corpus, "a", "approfondir")
+    run = graph_engine.parcours(chain_corpus, "a", 1)
     out = tmp_path / "page.html"
     render_html(chain_corpus, write_run(run), out)
     doc = out.read_text(encoding="utf-8")
@@ -112,7 +113,7 @@ def test_html_topic_directory_lists_all_corpus_topics(chain_corpus, tmp_path):
 
 
 def test_html_creates_parent_directories(rich_corpus, tmp_path):
-    run = graph_engine.parcours(rich_corpus, "v1", "approfondir")
+    run = graph_engine.parcours(rich_corpus, "v1", 1)
     out = tmp_path / "nested" / "deep" / "parcours.html"
     render_html(rich_corpus, write_run(run), out)
     assert out.exists()
@@ -142,9 +143,9 @@ def test_smoke_cli_run_then_render_makes_web_page(tmp_path):
              "justification": "j", "provenance": {"source": "t", "model": "m", "version": "0"}}]},
         ]
     }), encoding="utf-8")
-    run_path = tmp_path / "runs" / "v1-approfondir.json"
+    run_path = tmp_path / "runs" / "v1-r1.json"
     result = _run_cli("run", str(corpus_path), "--start", "v1",
-                     "--mode", "approfondir", "--out", str(run_path))
+                     "--rayon", "1", "--out", str(run_path))
     assert result.returncode == 0, result.stderr
     assert run_path.exists()
     saved = json.loads(run_path.read_text(encoding="utf-8"))
@@ -169,12 +170,12 @@ def test_smoke_render_demo_corpus_end_to_end(tmp_path):
         pytest.skip("data/corpus_demo.json absent")
     run_path = tmp_path / "demo.json"
     result = _run_cli("run", str(corpus_path), "--start", "vid-001",
-                      "--mode", "decouvrir", "--out", str(run_path))
+                      "--rayon", "3", "--out", str(run_path))
     assert result.returncode == 0, result.stderr
     page = tmp_path / "parcours.html"
     result = _run_cli("render", str(corpus_path), "--run", str(run_path), "--out", str(page))
     assert result.returncode == 0, result.stderr
     doc = page.read_text(encoding="utf-8")
     assert "<h1>Parcours depuis vid-001</h1>" in doc
-    assert "mode : <strong>decouvrir</strong>" in doc
+    assert "rayon : 3 hop(s) de sujets" in doc
     assert "chemin de sujets :" in doc

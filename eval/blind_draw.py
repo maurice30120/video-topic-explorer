@@ -3,14 +3,14 @@
 Génère le protocole complet, sans discipline manuelle (user story 18) :
 - sélectionne ~5 points de départ (déterministe : liste triée des départs
   éligibles échantillonnée par le RNG seedé ; un départ est éligible si ses
-  trois listes existent et ont toutes la même longueur : la longueur d'une
+  deux listes existent et ont toutes la même longueur : la longueur d'une
   liste ne doit jamais révéler son origine),
-- construit les trois listes par départ via les seams du moteur
+- construit les deux listes par départ via les seams du moteur
   (baseline() et parcours()) : jusqu'à 4 suggestions après le point de
-  départ, la même longueur maximale pour les trois origines,
+  départ, la même longueur maximale pour les deux origines,
 - masque les explications : order.json ne contient que le départ et les
-  vidéos (id, titre) — jamais le mode, l'origine ni les chemins de sujets,
-- tire et fige l'ordre de présentation des 15 listes (lettres A..O),
+  vidéos (id, titre) — jamais l'origine ni les chemins de sujets,
+- tire et fige l'ordre de présentation des 10 listes (lettres A..J),
 - écrit eval/order.json (matériel aveugle) et eval/mapping.json (enveloppe
   scellée : lettre → {start, origine}, lue uniquement par reveal.py).
 """
@@ -25,15 +25,25 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from vte.corpus import load_corpus
 from vte.graph_engine import PathfindingError, baseline, parcours
+from vte.session import RAYON_PASSER_VITE
 
 SUGGESTIONS = 4
-ORIGINES = ("baseline", "approfondir", "decouvrir")
+ORIGINES = ("baseline", "parcours")
+RAYON_PARCOURS = RAYON_PASSER_VITE
+"""Rayon du parcours sensible à la rétention dans le test de valeur.
+
+L'ADR-0001 (amendée 2026-10-24) : le parcours sensible à la rétention
+prend la place de l'ancien parcours élargi du barème initial. L'axe
+CLI/éval est le parcours complet au rayon explicite de « passer vite »
+(session.RAYON_PASSER_VITE, la valeur vit une seule fois) — celui qui
+teste l'hypothèse originale de découverte par chemins.
+"""
 
 
 def eligible_starts(corpus: dict) -> list[str]:
-    """Départs triés dont les trois listes existent et ont la même longueur.
+    """Départs triés dont les deux listes existent et ont la même longueur.
 
-    Trois listes de longueurs différentes révéleraient l'origine au
+    Deux listes de longueurs différentes révéleraient l'origine au
     scoreur en aveugle (liste courte = run partiel) : de tels départs sont
     exclus du protocole.
     """
@@ -54,7 +64,7 @@ def _blind_list(corpus: dict, start: str, origine: str) -> list[dict]:
     if origine == "baseline":
         ids = baseline(corpus, start)[:SUGGESTIONS]
     else:
-        ids = parcours(corpus, start, origine).videos[1:1 + SUGGESTIONS]
+        ids = parcours(corpus, start, RAYON_PARCOURS).videos[1:1 + SUGGESTIONS]
     return [{"id": vid, "title": by_id[vid]["title"]} for vid in ids]
 
 
