@@ -39,6 +39,15 @@ def _model_version(response: Any, fallback: str) -> str:
     return fallback
 
 
+def _save_corpus(done: dict[str, Any], corpus_path: Path) -> None:
+    """Figé le corpus sur disque (cache immédiat), une sauvegarde par vidéo."""
+    corpus_path.parent.mkdir(parents=True, exist_ok=True)
+    corpus_path.write_text(
+        json.dumps({"videos": list(done.values())}, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
+
+
 def cmd_ingest(args: argparse.Namespace) -> int:
     """Fusionne des métadonnées collées à la main (JSON) dans videos_raw.json.
 
@@ -122,9 +131,7 @@ def cmd_extract(args: argparse.Namespace) -> int:
             flagged.pop("topics", None)
             flagged["extraction_error"] = str(exc)
             done[vid] = flagged
-            corpus = {"videos": list(done.values())}
-            corpus_path.parent.mkdir(parents=True, exist_ok=True)
-            corpus_path.write_text(json.dumps(corpus, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+            _save_corpus(done, corpus_path)
             print(f"ÉCHEC extraction : {vid} ({exc})", file=sys.stderr)
             failures += 1
             continue
@@ -132,9 +139,7 @@ def cmd_extract(args: argparse.Namespace) -> int:
         enriched["topics"] = topics
         done[vid] = enriched
         # Sauvegarde immédiate (cache) après chaque vidéo.
-        corpus = {"videos": list(done.values())}
-        corpus_path.parent.mkdir(parents=True, exist_ok=True)
-        corpus_path.write_text(json.dumps(corpus, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        _save_corpus(done, corpus_path)
         print(f"extrait : {vid} ({len(topics)} sujets)")
     if failures:
         print(f"{failures} exception(s) d'extraction enregistrée(s) dans le corpus (extraction_error).", file=sys.stderr)
