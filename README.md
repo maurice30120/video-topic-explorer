@@ -1,37 +1,74 @@
-# Video Topic Explorer — exploration YouTube par graphe de sujets
+# Video Topic Explorer — MVP
 
-**Statut : spécifications uniquement.** Aucun moteur de recommandation n'est encore implémenté.
+Parcours explicable de vidéos YouTube dans un graphe de sujets. Pipeline Python local, déterministe, auditable. Spécification : [docs/MVP.md](docs/MVP.md), issue #2.
 
-## Pourquoi ce projet ?
+## Installation
 
-L'objectif est de découvrir des vidéos par des **chemins entre sujets**, et non de prédire si elles vont plaire. Un même graphe pourra servir à des modes choisis explicitement : **Approfondir** ou **Découvrir**. Chaque transition doit être explicable.
+```bash
+pip install -e ".[extract,render,test]"   # ou : pip install networkx pytest
+```
 
-## Documents
+## Démarrage rapide (corpus réel de 35 vidéos YouTube vérifiées)
 
-- [MVP — expérience minimale](docs/MVP.md) : **périmètre prioritaire** pour vérifier que les parcours par graphe apportent de la valeur.
-- [Cahier des charges — vision produit](docs/CAHIER_DES_CHARGES.md) : principes validés, propositions et questions ouvertes, sans engagement d'implémentation immédiate.
+Les 35 vidéos (`data/corpus_real.json`) sont de vraies conférences/tutoriels YouTube,
+chaque ID validé via l'oEmbed public. Les sujets (3-5 par vidéo) sont assignés
+manuellement depuis les titres publics (provenance `manual-curated`) :
+clusters Roslyn/C#, Compilateurs/LLVM, Rust, TypeScript, Machine Learning,
+Noyau Linux + ponts inter-clusters.
 
-## MVP en bref
+```bash
+python scripts/make_real_corpus.py                                          # régénère data/corpus_real.json
+python -m vte.cli run data/corpus_real.json --start ghnY4S8unMM --mode decouvrir --out data/runs/demo.json
+python -m vte.cli render data/corpus_real.json --run data/runs/demo.json --out out/parcours.html
+python -m vte.cli graph data/corpus_real.json --run data/runs/demo.json --out out/graphe.png
+python -m vte.cli baseline data/corpus_real.json --start ghnY4S8unMM
+```
 
-1. Environ 30 vidéos YouTube sur des sujets liés.
-2. Gemini extrait 3 à 5 sujets par vidéo.
-3. Un JSON local et NetworkX constituent un graphe vidéo ↔ sujet.
-4. Deux modes manuels parcourent **le même graphe** : Approfondir et Découvrir.
-5. Une page HTML affiche jusqu'à cinq vidéos ordonnées et explique leurs transitions.
-6. Le graphe est visible **sur demande** pour comprendre l'algorithme.
-7. Comparaison avec une liste classique de vidéos par thème.
+## Démarrage rapide (corpus de démonstration fictif)
 
-**Stack cible MVP :** Python, Gemini, NetworkX, JSON, HTML minimal. Pas de base SQL, d'agents, d'apprentissage de préférences ni d'autoplay.
+```bash
+python scripts/make_demo_corpus.py                 # ~35 vidéos fictives en 6 clusters + ponts
+python -m vte.cli run data/corpus_demo.json --start vid-001 --mode decouvrir --out data/runs/demo.json
+```
 
-## Vie privée
+## Flux réel
 
-Le dépôt est créé **privé**. Ne jamais committer de clé API, de données de visionnage personnelles ou de préférences réelles sans décision explicite. Utiliser des variables d'environnement pour les secrets et des données fictives pour les tests partagés.
+1. **Ingestion manuelle** (pas de clé API YouTube) :
 
-## Principes
+```bash
+python -m vte.cli ingest mes_videos.json --output data/videos_raw.json
+```
 
-- Explicabilité fondée sur des liens **réels** du graphe, pas sur une justification inventée.
-- Parcours déterministes avec un corpus JSON figé.
-- Ne pas interpréter le fait d'ignorer une vidéo comme un désintérêt durable.
-- D'abord démontrer l'utilité, ensuite seulement complexifier.
+2. **Extraction Gemini, une seule fois, mise en cache** (require `GEMINI_API_KEY` ; résultat figé dans le corpus, jamais rappelé pendant les parcours) :
 
-*Spécifications issues des échanges du 20 octobre 2026.*
+```bash
+export GEMINI_API_KEY=...
+python -m vte.cli extract data/videos_raw.json --output data/corpus.json
+```
+
+3. **Parcours** (fonction pure, hors ligne, reproductible) :
+
+```bash
+python -m vte.cli run data/corpus.json --start vid-001 --mode approfondir   # rayon 1
+python -m vte.cli run data/corpus.json --start vid-001 --mode decouvrir     # rayon 3
+```
+
+Chaque parcours produit un `run.json` auditable : départ, mode, rayon, vidéos, chemins de sujets, transitions.
+
+## Évaluation en aveugle (ADR-0001)
+
+```bash
+PYTHONPATH=. python eval/blind_draw.py data/corpus.json            # ordre figé → eval/order.json
+PYTHONPATH=. python eval/record_scores.py                          # notes sans connaître l'origine
+PYTHONPATH=. python eval/reveal.py                                 # go/no-go après notation complète
+```
+
+Mapping lettres → origine (baseline / approfondir / decouvrir) : construire `eval/mapping.json` avant la révélation, sans la consulter pendant la notation.
+
+## Tests
+
+```bash
+python -m pytest tests/ -q
+```
+
+Vocabulaire : [GLOSSARY.md](GLOSSARY.md) si présent ; décisions : [docs/MVP.md](docs/MVP.md), [docs/CAHIER_DES_CHARGES.md](docs/CAHIER_DES_CHARGES.md).

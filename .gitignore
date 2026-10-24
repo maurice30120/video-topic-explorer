@@ -2,8 +2,13 @@
 .env
 .env.*
 !.env.example
+
+# Données locales générées ; les corpus figés versionnés font exception
 data/*
 !data/.gitkeep
+!data/corpus_real.json
+!data/corpus_demo.json
+
 *.db
 *.sqlite
 *.sqlite3
@@ -11,3 +16,4 @@ __pycache__/
 .venv/
 venv/
 .DS_Store
+out/
