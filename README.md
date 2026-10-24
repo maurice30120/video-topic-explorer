@@ -23,6 +23,7 @@ python -m vte.cli render data/corpus_real.json --run data/runs/demo.json --out o
 python -m vte.cli graph data/corpus_real.json --run data/runs/demo.json --out out/graphe.png
 python -m vte.cli baseline data/corpus_real.json --start ghnY4S8unMM
 python -m vte.cli stats data/corpus_real.json                                # composantes, sujets morts, densité
+python -m vte.cli serve data/corpus_real.json --port 8000                    # page locale : sélection, parcours, graphe
 ```
 
 ## Démarrage rapide (corpus de démonstration fictif)

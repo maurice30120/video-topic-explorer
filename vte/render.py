@@ -10,7 +10,9 @@ from typing import Any
 from .graph_engine import build_graph
 
 
-def render_html(corpus: dict[str, Any], run: dict[str, Any], out: Path) -> None:
+def render_html(
+    corpus: dict[str, Any], run: dict[str, Any], out: Path, graph_href: str | None = None
+) -> None:
     by_id = {video["id"]: video for video in corpus["videos"]}
     topic_videos: dict[str, list[str]] = {}
     for video in corpus["videos"]:
@@ -40,6 +42,13 @@ def render_html(corpus: dict[str, Any], run: dict[str, Any], out: Path) -> None:
     if not run["complete"] and run.get("reason"):
         reason_html = f"<p class='reason'>{html.escape(run['reason'])}</p>"
 
+    graph_html = ""
+    if graph_href:
+        graph_html = (
+            '<p class="graph-link"><a href="' + html.escape(graph_href) + '">'
+            "afficher le graphe du corpus avec le sous-graphe du parcours surligné</a></p>"
+        )
+
     topic_anchors = "\n".join(
         f'<div id="topic-{html.escape(t)}"><strong>{html.escape(t)}</strong> : '
         + ", ".join(topic_videos.get(t, []))
@@ -57,6 +66,7 @@ body {{ font-family: sans-serif; margin: 2rem; }}
 .transition {{ color: #555; margin-left: 1rem; }}
 .vid {{ color: #888; font-size: 0.85em; }}
 .reason {{ color: #a33; }}
+.graph-link {{ margin: 1rem 0; }}
 ol li {{ margin: 0.75rem 0; }}
 #topics {{ margin-top: 2rem; border-top: 1px solid #ccc; padding-top: 1rem; }}
 </style>
@@ -68,6 +78,7 @@ ol li {{ margin: 0.75rem 0; }}
 {chr(10).join(items)}
 </ol>
 {reason_html}
+{graph_html}
 <div id="topics">
 <h2>Sujets du corpus et leurs vidéos</h2>
 {topic_anchors}

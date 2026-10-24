@@ -7,6 +7,7 @@ Utilisation :
     python -m vte render data/corpus.json --run data/runs/<fichier>.json --out out/parcours.html
     python -m vte graph data/corpus.json --run data/runs/<fichier>.json --out out/graphe.png
     python -m vte stats data/corpus.json
+    python -m vte serve data/corpus.json --port 8000
 """
 
 from __future__ import annotations
@@ -185,6 +186,15 @@ def cmd_graph(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_serve(args: argparse.Namespace) -> int:
+    """Serveur local minimal : page de sélection, parcours lancés depuis la page, graphe à la demande."""
+    from .serve import serve_forever
+
+    corpus = load_corpus(args.corpus)
+    serve_forever(corpus, Path(args.runs_dir), host=args.host, port=args.port)
+    return 0
+
+
 def cmd_stats(args: argparse.Namespace) -> int:
     """Affiche les stats du graphe biparti : composantes, sujets morts, densité."""
     corpus = load_corpus(args.corpus)
@@ -243,6 +253,13 @@ def main(argv: list[str] | None = None) -> int:
     p = sub.add_parser("stats", help="stats du graphe : composantes, sujets morts, densité")
     p.add_argument("corpus")
     p.set_defaults(func=cmd_stats)
+
+    p = sub.add_parser("serve", help="page locale : sélection, parcours, graphe à la demande")
+    p.add_argument("corpus")
+    p.add_argument("--runs-dir", default="data/runs")
+    p.add_argument("--host", default="127.0.0.1")
+    p.add_argument("--port", type=int, default=8000)
+    p.set_defaults(func=cmd_serve)
 
     args = parser.parse_args(argv)
     return args.func(args)
