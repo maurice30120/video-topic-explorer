@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import json
 from dataclasses import dataclass, field
+from enum import Enum
 from typing import Any
 
 import networkx as nx
@@ -15,7 +16,23 @@ import networkx as nx
 from .corpus import CorpusError, videos_by_id
 
 MAX_PATH = 5
-MODE_RADIUS = {"approfondir": 1, "decouvrir": 3}
+
+
+class Mode(str, Enum):
+    """Mode de parcours : Approfondir (rayon 1) ou Découvrir (rayon 3)."""
+
+    APPROFONDIR = "approfondir"
+    DECOUVRIR = "decouvrir"
+
+
+class StartKind(str, Enum):
+    """Nature du point de départ : une vidéo ou un sujet."""
+
+    VIDEO = "video"
+    TOPIC = "topic"
+
+
+MODE_RADIUS: dict[Mode, int] = {Mode.APPROFONDIR: 1, Mode.DECOUVRIR: 3}
 
 
 class PathfindingError(ValueError):
@@ -41,8 +58,8 @@ class Run:
     """Résultat auditable d'un parcours (sérialisé en run.json)."""
 
     start: str
-    start_kind: str  # "video" | "topic"
-    mode: str
+    start_kind: StartKind
+    mode: Mode
     radius: int
     videos: list[str] = field(default_factory=list)
     transitions: list[dict[str, Any]] = field(default_factory=list)
@@ -52,8 +69,8 @@ class Run:
     def to_dict(self) -> dict[str, Any]:
         return {
             "start": self.start,
-            "start_kind": self.start_kind,
-            "mode": self.mode,
+            "start_kind": self.start_kind.value,
+            "mode": self.mode.value,
             "radius": self.radius,
             "videos": self.videos,
             "transitions": self.transitions,
@@ -188,8 +205,12 @@ def parcours(corpus: dict[str, Any], start: str, mode: str, radius: int | None =
     - Jamais d'élargissement automatique du rayon.
     - Sujets morts exclus des candidats ; parcours partiel avec motif.
     """
-    if mode not in MODE_RADIUS:
-        raise PathfindingError(f"mode inconnu : {mode!r} (attendu : {sorted(MODE_RADIUS)})")
+    try:
+        mode = Mode(mode)
+    except ValueError:
+        raise PathfindingError(
+            f"mode inconnu : {mode!r} (attendu : {sorted(member.value for member in Mode)})"
+        ) from None
     if radius is None:
         radius = MODE_RADIUS[mode]
     if radius < 1:
@@ -200,8 +221,8 @@ def parcours(corpus: dict[str, Any], start: str, mode: str, radius: int | None =
     dead = set(corpus.get("dead_topics", ()))
     topic_nodes = {n for n, d in graph.nodes(data=True) if d["kind"] == "topic"}
 
-    start_kind = "video" if start in by_id else "topic"
-    if start_kind == "topic" and f"topic:{start}" not in graph:
+    start_kind = StartKind.VIDEO if start in by_id else StartKind.TOPIC
+    if start_kind is StartKind.TOPIC and f"topic:{start}" not in graph:
         raise PathfindingError(f"sujet inconnu : {start!r}")
 
     if start_kind == "video":
@@ -219,7 +240,7 @@ def parcours(corpus: dict[str, Any], start: str, mode: str, radius: int | None =
             f"({radius} hop(s)) ; affichez le graphe du corpus pour visualiser sa topologie"
         )
 
-    if start_kind == "topic":
+    if start_kind is StartKind.TOPIC:
         if not any(
             topics_in(graph, data["video_id"], allowed)
             for _, data in graph.nodes(data=True)
@@ -253,7 +274,7 @@ def _extend(
     chain: list[str],
     allowed: set[str],
     topic_nodes: set[str],
-    mode: str,
+    mode: Mode,
     radius: int,
     start: str,
     start_kind: str,
