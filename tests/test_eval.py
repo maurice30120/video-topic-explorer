@@ -269,6 +269,27 @@ class TestReveal:
             assert kind in result["moyennes"]["coherence"]
         assert result["moyennes"]["clarte"]["decouvrir"] == 5.0
 
+    def test_clarte_reported_but_outside_the_formula(self, tmp_path):
+        """AC #24 : la clarté est rapportée pour information, hors formule de
+        décision — une clarté désastreuse n'empêche pas le GO si la formule
+        (marge surprise, pas de perte de cohérence) est satisfaite."""
+        reveal = load_eval("reveal")
+        mapping = {
+            "A": {"start": "v1", "origine": "baseline"},
+            "B": {"start": "v1", "origine": "approfondir"},
+            "C": {"start": "v1", "origine": "decouvrir"},
+        }
+        scores = {
+            "A": {"coherence": 4, "surprise": 2, "clarte": 5},
+            "B": {"coherence": 4, "surprise": 3, "clarte": 1},
+            "C": {"coherence": 4, "surprise": 4, "clarte": 1},
+        }
+        paths = self.write_inputs(tmp_path, ["A", "B", "C"], mapping, scores)
+        result = reveal.reveal(*paths)
+        assert result["decision"].startswith("GO")
+        assert result["moyennes"]["clarte"]["decouvrir"] == 1.0
+        assert result["comparaisons"]["decouvrir"]["clarte"] == -4.0
+
     def test_reports_per_mode_comparisons_vs_baseline(self, tmp_path):
         """La révélation rapporte la comparaison (parcours vs baseline) par mode,
         sur les trois critères — la clarté pour information, hors formule."""
