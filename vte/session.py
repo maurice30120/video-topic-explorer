@@ -20,11 +20,31 @@ from . import graph_engine
 from .corpus import videos_by_id
 
 SEUIL_MS = 5000
+"""Seuil unique de rétention applicative (spec #27) : durée de visionnage
+≥ seuil = aimé ; < seuil = pas aimé. Pas de bande intermédiaire."""
 
 GARDE_FOU = 50
 
 RAYON_PROCHE = 1
-RAYON_LOIN = 3
+"""Rayon du pas suivant quand la carte quittée a été aimée (restée longtemps)."""
+
+RAYON_PASSER_VITE = 3
+"""Rayon du pas suivant quand la carte quittée a été passée vite : le pas
+s'éloigne. Constante unique du concept — reprise par le feed statique
+(render.RAYON_FEED), le départ du panneau (serve) et l'axe CLI/éval
+(eval.RAYON_PARCOURS), où elle porte le même sens (spec #27)."""
+
+
+def rayon_depuis_duree(duree_ms: int) -> int:
+    """Rétention applicative → rayon du pas suivant (mapping binaire, spec #27).
+
+    Rester longtemps (durée ≥ SEUIL_MS) c'est aimer : le pas reste dans le
+    voisinage immédiat (RAYON_PROCHE). Passer vite (durée < SEUIL_MS) c'est ne
+    pas aimer : le pas s'éloigne (RAYON_PASSER_VITE). Pas de bande
+    intermédiaire. Source unique du mapping — le serveur l'importe pour
+    dériver le rayon du pas suivant côté serveur.
+    """
+    return RAYON_PROCHE if duree_ms >= SEUIL_MS else RAYON_PASSER_VITE
 
 
 class FinSession(str, Enum):
@@ -77,7 +97,7 @@ def deroule(
         if cles == {"duree"}:
             courant = chaine[-1]
             duree = evenement["duree"]
-            rayon = RAYON_PROCHE if duree >= SEUIL_MS else RAYON_LOIN
+            rayon = rayon_depuis_duree(duree)
             pas_moteur = graph_engine.next_step(
                 corpus, courant, radius=rayon, exclude=set(exclusions)
             )

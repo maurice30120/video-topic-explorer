@@ -25,17 +25,18 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from vte.corpus import load_corpus
 from vte.graph_engine import PathfindingError, baseline, parcours
+from vte.session import RAYON_PASSER_VITE
 
 SUGGESTIONS = 4
 ORIGINES = ("baseline", "parcours")
-RAYON_PARCOURS = 3
+RAYON_PARCOURS = RAYON_PASSER_VITE
 """Rayon du parcours sensible à la rétention dans le test de valeur.
 
 L'ADR-0001 (amendée 2026-10-24) : le parcours sensible à la rétention
 prend la place de l'ancien parcours élargi du barème initial. L'axe
-CLI/éval est le parcours complet au rayon explicite 3 — le rayon de
-« passer vite », celui qui teste l'hypothèse originale de découverte
-par chemins.
+CLI/éval est le parcours complet au rayon explicite de « passer vite »
+(session.RAYON_PASSER_VITE, la valeur vit une seule fois) — celui qui
+teste l'hypothèse originale de découverte par chemins.
 """
 
 

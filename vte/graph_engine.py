@@ -182,6 +182,22 @@ def _ranked_candidates(
     return [video_id for _, video_id in scored]
 
 
+def _transition(
+    from_video: str | None, to_video: str, topic_path: list[str], explanation: str
+) -> dict[str, Any]:
+    """Forme unique du pas : départ (None pour un départ par sujet), arrivée,
+    nœuds, chemin de sujets réel et son explication."""
+    return {
+        "from": from_video,
+        "from_node": None if from_video is None else f"video:{from_video}",
+        "to": to_video,
+        "to_node": f"video:{to_video}",
+        "topic_path": topic_path,
+        "topic_nodes": [f"topic:{t}" for t in topic_path],
+        "explanation": explanation,
+    }
+
+
 def parcours(corpus: dict[str, Any], start: str, radius: int | None) -> Run:
     """Fonction pure : (corpus figé, point de départ, rayon explicite) → run.
 
@@ -237,15 +253,7 @@ def parcours(corpus: dict[str, Any], start: str, radius: int | None) -> Run:
             )[0]
         ]
         run = _extend(graph, chain, allowed, projected, radius, start, start_kind)
-        run.transitions.insert(0, {
-            "from": None,
-            "from_node": None,
-            "to": chain[0],
-            "to_node": f"video:{chain[0]}",
-            "topic_path": [start],
-            "topic_nodes": [f"topic:{start}"],
-            "explanation": f"sujet de départ : {start}",
-        })
+        run.transitions.insert(0, _transition(None, chain[0], [start], f"sujet de départ : {start}"))
         return run
 
     return _extend(graph, chain, allowed, projected, radius, start, start_kind)
@@ -274,15 +282,7 @@ def _next_transition(
         return None
     chosen = ranked[0]
     best = paths[chosen]
-    return {
-        "from": current,
-        "from_node": f"video:{current}",
-        "to": chosen,
-        "to_node": f"video:{chosen}",
-        "topic_path": best,
-        "topic_nodes": [f"topic:{t}" for t in best],
-        "explanation": " → ".join(best),
-    }
+    return _transition(current, chosen, best, " → ".join(best))
 
 
 def next_step(
@@ -355,15 +355,7 @@ def first_step(
     if not ranked:
         return None
     chosen = ranked[0]
-    return {
-        "from": None,
-        "from_node": None,
-        "to": chosen,
-        "to_node": f"video:{chosen}",
-        "topic_path": [sujet],
-        "topic_nodes": [f"topic:{sujet}"],
-        "explanation": f"sujet de départ : {sujet}",
-    }
+    return _transition(None, chosen, [sujet], f"sujet de départ : {sujet}")
 
 
 def _extend(
