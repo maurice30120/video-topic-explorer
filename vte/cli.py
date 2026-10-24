@@ -5,7 +5,7 @@ Utilisation :
     python -m vte extract data/videos_raw.json data/corpus.json
     python -m vte run data/corpus.json --start vid-001 --mode decouvrir
     python -m vte render data/corpus.json --run data/runs/<fichier>.json --out out/parcours.html
-    python -m vte.cli feed data/corpus.json --start vid-001 --out out/site/index.html
+    python -m vte.cli feed data/corpus.json --out out/site/index.html (--start optionnel, défaut vte.DEFAULT_START)
     python -m vte graph data/corpus.json --run data/runs/<fichier>.json --out out/graphe.png (ou .svg)
     python -m vte stats data/corpus.json
     python -m vte serve data/corpus.json --port 8000
@@ -21,7 +21,7 @@ import sys
 from pathlib import Path
 from typing import Any
 
-from . import graph_engine
+from . import DEFAULT_START, graph_engine
 from .corpus import CorpusError, canonical, load_corpus
 
 EXTRACTION_PROMPT = (
@@ -304,7 +304,7 @@ def main(argv: list[str] | None = None) -> int:
 
     p = sub.add_parser("feed", help="page feed vertical : parcours des deux modes embarqués")
     p.add_argument("corpus")
-    p.add_argument("--start", required=True)
+    p.add_argument("--start", default=DEFAULT_START, help=f"vidéo de départ (défaut : {DEFAULT_START}, voir vte.DEFAULT_START)")
     p.add_argument("--out", default=None)
     p.add_argument("--graph-href", default="graphe.png")
     p.set_defaults(func=cmd_feed)

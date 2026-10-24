@@ -269,6 +269,30 @@ def test_cli_feed_computes_both_modes_and_writes_single_page(tmp_path):
     assert '<article class="carte depart" data-video="v1">' in doc
 
 
+def test_cli_feed_without_start_uses_documented_default(tmp_path):
+    import json
+
+    from vte import DEFAULT_START
+
+    def video(vid):
+        topics = [{"raw": t, "canonical": t, "justification": "j",
+                   "provenance": {"source": "t", "model": "m", "version": "0"}}
+                  for t in ("A", "B")]
+        return {"id": vid, "url": f"https://e.com/{vid}", "title": vid,
+                "description": "d", "topics": topics}
+
+    corpus_path = tmp_path / "corpus.json"
+    corpus_path.write_text(json.dumps({
+        "videos": [video(DEFAULT_START), video("v2")],
+    }), encoding="utf-8")
+    out = tmp_path / "site" / "index.html"
+    result = _run_cli("feed", str(corpus_path), "--out", str(out))
+    assert result.returncode == 0, result.stderr
+    doc = out.read_text(encoding="utf-8")
+    # le départ est la constante documentée, sans --start ressaisi
+    assert f'<article class="carte depart" data-video="{DEFAULT_START}">' in doc
+
+
 def test_cli_feed_rejects_unknown_start(tmp_path):
     import json
 

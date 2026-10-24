@@ -41,12 +41,13 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install --retries 5 networkx matplotlib
+          pip install --retries 5 networkx matplotlib      - name: "Départ par défaut du site (source unique : vte.DEFAULT_START)"
+        run: echo "DEFAULT_START=$(python -c 'from vte import DEFAULT_START; print(DEFAULT_START)')" >> "$GITHUB_ENV"
       - name: Generate parcours (run) on real corpus
-        run: python -m vte.cli run data/corpus_real.json --start ghnY4S8unMM --mode decouvrir --out out/run/demo.json
+        run: python -m vte.cli run data/corpus_real.json --start "$DEFAULT_START" --mode decouvrir --out out/run/demo.json
       - name: Build site (feed en index.html à la racine + graphe statique)
         run: |
-          python -m vte.cli feed data/corpus_real.json --start ghnY4S8unMM --out out/site/index.html
+          python -m vte.cli feed data/corpus_real.json --out out/site/index.html
           python -m vte.cli graph data/corpus_real.json --run out/run/demo.json --out out/site/graphe.png
       - name: Smoke check generated site (feed à la racine, première carte dérivée du run généré)
         run: python -m vte.cli smoke --site out/site --run out/run/demo.json
