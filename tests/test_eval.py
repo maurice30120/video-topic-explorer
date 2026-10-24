@@ -269,6 +269,37 @@ class TestReveal:
             assert kind in result["moyennes"]["coherence"]
         assert result["moyennes"]["clarte"]["decouvrir"] == 5.0
 
+    def test_exact_margin_of_one_is_go(self, tmp_path):
+        """ADR-0001 : marge ≥ 1. Une marge vraie de 1 (8/3 - 5/3) ne doit pas
+        être rejetée par un artefact d'arrondi flottant."""
+        reveal = load_eval("reveal")
+        mapping = {
+            "A": {"start": "v1", "origine": "baseline"},
+            "B": {"start": "v1", "origine": "baseline"},
+            "C": {"start": "v1", "origine": "baseline"},
+            "D": {"start": "v1", "origine": "approfondir"},
+            "E": {"start": "v1", "origine": "approfondir"},
+            "F": {"start": "v1", "origine": "approfondir"},
+            "G": {"start": "v1", "origine": "decouvrir"},
+            "H": {"start": "v1", "origine": "decouvrir"},
+            "I": {"start": "v1", "origine": "decouvrir"},
+        }
+        scores = {
+            "A": {"coherence": 4, "surprise": 2, "clarte": 3},
+            "B": {"coherence": 4, "surprise": 2, "clarte": 3},
+            "C": {"coherence": 4, "surprise": 1, "clarte": 3},
+            "D": {"coherence": 4, "surprise": 3, "clarte": 3},
+            "E": {"coherence": 4, "surprise": 3, "clarte": 3},
+            "F": {"coherence": 4, "surprise": 3, "clarte": 3},
+            "G": {"coherence": 4, "surprise": 3, "clarte": 3},
+            "H": {"coherence": 4, "surprise": 3, "clarte": 3},
+            "I": {"coherence": 4, "surprise": 2, "clarte": 3},
+        }
+        paths = self.write_inputs(tmp_path, sorted(mapping), mapping, scores)
+        result = reveal.reveal(*paths)
+        assert result["marge_surprise"] == 1.0
+        assert result["decision"].startswith("GO")
+
     def test_decision_no_go_on_surprise_margin(self, tmp_path):
         reveal = load_eval("reveal")
         mapping = {

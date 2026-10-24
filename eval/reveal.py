@@ -8,6 +8,7 @@ mais le seuil pré-engagé ne porte que sur surprise utile et cohérence.
 
 import argparse
 import json
+from fractions import Fraction
 from pathlib import Path
 
 from record_scores import scores_complete
@@ -31,7 +32,8 @@ def reveal(order_path: str, scores_path: str, mapping_path: str) -> dict:
 
     def avg(origine, criterion):
         rows = buckets.get(origine, [])
-        return sum(row[criterion] for row in rows) / len(rows) if rows else 0.0
+        # Fraction : une marge vraie de 1 ne doit jamais être rejetée par un arrondi.
+        return Fraction(sum(row[criterion] for row in rows), len(rows)) if rows else Fraction(0)
 
     surprise_baseline = avg("baseline", "surprise")
     surprise_decouvrir = avg("decouvrir", "surprise")
@@ -50,14 +52,14 @@ def reveal(order_path: str, scores_path: str, mapping_path: str) -> dict:
     return {
         "moyennes": {
             "coherence": {
-                "baseline": coherence_baseline,
-                "approfondir": coherence_approfondir,
-                "decouvrir": coherence_decouvrir,
+                "baseline": float(coherence_baseline),
+                "approfondir": float(coherence_approfondir),
+                "decouvrir": float(coherence_decouvrir),
             },
-            "surprise": {"baseline": surprise_baseline, "decouvrir": surprise_decouvrir},
-            "clarte": {origine: avg(origine, "clarte") for origine in ("baseline", "approfondir", "decouvrir")},
+            "surprise": {"baseline": float(surprise_baseline), "decouvrir": float(surprise_decouvrir)},
+            "clarte": {origine: float(avg(origine, "clarte")) for origine in ("baseline", "approfondir", "decouvrir")},
         },
-        "marge_surprise": surprise_margin,
+        "marge_surprise": float(surprise_margin),
         "seuil": {"marge_min": MARGIN, "adr": "docs/adr/0001-seuil-go-no-go-pre-engage.md"},
         "decision": decision,
         "correspondance": mapping,
