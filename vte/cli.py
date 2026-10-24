@@ -174,7 +174,7 @@ def cmd_render(args: argparse.Namespace) -> int:
 
     corpus = load_corpus(args.corpus)
     run = json.loads(Path(args.run).read_text(encoding="utf-8"))
-    out = Path(args.out) or Path("out/parcours.html")
+    out = Path(args.out) if args.out else Path("out/parcours.html")
     render_html(corpus, run, out)
     print(f"page HTML : {out}")
     return 0
