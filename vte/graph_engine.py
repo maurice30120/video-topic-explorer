@@ -178,12 +178,6 @@ def topics_in(graph: nx.Graph, video_id: str, allowed: set[str] | None = None) -
     return topics
 
 
-def _rank_key(candidate: tuple[str, list[str]]) -> tuple[int, str]:
-    """Départage déterministe : longueur de chemin de sujets croissante, puis ID croissant."""
-    video_id, shortest = candidate
-    return (len(shortest), video_id)
-
-
 def parcours(corpus: dict[str, Any], start: str, mode: str, radius: int | None = None) -> Run:
     """Fonction pure : (corpus figé, point de départ, mode) → run.
 
@@ -226,17 +220,18 @@ def parcours(corpus: dict[str, Any], start: str, mode: str, radius: int | None =
         )
 
     if start_kind == "topic":
-        candidates = _rank(graph, {start}, allowed, topic_nodes, exclude=set())
-        if not candidates:
+        if not any(
+            topics_in(graph, data["video_id"], allowed)
+            for _, data in graph.nodes(data=True)
+            if data["kind"] == "video"
+        ):
             raise PathfindingError(
                 "point de départ isolé : aucune vidéo ne porte ce sujet vivant dans le rayon"
             )
-        _, shortest = candidates[0]
         chain = [min(
             (v for v in by_id if topics_in(graph, v) & {start}),
             key=lambda v: v,
         )]
-        transitions: list[dict[str, Any]] = []
         run = _extend(graph, corpus, chain, allowed, topic_nodes, mode, radius, start, start_kind)
         run.transitions.insert(0, {
             "from": None,
@@ -247,29 +242,6 @@ def parcours(corpus: dict[str, Any], start: str, mode: str, radius: int | None =
         return run
 
     return _extend(graph, corpus, chain, allowed, topic_nodes, mode, radius, start, start_kind)
-
-
-def _rank(
-    graph: nx.Graph,
-    seed_topics: set[str],
-    allowed: set[str],
-    topic_nodes: set[str],
-    exclude: set[str],
-) -> list[tuple[str, list[str]]]:
-    """Candidates triées : sujets communs d\écroissants, puis longueur de chemin, puis ID croissant."""
-    candidates: list[tuple[int, str, list[str]]] = []
-    for node, data in graph.nodes(data=True):
-        if data["kind"] != "video" or data["video_id"] in exclude:
-            continue
-        video_id = data["video_id"]
-        video_topics = topics_in(graph, video_id, allowed)
-        if not video_topics:
-            continue
-        explanations = _candidate_explanations(graph, list(exclude)[-1] if exclude else "", video_id, allowed, topic_nodes) if exclude else []
-        common = len(seed_topics & topics_in(graph, video_id))
-        candidates.append((common, video_id, explanations[0] if explanations else []))
-    candidates.sort(key=lambda c: (-c[0], len(c[2]) if c[2] else 99, c[1]))
-    return [(vid, path) for _, vid, path in candidates]
 
 
 def _extend(
