@@ -1,0 +1,81 @@
+name: Extract corpus (Gemini)
+
+# Génération limitée à la branche main :
+# - les déclencheurs schedule et workflow_dispatch ne s'exécutent que sur
+#   la branche par défaut (main) ;
+# - garde explicite supplémentaire sur le job ;
+# - le secret GEMINI_API_KEY vit dans l'environnement corpus-extract, dont
+#   la politique de branches limite l'accès à main uniquement. Les PR depuis
+#   des forks n'ont jamais accès aux secrets.
+#
+# Le corpus régénéré n'est jamais poussé directement sur main (protégée) :
+# une PR automatique est ouverte pour revue.
+
+on:
+  schedule:
+    - cron: "0 4 * * *" # tous les jours à 04:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: extract-corpus
+  cancel-in-progress: false
+
+jobs:
+  extract:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment: corpus-extract
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install --retries 5 networkx pytest google-generativeai
+
+      - name: Vérifier l'entrée data/videos_raw.json
+        id: raw
+        run: |
+          if [ -f data/videos_raw.json ]; then
+            echo "present=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "present=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::data/videos_raw.json absent — extraction ignorée"
+          fi
+
+      - name: Extraction Gemini (cache incrémental : les vidéos déjà extraites sont sautées)
+        if: steps.raw.outputs.present == 'true'
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: python -m vte.cli extract data/videos_raw.json --output data/corpus_real.json
+
+      - name: Tests sur le corpus régénéré
+        if: steps.raw.outputs.present == 'true'
+        run: python -m pytest tests/ -q
+
+      - name: PR automatique si le corpus a changé
+        if: steps.raw.outputs.present == 'true'
+        uses: peter-evans/create-pull-request@v6
+        with:
+          commit-message: "chore: extraction Gemini incrémentale du corpus (CI)"
+          title: "Corpus : extraction Gemini automatique"
+          body: |
+            Extraction Gemini exécutée en CI sur main.
+
+            - Seules les vidéos nouvelles dans `data/videos_raw.json` sont extraites
+              (les sujets déjà figés ne sont jamais rappelés ni réécrits).
+            - Le secret `GEMINI_API_KEY` est un secret d'environnement
+              (`corpus-extract`), accessible uniquement aux exécutions sur main.
+          branch: chore/corpus-extract
+          base: main
+          delete-branch: true
