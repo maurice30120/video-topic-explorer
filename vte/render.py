@@ -97,7 +97,16 @@ def render_html(
     out.write_text(doc, encoding="utf-8")
 
 
-def render_graph_png(corpus: dict[str, Any], run: dict[str, Any] | None, out: Path) -> None:
+def render_graph(corpus: dict[str, Any], run: dict[str, Any] | None, out: Path) -> None:
+    """Rend le graphe statique du corpus, en PNG ou SVG selon l'extension du fichier demandé.
+
+    Un seul moteur de rendu dessine les deux formats : même layout (spring_layout
+    seedé), même surlignage du sous-graphe du parcours.
+    """
+    fmt = out.suffix.lower().lstrip(".")
+    if fmt not in {"png", "svg"}:
+        raise ValueError(f"format de graphe non supporté : {out.suffix!r} (choisir .png ou .svg)")
+
     import matplotlib
 
     matplotlib.use("Agg")
