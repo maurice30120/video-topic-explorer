@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import html
 import json
+import re
 from pathlib import Path
 from typing import Any
 
@@ -139,3 +140,108 @@ def render_graph_png(corpus: dict[str, Any], run: dict[str, Any] | None, out: Pa
     out.parent.mkdir(parents=True, exist_ok=True)
     plt.savefig(out, dpi=150)
     plt.close()
+
+# ------------------------------------------------------------------ feed vertical
+
+MODE_LABELS = {"decouvrir": "Découvrir", "approfondir": "Approfondir"}
+MODE_SWITCH_LABELS = {"decouvrir": "Passer en Approfondir", "approfondir": "Passer en Découvrir"}
+_FEED_MODES = ("decouvrir", "approfondir")
+
+
+def _embed_url(url: str) -> str | None:
+    """URL d'intégration (youtube-nocookie) d'une vidéo YouTube, sinon None."""
+    for pattern in (
+        r"youtube\.com/watch\?[^#]*?\bv=([\w-]+)",
+        r"youtu\.be/([\w-]+)",
+        r"youtube\.com/embed/([\w-]+)",
+        r"youtube\.com/shorts/([\w-]+)",
+    ):
+        match = re.search(pattern, url)
+        if match:
+            return (
+                f"https://www.youtube-nocookie.com/embed/{match.group(1)}"
+                "?enablejsapi=1&mute=1&playsinline=1&rel=0"
+            )
+    return None
+
+
+def _player_html(video: dict[str, Any]) -> str:
+    """Lecteur intégré de la vidéo (iframe), ou lien de repli si hors YouTube."""
+    embed = _embed_url(video.get("url", ""))
+    if embed is None:
+        return (
+            f'<p class="lecteur lecteur-lien">Vidéo hors YouTube : '
+            f'<a href="{html.escape(video.get("url", "#"), quote=True)}">'
+            f"{html.escape(video['title'])}</a></p>"
+        )
+    return (
+        '<div class="lecteur">'
+        f'<iframe src="{html.escape(embed, quote=True)}" '
+        'title="lecteur intégré" allow="autoplay; encrypted-media; picture-in-picture" '
+        "allowfullscreen loading=\"lazy\"></iframe>"
+        "</div>"
+    )
+
+
+def _card_html(by_id: dict[str, dict], video_id: str, transition: dict[str, Any] | None) -> str:
+    video = by_id[video_id]
+    return (
+        f'<article class="carte" data-video="{html.escape(video_id, quote=True)}">'
+        f"{_player_html(video)}"
+        '<div class="legende">'
+        f'<h2 class="titre">{html.escape(video["title"])}</h2>'
+        "</div>"
+        "</article>"
+    )
+
+
+def _parcours_html(by_id: dict[str, dict], run: dict[str, Any], mode: str, active: bool) -> str:
+    cards = []
+    for index, video_id in enumerate(run["videos"]):
+        transition = next((t for t in run["transitions"] if t["to"] == video_id), None)
+        cards.append(_card_html(by_id, video_id, transition))
+    return (
+        f'<section class="parcours" data-mode="{html.escape(mode, quote=True)}"'
+        + ("" if active else " hidden")
+        + ">"
+        + "".join(cards)
+        + "</section>"
+    )
+
+
+def build_feed_html(
+    corpus: dict[str, Any],
+    runs: dict[str, dict[str, Any]],
+    graph_href: str | None = None,
+    default_mode: str = "decouvrir",
+) -> str:
+    """Construit la page unique du feed vertical (les deux modes embarqués) et la renvoie."""
+    from .corpus import videos_by_id
+
+    by_id = videos_by_id(corpus)
+    modes = [m for m in _FEED_MODES if m in runs]
+    if not modes:
+        raise ValueError("le feed exige au moins un parcours (mode decouvrir ou approfondir)")
+    if default_mode not in modes:
+        default_mode = modes[0]
+    sections = "\n".join(
+        _parcours_html(by_id, runs[mode], mode, mode == default_mode) for mode in modes
+    )
+    doc = f"""<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Parcours — Video Topic Explorer</title>
+</head>
+<body>
+<header class="barre">
+<p class="marque">Video Topic Explorer</p>
+</header>
+<main class="feed" id="feed">
+{sections}
+</main>
+</body>
+</html>
+"""
+    return doc
