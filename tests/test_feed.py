@@ -181,8 +181,10 @@ def test_feed_shell_mobile_first_snap_focus_and_reduced_motion(rich_corpus):
     runs = both_runs(rich_corpus, "v1")
     doc = build_feed_html(rich_corpus, runs, graph_href="graphe.png")
 
-    # colonne verticale centrée ~480px, identique au mobile
+    # mobile : colonne verticale centrée ~480px ; écran large : salle de
+    # projection ~1100px, bornée par la hauteur disponible
     assert "480px" in doc
+    assert "1100px" in doc
     # défilement aimanté carte par carte
     assert "scroll-snap-type: y mandatory" in doc
     assert "scroll-snap-align: start" in doc
@@ -199,7 +201,7 @@ def test_feed_shell_mobile_first_snap_focus_and_reduced_motion(rich_corpus):
     # départ direct sur le parcours du mode par défaut
     assert '<body data-mode="decouvrir">' in doc
     # indication du geste son, en français
-    assert "Un appui sur la vidéo active le son." in doc
+    assert "Le bouton « Activer le son » débloque l'audio" in doc
 
 
 def _feed_js(doc: str) -> str:
@@ -214,16 +216,33 @@ def test_feed_player_commands_queue_until_on_ready(rich_corpus):
     # les commandes passent par une file d'attente vidée à la mise en place
     assert "pending" in js
     assert "readyPlayers" in js
+    # le canal ne s'ouvre que si la page salue chaque lecteur « listening »
+    assert '"listening"' in js
+
+
+def test_feed_player_controls_not_blocked_by_overlay(rich_corpus):
+    doc = build_feed_html(rich_corpus, both_runs(rich_corpus, "v1"))
+    # aucun calque ne recouvre l'iframe : avance et volume du lecteur YouTube
+    # restent manipulables directement
+    assert ".lecteur::after" not in doc
+    # chaque lecteur a son bouton son dédié dans la légende
+    assert doc.count('class="son"') == doc.count("<iframe")
+    assert 'aria-pressed="false">Activer le son</button>' in doc
 
 
 def test_feed_tap_starts_playback_and_unmutes(rich_corpus):
     js = _feed_js(build_feed_html(rich_corpus, both_runs(rich_corpus, "v1")))
     tap = js[js.index('feed.addEventListener("click"'):]
+    # le bouton son pilote l'audio, pas le lecteur lui-même
+    assert 'closest(".son")' in tap
     # activer le son démarre aussi la lecture, pas seulement le démutage
     assert 'post(iframe, "unMute")' in tap
     assert tap.index('"unMute"') < tap.index('"playVideo"')
     # un appui alors que le son est actif le coupe, sans arrêter la lecture
     assert 'post(iframe, "mute")' in tap
+    # le bouton reflète l'état (libellé et aria-pressed)
+    assert "setSon" in js
+    assert '"Couper le son"' in js
 
 
 def test_render_feed_html_writes_page_and_parent_dirs(rich_corpus, tmp_path):

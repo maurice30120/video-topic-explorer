@@ -62,7 +62,7 @@ Chaque transition affiche les sujets communs ou les sujets intermédiaires réel
 ## 5. Sorties attendues
 
 - Un **JSON local** inspectable : vidéos, sujets normalisés, liens et provenance de l'extraction.
-- Une **page HTML minimale** : sélection du point de départ, choix du mode, liste ordonnée et justifications.
+- Une **page HTML minimale** : démarrage direct sur une vidéo, intérêt simulé ou zap, puis remplacement immédiat par une vidéo liée avec son chemin de sujets.
 - Une **visualisation facultative** du graphe ou du sous-graphe pertinent.
 - Des erreurs et limites présentées clairement, sans données fictives cachées.
 
@@ -82,7 +82,7 @@ Un script Python lisible (éventuellement réparti en deux ou trois petits fichi
 
 ## 7. Règles de comportement
 
-- Le **mode est sélectionné manuellement** ; ne pas inférer l'humeur.
+- Les commandes CLI gardent le choix manuel du mode ; le parcours direct réagit à l'intérêt simulé, sans inférer l'humeur ni mesurer le temps de lecture.
 - Ne pas pénaliser un sujet parce qu'une vidéo est ignorée : l'absence de clic n'est pas un jugement négatif.
 - La qualité d'une vidéo n'est pas confondue avec la proximité thématique.
 - Aucun apprentissage des goûts ni entraînement de modèle pour le MVP.
@@ -130,11 +130,11 @@ Le grilling du plan MVP a validé les décisions suivantes ; elles complètent l
 
 ### Modes
 
-Même algorithme, un seul paramètre : le rayon de hops de sujets depuis l'ensemble des sujets du point de départ. **Approfondir : rayon 1. Découvrir : rayon 2–3.** Depuis une vidéo, Découvrir peut atteindre des vidéos sans sujet commun avec le départ, tant que le chemin de sujets affiché reste continu.
+Même algorithme, deux paramètres : le rayon de hops de sujets depuis l'ensemble des sujets du point de départ et le classement des candidates à chaque extension. **Approfondir : rayon 1, suivre la branche.** **Découvrir : rayon 2–3, sauter de branche plus tôt.** Depuis une vidéo, Découvrir peut atteindre des vidéos sans sujet commun avec le départ, tant que le chemin de sujets affiché reste continu.
 
 ### Parcours
 
-Un parcours est une **chaîne** : chaque vidéo partage un sujet (direct ou via un sujet intermédiaire) avec la précédente. Départage à égalité : nombre de sujets communs, puis ID de vidéo croissant. Pas de diversité forcée : les 5 premières candidates gagnent. Les **sujets morts** (une seule vidéo) restent dans le JSON et le graphe visuel mais sont exclus des candidats.
+Un parcours est une **chaîne** : chaque vidéo partage un sujet (direct ou via un sujet intermédiaire) avec la précédente. Classement des candidates selon le mode : **Approfondir suit la branche** (sujets communs avec la vidéo courante, décroissants) ; **Découvrir saute de branche plus tôt** (sujets nouveaux apportés par la candidate, décroissants). Départage à égalité : sujets communs, puis ID de vidéo croissant — la longueur du chemin de sujets ne participe jamais au classement. Les **sujets morts** (une seule vidéo) restent dans le JSON et le graphe visuel mais sont exclus des candidats.
 
 ### Explications
 

@@ -17,11 +17,11 @@ Une chaîne ordonnée de vidéos distinctes, où chaque vidéo partage un sujet 
 _Avoid_ : liste, playlist, séquence
 
 **Approfondir** :
-Le mode qui parcourt le graphe en restant dans le voisinage immédiat du point de départ (rayon de 1 hop de sujets).
+Le mode qui parcourt le graphe en restant dans le voisinage immédiat du point de départ (rayon de 1 hop de sujets) en suivant la branche : chaque extension privilégie la candidate qui partage le plus de sujets avec la vidéo courante.
 _Avoid_ : explorer en profondeur, mode focus
 
 **Découvrir** :
-Le mode qui parcourt le graphe en s'éloignant progressivement du point de départ (rayon de 2 à 3 hops de sujets) tout en gardant des transitions explicables.
+Le mode qui parcourt le graphe en s'éloignant progressivement du point de départ (rayon de 2 à 3 hops de sujets) tout en gardant des transitions explicables : le saut de branche arrive tôt, chaque extension privilégie la candidate qui apporte le plus de sujets nouveaux par rapport à la vidéo courante.
 _Avoid_ : mode surprise, mode aléatoire
 
 **Baseline** :
@@ -48,3 +48,15 @@ _Avoid_ : sujet orphelin, cul-de-sac
 **Rétention applicative** :
 Le temps de visionnage effectif d'une vidéo par un lecteur du parcours, observé dans la page elle-même. C'est le signal implicite d'appréciation d'une vidéo : rester longtemps, c'est aimer ; passer vite, c'est ne pas aimer.
 _Avoid_ : like, note, étoile, rétention YouTube Analytics
+
+**Intérêt simulé** :
+Geste de test qui exprime un intérêt ponctuel pour la vidéo courante sans mesurer sa durée réelle de visionnage.
+_Avoid_ : like, note, mesure de rétention
+
+**Point d’intérêt** :
+Vidéo retenue comme repère actif après un intérêt exprimé pendant le parcours. Un zap fait perdre ce point d’intérêt.
+_Avoid_ : profil de goûts, favori
+
+**Branche voisine** :
+Une direction d’exploration liée aux sujets de la vidéo quittée, différente de celle qui vient d’être zappée.
+_Avoid_ : vidéo aléatoire, sujet sans rapport

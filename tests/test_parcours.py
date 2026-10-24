@@ -162,22 +162,18 @@ def load_corpus_from_videos(videos):
     Path(path).unlink()
     return corpus
 
-def test_tiebreak_is_common_topics_then_id_only():
-    """Departage spec : sujets communs decroissant, puis ID croissant — rien d'autre.
+def test_decouvrir_saute_de_branche_plus_tot(rich_corpus):
+    """Decouvrir classe par sujets nouveaux apportes : le saut de branche
+    arrive des la premiere extension (v5 ne partage aucun sujet avec v1),
+    la ou Approfondir suit la branche (v2 partage deux sujets avec v1).
 
-    Depuis c, y et z sont a egalite de sujets communs (0) ; z a un chemin de
-    sujets plus court ([P, R]) mais un ID plus grand : l'ID doit gagner,
-    la longueur du chemin ne participe pas au departage.
+    L'invariant « la longueur du chemin ne compte pas, ID croissant a
+    egalite » reste couvert par test_etape.py (next_step, meme classement).
     """
-    corpus = load_corpus_from_videos([
-        make_video("s", ["A"]),
-        make_video("br", ["A", "P", "R"]),
-        make_video("c", ["P", "Q"]),
-        make_video("z", ["R", "S"]),
-        make_video("y", ["S"]),
-    ])
-    run = graph_engine.parcours(corpus, "s", "decouvrir")
-    assert run.videos == ["s", "br", "c", "y", "z"]
+    decouvrir = graph_engine.parcours(rich_corpus, "v1", "decouvrir")
+    approfondir = graph_engine.parcours(rich_corpus, "v1", "approfondir")
+    assert approfondir.videos[1] == "v2"
+    assert decouvrir.videos[1] == "v5"
 
 
 def test_run_transitions_carry_explicit_node_ids(chain_corpus):
