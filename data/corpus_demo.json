@@ -3,11 +3,11 @@
     {
       "id": "vid-001",
       "url": "https://www.youtube.com/watch?v=demo001",
-      "title": "dotnet — C# (démo 001)",
-      "description": "Vidéo de démonstration fictive n°1 sur : C#, .NET, Roslyn, Compilateurs.",
+      "title": "Écrire du C Sharp moderne sur .NET",
+      "description": "Vidéo de démonstration fictive n°1 sur : C Sharp, .NET, Roslyn.",
       "topics": [
         {
-          "raw": "C#",
+          "raw": "C Sharp",
           "canonical": "C#",
           "justification": "mentionné explicitement dans le titre/description (démo 001)",
           "provenance": {
@@ -29,16 +29,6 @@
         {
           "raw": "Roslyn",
           "canonical": "Roslyn",
-          "justification": "mentionné explicitement dans le titre/description (démo 001)",
-          "provenance": {
-            "source": "gemini",
-            "model": "demo-fixture",
-            "version": "cached"
-          }
-        },
-        {
-          "raw": "Compilateurs",
-          "canonical": "Compilateurs",
           "justification": "mentionné explicitement dans le titre/description (démo 001)",
           "provenance": {
             "source": "gemini",
@@ -51,9 +41,19 @@
     {
       "id": "vid-002",
       "url": "https://www.youtube.com/watch?v=demo002",
-      "title": "dotnet — .NET (démo 002)",
-      "description": "Vidéo de démonstration fictive n°2 sur : .NET, Roslyn, Compilateurs, Visual Studio.",
+      "title": "C# et Roslyn : le compilateur comme service",
+      "description": "Vidéo de démonstration fictive n°2 sur : C#, .NET, Roslyn.",
       "topics": [
+        {
+          "raw": "C#",
+          "canonical": "C#",
+          "justification": "mentionné explicitement dans le titre/description (démo 002)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "cached"
+          }
+        },
         {
           "raw": ".NET",
           "canonical": ".NET",
@@ -67,26 +67,6 @@
         {
           "raw": "Roslyn",
           "canonical": "Roslyn",
-          "justification": "mentionné explicitement dans le titre/description (démo 002)",
-          "provenance": {
-            "source": "gemini",
-            "model": "demo-fixture",
-            "version": "cached"
-          }
-        },
-        {
-          "raw": "Compilateurs",
-          "canonical": "Compilateurs",
-          "justification": "mentionné explicitement dans le titre/description (démo 002)",
-          "provenance": {
-            "source": "gemini",
-            "model": "demo-fixture",
-            "version": "cached"
-          }
-        },
-        {
-          "raw": "Visual Studio",
-          "canonical": "Visual Studio",
           "justification": "mentionné explicitement dans le titre/description (démo 002)",
           "provenance": {
             "source": "gemini",
@@ -99,8 +79,8 @@
     {
       "id": "vid-003",
       "url": "https://www.youtube.com/watch?v=demo003",
-      "title": "dotnet — Roslyn (démo 003)",
-      "description": "Vidéo de démonstration fictive n°3 sur : Roslyn, Compilateurs, Visual Studio, C#.",
+      "title": "Comment Roslyn parse votre code",
+      "description": "Vidéo de démonstration fictive n°3 sur : Roslyn, Compilateurs, Parsing.",
       "topics": [
         {
           "raw": "Roslyn",
@@ -123,18 +103,8 @@
           }
         },
         {
-          "raw": "Visual Studio",
-          "canonical": "Visual Studio",
-          "justification": "mentionné explicitement dans le titre/description (démo 003)",
-          "provenance": {
-            "source": "gemini",
-            "model": "demo-fixture",
-            "version": "cached"
-          }
-        },
-        {
-          "raw": "C#",
-          "canonical": "C#",
+          "raw": "Parsing",
+          "canonical": "Parsing",
           "justification": "mentionné explicitement dans le titre/description (démo 003)",
           "provenance": {
             "source": "gemini",
@@ -147,8 +117,8 @@
     {
       "id": "vid-004",
       "url": "https://www.youtube.com/watch?v=demo004",
-      "title": "dotnet — Compilateurs (démo 004)",
-      "description": "Vidéo de démonstration fictive n°4 sur : Compilateurs, Visual Studio, C#, .NET.",
+      "title": "Compilateurs et optimisation : le rôle de LLVM",
+      "description": "Vidéo de démonstration fictive n°4 sur : Compilateurs, LLVM, Optimisation.",
       "topics": [
         {
           "raw": "Compilateurs",
@@ -161,8 +131,8 @@
           }
         },
         {
-          "raw": "Visual Studio",
-          "canonical": "Visual Studio",
+          "raw": "LLVM",
+          "canonical": "LLVM",
           "justification": "mentionné explicitement dans le titre/description (démo 004)",
           "provenance": {
             "source": "gemini",
@@ -171,18 +141,8 @@
           }
         },
         {
-          "raw": "C#",
-          "canonical": "C#",
-          "justification": "mentionné explicitement dans le titre/description (démo 004)",
-          "provenance": {
-            "source": "gemini",
-            "model": "demo-fixture",
-            "version": "cached"
-          }
-        },
-        {
-          "raw": ".NET",
-          "canonical": ".NET",
+          "raw": "Optimisation",
+          "canonical": "Optimisation",
           "justification": "mentionné explicitement dans le titre/description (démo 004)",
           "provenance": {
             "source": "gemini",
@@ -195,12 +155,12 @@
     {
       "id": "vid-005",
       "url": "https://www.youtube.com/watch?v=demo005",
-      "title": "dotnet — Visual Studio (démo 005)",
-      "description": "Vidéo de démonstration fictive n°5 sur : Visual Studio, C#, .NET, Roslyn.",
+      "title": "Rust, un compilateur plus sûr sur LLVM",
+      "description": "Vidéo de démonstration fictive n°5 sur : Rust, LLVM, Sécurité mémoire.",
       "topics": [
         {
-          "raw": "Visual Studio",
-          "canonical": "Visual Studio",
+          "raw": "Rust",
+          "canonical": "Rust",
           "justification": "mentionné explicitement dans le titre/description (démo 005)",
           "provenance": {
             "source": "gemini",
@@ -209,8 +169,8 @@
           }
         },
         {
-          "raw": "C#",
-          "canonical": "C#",
+          "raw": "LLVM",
+          "canonical": "LLVM",
           "justification": "mentionné explicitement dans le titre/description (démo 005)",
           "provenance": {
             "source": "gemini",
@@ -219,18 +179,8 @@
           }
         },
         {
-          "raw": ".NET",
-          "canonical": ".NET",
-          "justification": "mentionné explicitement dans le titre/description (démo 005)",
-          "provenance": {
-            "source": "gemini",
-            "model": "demo-fixture",
-            "version": "cached"
-          }
-        },
-        {
-          "raw": "Roslyn",
-          "canonical": "Roslyn",
+          "raw": "Sécurité mémoire",
+          "canonical": "Sécurité mémoire",
           "justification": "mentionné explicitement dans le titre/description (démo 005)",
           "provenance": {
             "source": "gemini",
@@ -243,12 +193,12 @@
     {
       "id": "vid-006",
       "url": "https://www.youtube.com/watch?v=demo006",
-      "title": "compilateurs — Compilateurs (démo 006)",
-      "description": "Vidéo de démonstration fictive n°6 sur : Compilateurs, LLVM, Roslyn, Optimisation.",
+      "title": "Rust dans les systèmes : sécurité mémoire",
+      "description": "Vidéo de démonstration fictive n°6 sur : Rust, Systèmes, Sécurité mémoire.",
       "topics": [
         {
-          "raw": "Compilateurs",
-          "canonical": "Compilateurs",
+          "raw": "Rust",
+          "canonical": "Rust",
           "justification": "mentionné explicitement dans le titre/description (démo 006)",
           "provenance": {
             "source": "gemini",
@@ -257,8 +207,8 @@
           }
         },
         {
-          "raw": "LLVM",
-          "canonical": "LLVM",
+          "raw": "Systèmes",
+          "canonical": "Systèmes",
           "justification": "mentionné explicitement dans le titre/description (démo 006)",
           "provenance": {
             "source": "gemini",
@@ -267,18 +217,8 @@
           }
         },
         {
-          "raw": "Roslyn",
-          "canonical": "Roslyn",
-          "justification": "mentionné explicitement dans le titre/description (démo 006)",
-          "provenance": {
-            "source": "gemini",
-            "model": "demo-fixture",
-            "version": "cached"
-          }
-        },
-        {
-          "raw": "Optimisation",
-          "canonical": "Optimisation",
+          "raw": "Sécurité mémoire",
+          "canonical": "Sécurité mémoire",
           "justification": "mentionné explicitement dans le titre/description (démo 006)",
           "provenance": {
             "source": "gemini",
@@ -291,12 +231,12 @@
     {
       "id": "vid-007",
       "url": "https://www.youtube.com/watch?v=demo007",
-      "title": "compilateurs — LLVM (démo 007)",
-      "description": "Vidéo de démonstration fictive n°7 sur : LLVM, Roslyn, Optimisation, Parsing.",
+      "title": "Rust et systèmes : une brève histoire",
+      "description": "Vidéo de démonstration fictive n°7 sur : Rust, Systèmes, Histoire de l'informatique.",
       "topics": [
         {
-          "raw": "LLVM",
-          "canonical": "LLVM",
+          "raw": "Rust",
+          "canonical": "Rust",
           "justification": "mentionné explicitement dans le titre/description (démo 007)",
           "provenance": {
             "source": "gemini",
@@ -305,8 +245,8 @@
           }
         },
         {
-          "raw": "Roslyn",
-          "canonical": "Roslyn",
+          "raw": "Systèmes",
+          "canonical": "Systèmes",
           "justification": "mentionné explicitement dans le titre/description (démo 007)",
           "provenance": {
             "source": "gemini",
@@ -315,18 +255,8 @@
           }
         },
         {
-          "raw": "Optimisation",
-          "canonical": "Optimisation",
-          "justification": "mentionné explicitement dans le titre/description (démo 007)",
-          "provenance": {
-            "source": "gemini",
-            "model": "demo-fixture",
-            "version": "cached"
-          }
-        },
-        {
-          "raw": "Parsing",
-          "canonical": "Parsing",
+          "raw": "Histoire de l'informatique",
+          "canonical": "Histoire de l'informatique",
           "justification": "mentionné explicitement dans le titre/description (démo 007)",
           "provenance": {
             "source": "gemini",
@@ -339,12 +269,12 @@
     {
       "id": "vid-008",
       "url": "https://www.youtube.com/watch?v=demo008",
-      "title": "compilateurs — Roslyn (démo 008)",
-      "description": "Vidéo de démonstration fictive n°8 sur : Roslyn, Optimisation, Parsing, Compilateurs.",
+      "title": "Tournage de poterie : l'artisanat au tour",
+      "description": "Vidéo de démonstration fictive n°8 sur : Poterie, Tournage, Artisanat.",
       "topics": [
         {
-          "raw": "Roslyn",
-          "canonical": "Roslyn",
+          "raw": "Poterie",
+          "canonical": "Poterie",
           "justification": "mentionné explicitement dans le titre/description (démo 008)",
           "provenance": {
             "source": "gemini",
@@ -353,8 +283,8 @@
           }
         },
         {
-          "raw": "Optimisation",
-          "canonical": "Optimisation",
+          "raw": "Tournage",
+          "canonical": "Tournage",
           "justification": "mentionné explicitement dans le titre/description (démo 008)",
           "provenance": {
             "source": "gemini",
@@ -363,1255 +293,9 @@
           }
         },
         {
-          "raw": "Parsing",
-          "canonical": "Parsing",
+          "raw": "Artisanat",
+          "canonical": "Artisanat",
           "justification": "mentionné explicitement dans le titre/description (démo 008)",
-          "provenance": {
-            "source": "gemini",
-            "model": "demo-fixture",
-            "version": "cached"
-          }
-        },
-        {
-          "raw": "Compilateurs",
-          "canonical": "Compilateurs",
-          "justification": "mentionné explicitement dans le titre/description (démo 008)",
-          "provenance": {
-            "source": "gemini",
-            "model": "demo-fixture",
-            "version": "cached"
-          }
-        }
-      ]
-    },
-    {
-      "id": "vid-009",
-      "url": "https://www.youtube.com/watch?v=demo009",
-      "title": "compilateurs — Optimisation (démo 009)",
-      "description": "Vidéo de démonstration fictive n°9 sur : Optimisation, Parsing, Compilateurs, LLVM.",
-      "topics": [
-        {
-          "raw": "Optimisation",
-          "canonical": "Optimisation",
-          "justification": "mentionné explicitement dans le titre/description (démo 009)",
-          "provenance": {
-            "source": "gemini",
-            "model": "demo-fixture",
-            "version": "cached"
-          }
-        },
-        {
-          "raw": "Parsing",
-          "canonical": "Parsing",
-          "justification": "mentionné explicitement dans le titre/description (démo 009)",
-          "provenance": {
-            "source": "gemini",
-            "model": "demo-fixture",
-            "version": "cached"
-          }
-        },
-        {
-          "raw": "Compilateurs",
-          "canonical": "Compilateurs",
-          "justification": "mentionné explicitement dans le titre/description (démo 009)",
-          "provenance": {
-            "source": "gemini",
-            "model": "demo-fixture",
-            "version": "cached"
-          }
-        },
-        {
-          "raw": "LLVM",
-          "canonical": "LLVM",
-          "justification": "mentionné explicitement dans le titre/description (démo 009)",
-          "provenance": {
-            "source": "gemini",
-            "model": "demo-fixture",
-            "version": "cached"
-          }
-        }
-      ]
-    },
-    {
-      "id": "vid-010",
-      "url": "https://www.youtube.com/watch?v=demo010",
-      "title": "compilateurs — Parsing (démo 010)",
-      "description": "Vidéo de démonstration fictive n°10 sur : Parsing, Compilateurs, LLVM, Roslyn.",
-      "topics": [
-        {
-          "raw": "Parsing",
-          "canonical": "Parsing",
-          "justification": "mentionné explicitement dans le titre/description (démo 010)",
-          "provenance": {
-            "source": "gemini",
-            "model": "demo-fixture",
-            "version": "cached"
-          }
-        },
-        {
-          "raw": "Compilateurs",
-          "canonical": "Compilateurs",
-          "justification": "mentionné explicitement dans le titre/description (démo 010)",
-          "provenance": {
-            "source": "gemini",
-            "model": "demo-fixture",
-            "version": "cached"
-          }
-        },
-        {
-          "raw": "LLVM",
-          "canonical": "LLVM",
-          "justification": "mentionné explicitement dans le titre/description (démo 010)",
-          "provenance": {
-            "source": "gemini",
-            "model": "demo-fixture",
-            "version": "cached"
-          }
-        },
-        {
-          "raw": "Roslyn",
-          "canonical": "Roslyn",
-          "justification": "mentionné explicitement dans le titre/description (démo 010)",
-          "provenance": {
-            "source": "gemini",
-            "model": "demo-fixture",
-            "version": "cached"
-          }
-        }
-      ]
-    },
-    {
-      "id": "vid-011",
-      "url": "https://www.youtube.com/watch?v=demo011",
-      "title": "rust — Rust (démo 011)",
-      "description": "Vidéo de démonstration fictive n°11 sur : Rust, Sécurité mémoire, LLVM, Systèmes.",
-      "topics": [
-        {
-          "raw": "Rust",
-          "canonical": "Rust",
-          "justification": "mentionné explicitement dans le titre/description (démo 011)",
-          "provenance": {
-            "source": "gemini",
-            "model": "demo-fixture",
-            "version": "cached"
-          }
-        },
-        {
-          "raw": "Sécurité mémoire",
-          "canonical": "Sécurité mémoire",
-          "justification": "mentionné explicitement dans le titre/description (démo 011)",
-          "provenance": {
-            "source": "gemini",
-            "model": "demo-fixture",
-            "version": "cached"
-          }
-        },
-        {
-          "raw": "LLVM",
-          "canonical": "LLVM",
-          "justification": "mentionné explicitement dans le titre/description (démo 011)",
-          "provenance": {
-            "source": "gemini",
-            "model": "demo-fixture",
-            "version": "cached"
-          }
-        },
-        {
-          "raw": "Systèmes",
-          "canonical": "Systèmes",
-          "justification": "mentionné explicitement dans le titre/description (démo 011)",
-          "provenance": {
-            "source": "gemini",
-            "model": "demo-fixture",
-            "version": "cached"
-          }
-        }
-      ]
-    },
-    {
-      "id": "vid-012",
-      "url": "https://www.youtube.com/watch?v=demo012",
-      "title": "rust — Sécurité mémoire (démo 012)",
-      "description": "Vidéo de démonstration fictive n°12 sur : Sécurité mémoire, LLVM, Systèmes, Ownership.",
-      "topics": [
-        {
-          "raw": "Sécurité mémoire",
-          "canonical": "Sécurité mémoire",
-          "justification": "mentionné explicitement dans le titre/description (démo 012)",
-          "provenance": {
-            "source": "gemini",
-            "model": "demo-fixture",
-            "version": "cached"
-          }
-        },
-        {
-          "raw": "LLVM",
-          "canonical": "LLVM",
-          "justification": "mentionné explicitement dans le titre/description (démo 012)",
-          "provenance": {
-            "source": "gemini",
-            "model": "demo-fixture",
-            "version": "cached"
-          }
-        },
-        {
-          "raw": "Systèmes",
-          "canonical": "Systèmes",
-          "justification": "mentionné explicitement dans le titre/description (démo 012)",
-          "provenance": {
-            "source": "gemini",
-            "model": "demo-fixture",
-            "version": "cached"
-          }
-        },
-        {
-          "raw": "Ownership",
-          "canonical": "Ownership",
-          "justification": "mentionné explicitement dans le titre/description (démo 012)",
-          "provenance": {
-            "source": "gemini",
-            "model": "demo-fixture",
-            "version": "cached"
-          }
-        }
-      ]
-    },
-    {
-      "id": "vid-013",
-      "url": "https://www.youtube.com/watch?v=demo013",
-      "title": "rust — LLVM (démo 013)",
-      "description": "Vidéo de démonstration fictive n°13 sur : LLVM, Systèmes, Ownership, Rust.",
-      "topics": [
-        {
-          "raw": "LLVM",
-          "canonical": "LLVM",
-          "justification": "mentionné explicitement dans le titre/description (démo 013)",
-          "provenance": {
-            "source": "gemini",
-            "model": "demo-fixture",
-            "version": "cached"
-          }
-        },
-        {
-          "raw": "Systèmes",
-          "canonical": "Systèmes",
-          "justification": "mentionné explicitement dans le titre/description (démo 013)",
-          "provenance": {
-            "source": "gemini",
-            "model": "demo-fixture",
-            "version": "cached"
-          }
-        },
-        {
-          "raw": "Ownership",
-          "canonical": "Ownership",
-          "justification": "mentionné explicitement dans le titre/description (démo 013)",
-          "provenance": {
-            "source": "gemini",
-            "model": "demo-fixture",
-            "version": "cached"
-          }
-        },
-        {
-          "raw": "Rust",
-          "canonical": "Rust",
-          "justification": "mentionné explicitement dans le titre/description (démo 013)",
-          "provenance": {
-            "source": "gemini",
-            "model": "demo-fixture",
-            "version": "cached"
-          }
-        }
-      ]
-    },
-    {
-      "id": "vid-014",
-      "url": "https://www.youtube.com/watch?v=demo014",
-      "title": "rust — Systèmes (démo 014)",
-      "description": "Vidéo de démonstration fictive n°14 sur : Systèmes, Ownership, Rust, Sécurité mémoire.",
-      "topics": [
-        {
-          "raw": "Systèmes",
-          "canonical": "Systèmes",
-          "justification": "mentionné explicitement dans le titre/description (démo 014)",
-          "provenance": {
-            "source": "gemini",
-            "model": "demo-fixture",
-            "version": "cached"
-          }
-        },
-        {
-          "raw": "Ownership",
-          "canonical": "Ownership",
-          "justification": "mentionné explicitement dans le titre/description (démo 014)",
-          "provenance": {
-            "source": "gemini",
-            "model": "demo-fixture",
-            "version": "cached"
-          }
-        },
-        {
-          "raw": "Rust",
-          "canonical": "Rust",
-          "justification": "mentionné explicitement dans le titre/description (démo 014)",
-          "provenance": {
-            "source": "gemini",
-            "model": "demo-fixture",
-            "version": "cached"
-          }
-        },
-        {
-          "raw": "Sécurité mémoire",
-          "canonical": "Sécurité mémoire",
-          "justification": "mentionné explicitement dans le titre/description (démo 014)",
-          "provenance": {
-            "source": "gemini",
-            "model": "demo-fixture",
-            "version": "cached"
-          }
-        }
-      ]
-    },
-    {
-      "id": "vid-015",
-      "url": "https://www.youtube.com/watch?v=demo015",
-      "title": "rust — Ownership (démo 015)",
-      "description": "Vidéo de démonstration fictive n°15 sur : Ownership, Rust, Sécurité mémoire, LLVM.",
-      "topics": [
-        {
-          "raw": "Ownership",
-          "canonical": "Ownership",
-          "justification": "mentionné explicitement dans le titre/description (démo 015)",
-          "provenance": {
-            "source": "gemini",
-            "model": "demo-fixture",
-            "version": "cached"
-          }
-        },
-        {
-          "raw": "Rust",
-          "canonical": "Rust",
-          "justification": "mentionné explicitement dans le titre/description (démo 015)",
-          "provenance": {
-            "source": "gemini",
-            "model": "demo-fixture",
-            "version": "cached"
-          }
-        },
-        {
-          "raw": "Sécurité mémoire",
-          "canonical": "Sécurité mémoire",
-          "justification": "mentionné explicitement dans le titre/description (démo 015)",
-          "provenance": {
-            "source": "gemini",
-            "model": "demo-fixture",
-            "version": "cached"
-          }
-        },
-        {
-          "raw": "LLVM",
-          "canonical": "LLVM",
-          "justification": "mentionné explicitement dans le titre/description (démo 015)",
-          "provenance": {
-            "source": "gemini",
-            "model": "demo-fixture",
-            "version": "cached"
-          }
-        }
-      ]
-    },
-    {
-      "id": "vid-016",
-      "url": "https://www.youtube.com/watch?v=demo016",
-      "title": "web — JavaScript (démo 016)",
-      "description": "Vidéo de démonstration fictive n°16 sur : JavaScript, TypeScript, React, Node.js.",
-      "topics": [
-        {
-          "raw": "JavaScript",
-          "canonical": "JavaScript",
-          "justification": "mentionné explicitement dans le titre/description (démo 016)",
-          "provenance": {
-            "source": "gemini",
-            "model": "demo-fixture",
-            "version": "cached"
-          }
-        },
-        {
-          "raw": "TypeScript",
-          "canonical": "TypeScript",
-          "justification": "mentionné explicitement dans le titre/description (démo 016)",
-          "provenance": {
-            "source": "gemini",
-            "model": "demo-fixture",
-            "version": "cached"
-          }
-        },
-        {
-          "raw": "React",
-          "canonical": "React",
-          "justification": "mentionné explicitement dans le titre/description (démo 016)",
-          "provenance": {
-            "source": "gemini",
-            "model": "demo-fixture",
-            "version": "cached"
-          }
-        },
-        {
-          "raw": "Node.js",
-          "canonical": "Node.js",
-          "justification": "mentionné explicitement dans le titre/description (démo 016)",
-          "provenance": {
-            "source": "gemini",
-            "model": "demo-fixture",
-            "version": "cached"
-          }
-        }
-      ]
-    },
-    {
-      "id": "vid-017",
-      "url": "https://www.youtube.com/watch?v=demo017",
-      "title": "web — TypeScript (démo 017)",
-      "description": "Vidéo de démonstration fictive n°17 sur : TypeScript, React, Node.js, Web.",
-      "topics": [
-        {
-          "raw": "TypeScript",
-          "canonical": "TypeScript",
-          "justification": "mentionné explicitement dans le titre/description (démo 017)",
-          "provenance": {
-            "source": "gemini",
-            "model": "demo-fixture",
-            "version": "cached"
-          }
-        },
-        {
-          "raw": "React",
-          "canonical": "React",
-          "justification": "mentionné explicitement dans le titre/description (démo 017)",
-          "provenance": {
-            "source": "gemini",
-            "model": "demo-fixture",
-            "version": "cached"
-          }
-        },
-        {
-          "raw": "Node.js",
-          "canonical": "Node.js",
-          "justification": "mentionné explicitement dans le titre/description (démo 017)",
-          "provenance": {
-            "source": "gemini",
-            "model": "demo-fixture",
-            "version": "cached"
-          }
-        },
-        {
-          "raw": "Web",
-          "canonical": "Web",
-          "justification": "mentionné explicitement dans le titre/description (démo 017)",
-          "provenance": {
-            "source": "gemini",
-            "model": "demo-fixture",
-            "version": "cached"
-          }
-        }
-      ]
-    },
-    {
-      "id": "vid-018",
-      "url": "https://www.youtube.com/watch?v=demo018",
-      "title": "web — React (démo 018)",
-      "description": "Vidéo de démonstration fictive n°18 sur : React, Node.js, Web, JavaScript.",
-      "topics": [
-        {
-          "raw": "React",
-          "canonical": "React",
-          "justification": "mentionné explicitement dans le titre/description (démo 018)",
-          "provenance": {
-            "source": "gemini",
-            "model": "demo-fixture",
-            "version": "cached"
-          }
-        },
-        {
-          "raw": "Node.js",
-          "canonical": "Node.js",
-          "justification": "mentionné explicitement dans le titre/description (démo 018)",
-          "provenance": {
-            "source": "gemini",
-            "model": "demo-fixture",
-            "version": "cached"
-          }
-        },
-        {
-          "raw": "Web",
-          "canonical": "Web",
-          "justification": "mentionné explicitement dans le titre/description (démo 018)",
-          "provenance": {
-            "source": "gemini",
-            "model": "demo-fixture",
-            "version": "cached"
-          }
-        },
-        {
-          "raw": "JavaScript",
-          "canonical": "JavaScript",
-          "justification": "mentionné explicitement dans le titre/description (démo 018)",
-          "provenance": {
-            "source": "gemini",
-            "model": "demo-fixture",
-            "version": "cached"
-          }
-        }
-      ]
-    },
-    {
-      "id": "vid-019",
-      "url": "https://www.youtube.com/watch?v=demo019",
-      "title": "web — Node.js (démo 019)",
-      "description": "Vidéo de démonstration fictive n°19 sur : Node.js, Web, JavaScript, TypeScript.",
-      "topics": [
-        {
-          "raw": "Node.js",
-          "canonical": "Node.js",
-          "justification": "mentionné explicitement dans le titre/description (démo 019)",
-          "provenance": {
-            "source": "gemini",
-            "model": "demo-fixture",
-            "version": "cached"
-          }
-        },
-        {
-          "raw": "Web",
-          "canonical": "Web",
-          "justification": "mentionné explicitement dans le titre/description (démo 019)",
-          "provenance": {
-            "source": "gemini",
-            "model": "demo-fixture",
-            "version": "cached"
-          }
-        },
-        {
-          "raw": "JavaScript",
-          "canonical": "JavaScript",
-          "justification": "mentionné explicitement dans le titre/description (démo 019)",
-          "provenance": {
-            "source": "gemini",
-            "model": "demo-fixture",
-            "version": "cached"
-          }
-        },
-        {
-          "raw": "TypeScript",
-          "canonical": "TypeScript",
-          "justification": "mentionné explicitement dans le titre/description (démo 019)",
-          "provenance": {
-            "source": "gemini",
-            "model": "demo-fixture",
-            "version": "cached"
-          }
-        }
-      ]
-    },
-    {
-      "id": "vid-020",
-      "url": "https://www.youtube.com/watch?v=demo020",
-      "title": "web — Web (démo 020)",
-      "description": "Vidéo de démonstration fictive n°20 sur : Web, JavaScript, TypeScript, React.",
-      "topics": [
-        {
-          "raw": "Web",
-          "canonical": "Web",
-          "justification": "mentionné explicitement dans le titre/description (démo 020)",
-          "provenance": {
-            "source": "gemini",
-            "model": "demo-fixture",
-            "version": "cached"
-          }
-        },
-        {
-          "raw": "JavaScript",
-          "canonical": "JavaScript",
-          "justification": "mentionné explicitement dans le titre/description (démo 020)",
-          "provenance": {
-            "source": "gemini",
-            "model": "demo-fixture",
-            "version": "cached"
-          }
-        },
-        {
-          "raw": "TypeScript",
-          "canonical": "TypeScript",
-          "justification": "mentionné explicitement dans le titre/description (démo 020)",
-          "provenance": {
-            "source": "gemini",
-            "model": "demo-fixture",
-            "version": "cached"
-          }
-        },
-        {
-          "raw": "React",
-          "canonical": "React",
-          "justification": "mentionné explicitement dans le titre/description (démo 020)",
-          "provenance": {
-            "source": "gemini",
-            "model": "demo-fixture",
-            "version": "cached"
-          }
-        }
-      ]
-    },
-    {
-      "id": "vid-021",
-      "url": "https://www.youtube.com/watch?v=demo021",
-      "title": "ml — Machine Learning (démo 021)",
-      "description": "Vidéo de démonstration fictive n°21 sur : Machine Learning, Python, TensorFlow, Réseaux de neurones.",
-      "topics": [
-        {
-          "raw": "Machine Learning",
-          "canonical": "Machine Learning",
-          "justification": "mentionné explicitement dans le titre/description (démo 021)",
-          "provenance": {
-            "source": "gemini",
-            "model": "demo-fixture",
-            "version": "cached"
-          }
-        },
-        {
-          "raw": "Python",
-          "canonical": "Python",
-          "justification": "mentionné explicitement dans le titre/description (démo 021)",
-          "provenance": {
-            "source": "gemini",
-            "model": "demo-fixture",
-            "version": "cached"
-          }
-        },
-        {
-          "raw": "TensorFlow",
-          "canonical": "TensorFlow",
-          "justification": "mentionné explicitement dans le titre/description (démo 021)",
-          "provenance": {
-            "source": "gemini",
-            "model": "demo-fixture",
-            "version": "cached"
-          }
-        },
-        {
-          "raw": "Réseaux de neurones",
-          "canonical": "Réseaux de neurones",
-          "justification": "mentionné explicitement dans le titre/description (démo 021)",
-          "provenance": {
-            "source": "gemini",
-            "model": "demo-fixture",
-            "version": "cached"
-          }
-        }
-      ]
-    },
-    {
-      "id": "vid-022",
-      "url": "https://www.youtube.com/watch?v=demo022",
-      "title": "ml — Python (démo 022)",
-      "description": "Vidéo de démonstration fictive n°22 sur : Python, TensorFlow, Réseaux de neurones, Data Science.",
-      "topics": [
-        {
-          "raw": "Python",
-          "canonical": "Python",
-          "justification": "mentionné explicitement dans le titre/description (démo 022)",
-          "provenance": {
-            "source": "gemini",
-            "model": "demo-fixture",
-            "version": "cached"
-          }
-        },
-        {
-          "raw": "TensorFlow",
-          "canonical": "TensorFlow",
-          "justification": "mentionné explicitement dans le titre/description (démo 022)",
-          "provenance": {
-            "source": "gemini",
-            "model": "demo-fixture",
-            "version": "cached"
-          }
-        },
-        {
-          "raw": "Réseaux de neurones",
-          "canonical": "Réseaux de neurones",
-          "justification": "mentionné explicitement dans le titre/description (démo 022)",
-          "provenance": {
-            "source": "gemini",
-            "model": "demo-fixture",
-            "version": "cached"
-          }
-        },
-        {
-          "raw": "Data Science",
-          "canonical": "Data Science",
-          "justification": "mentionné explicitement dans le titre/description (démo 022)",
-          "provenance": {
-            "source": "gemini",
-            "model": "demo-fixture",
-            "version": "cached"
-          }
-        }
-      ]
-    },
-    {
-      "id": "vid-023",
-      "url": "https://www.youtube.com/watch?v=demo023",
-      "title": "ml — TensorFlow (démo 023)",
-      "description": "Vidéo de démonstration fictive n°23 sur : TensorFlow, Réseaux de neurones, Data Science, Machine Learning.",
-      "topics": [
-        {
-          "raw": "TensorFlow",
-          "canonical": "TensorFlow",
-          "justification": "mentionné explicitement dans le titre/description (démo 023)",
-          "provenance": {
-            "source": "gemini",
-            "model": "demo-fixture",
-            "version": "cached"
-          }
-        },
-        {
-          "raw": "Réseaux de neurones",
-          "canonical": "Réseaux de neurones",
-          "justification": "mentionné explicitement dans le titre/description (démo 023)",
-          "provenance": {
-            "source": "gemini",
-            "model": "demo-fixture",
-            "version": "cached"
-          }
-        },
-        {
-          "raw": "Data Science",
-          "canonical": "Data Science",
-          "justification": "mentionné explicitement dans le titre/description (démo 023)",
-          "provenance": {
-            "source": "gemini",
-            "model": "demo-fixture",
-            "version": "cached"
-          }
-        },
-        {
-          "raw": "Machine Learning",
-          "canonical": "Machine Learning",
-          "justification": "mentionné explicitement dans le titre/description (démo 023)",
-          "provenance": {
-            "source": "gemini",
-            "model": "demo-fixture",
-            "version": "cached"
-          }
-        }
-      ]
-    },
-    {
-      "id": "vid-024",
-      "url": "https://www.youtube.com/watch?v=demo024",
-      "title": "ml — Réseaux de neurones (démo 024)",
-      "description": "Vidéo de démonstration fictive n°24 sur : Réseaux de neurones, Data Science, Machine Learning, Python.",
-      "topics": [
-        {
-          "raw": "Réseaux de neurones",
-          "canonical": "Réseaux de neurones",
-          "justification": "mentionné explicitement dans le titre/description (démo 024)",
-          "provenance": {
-            "source": "gemini",
-            "model": "demo-fixture",
-            "version": "cached"
-          }
-        },
-        {
-          "raw": "Data Science",
-          "canonical": "Data Science",
-          "justification": "mentionné explicitement dans le titre/description (démo 024)",
-          "provenance": {
-            "source": "gemini",
-            "model": "demo-fixture",
-            "version": "cached"
-          }
-        },
-        {
-          "raw": "Machine Learning",
-          "canonical": "Machine Learning",
-          "justification": "mentionné explicitement dans le titre/description (démo 024)",
-          "provenance": {
-            "source": "gemini",
-            "model": "demo-fixture",
-            "version": "cached"
-          }
-        },
-        {
-          "raw": "Python",
-          "canonical": "Python",
-          "justification": "mentionné explicitement dans le titre/description (démo 024)",
-          "provenance": {
-            "source": "gemini",
-            "model": "demo-fixture",
-            "version": "cached"
-          }
-        }
-      ]
-    },
-    {
-      "id": "vid-025",
-      "url": "https://www.youtube.com/watch?v=demo025",
-      "title": "ml — Data Science (démo 025)",
-      "description": "Vidéo de démonstration fictive n°25 sur : Data Science, Machine Learning, Python, TensorFlow.",
-      "topics": [
-        {
-          "raw": "Data Science",
-          "canonical": "Data Science",
-          "justification": "mentionné explicitement dans le titre/description (démo 025)",
-          "provenance": {
-            "source": "gemini",
-            "model": "demo-fixture",
-            "version": "cached"
-          }
-        },
-        {
-          "raw": "Machine Learning",
-          "canonical": "Machine Learning",
-          "justification": "mentionné explicitement dans le titre/description (démo 025)",
-          "provenance": {
-            "source": "gemini",
-            "model": "demo-fixture",
-            "version": "cached"
-          }
-        },
-        {
-          "raw": "Python",
-          "canonical": "Python",
-          "justification": "mentionné explicitement dans le titre/description (démo 025)",
-          "provenance": {
-            "source": "gemini",
-            "model": "demo-fixture",
-            "version": "cached"
-          }
-        },
-        {
-          "raw": "TensorFlow",
-          "canonical": "TensorFlow",
-          "justification": "mentionné explicitement dans le titre/description (démo 025)",
-          "provenance": {
-            "source": "gemini",
-            "model": "demo-fixture",
-            "version": "cached"
-          }
-        }
-      ]
-    },
-    {
-      "id": "vid-026",
-      "url": "https://www.youtube.com/watch?v=demo026",
-      "title": "sys — Systèmes (démo 026)",
-      "description": "Vidéo de démonstration fictive n°26 sur : Systèmes, Linux, Noyau, Sécurité mémoire.",
-      "topics": [
-        {
-          "raw": "Systèmes",
-          "canonical": "Systèmes",
-          "justification": "mentionné explicitement dans le titre/description (démo 026)",
-          "provenance": {
-            "source": "gemini",
-            "model": "demo-fixture",
-            "version": "cached"
-          }
-        },
-        {
-          "raw": "Linux",
-          "canonical": "Linux",
-          "justification": "mentionné explicitement dans le titre/description (démo 026)",
-          "provenance": {
-            "source": "gemini",
-            "model": "demo-fixture",
-            "version": "cached"
-          }
-        },
-        {
-          "raw": "Noyau",
-          "canonical": "Noyau",
-          "justification": "mentionné explicitement dans le titre/description (démo 026)",
-          "provenance": {
-            "source": "gemini",
-            "model": "demo-fixture",
-            "version": "cached"
-          }
-        },
-        {
-          "raw": "Sécurité mémoire",
-          "canonical": "Sécurité mémoire",
-          "justification": "mentionné explicitement dans le titre/description (démo 026)",
-          "provenance": {
-            "source": "gemini",
-            "model": "demo-fixture",
-            "version": "cached"
-          }
-        }
-      ]
-    },
-    {
-      "id": "vid-027",
-      "url": "https://www.youtube.com/watch?v=demo027",
-      "title": "sys — Linux (démo 027)",
-      "description": "Vidéo de démonstration fictive n°27 sur : Linux, Noyau, Sécurité mémoire, Rust.",
-      "topics": [
-        {
-          "raw": "Linux",
-          "canonical": "Linux",
-          "justification": "mentionné explicitement dans le titre/description (démo 027)",
-          "provenance": {
-            "source": "gemini",
-            "model": "demo-fixture",
-            "version": "cached"
-          }
-        },
-        {
-          "raw": "Noyau",
-          "canonical": "Noyau",
-          "justification": "mentionné explicitement dans le titre/description (démo 027)",
-          "provenance": {
-            "source": "gemini",
-            "model": "demo-fixture",
-            "version": "cached"
-          }
-        },
-        {
-          "raw": "Sécurité mémoire",
-          "canonical": "Sécurité mémoire",
-          "justification": "mentionné explicitement dans le titre/description (démo 027)",
-          "provenance": {
-            "source": "gemini",
-            "model": "demo-fixture",
-            "version": "cached"
-          }
-        },
-        {
-          "raw": "Rust",
-          "canonical": "Rust",
-          "justification": "mentionné explicitement dans le titre/description (démo 027)",
-          "provenance": {
-            "source": "gemini",
-            "model": "demo-fixture",
-            "version": "cached"
-          }
-        }
-      ]
-    },
-    {
-      "id": "vid-028",
-      "url": "https://www.youtube.com/watch?v=demo028",
-      "title": "sys — Noyau (démo 028)",
-      "description": "Vidéo de démonstration fictive n°28 sur : Noyau, Sécurité mémoire, Rust, Systèmes.",
-      "topics": [
-        {
-          "raw": "Noyau",
-          "canonical": "Noyau",
-          "justification": "mentionné explicitement dans le titre/description (démo 028)",
-          "provenance": {
-            "source": "gemini",
-            "model": "demo-fixture",
-            "version": "cached"
-          }
-        },
-        {
-          "raw": "Sécurité mémoire",
-          "canonical": "Sécurité mémoire",
-          "justification": "mentionné explicitement dans le titre/description (démo 028)",
-          "provenance": {
-            "source": "gemini",
-            "model": "demo-fixture",
-            "version": "cached"
-          }
-        },
-        {
-          "raw": "Rust",
-          "canonical": "Rust",
-          "justification": "mentionné explicitement dans le titre/description (démo 028)",
-          "provenance": {
-            "source": "gemini",
-            "model": "demo-fixture",
-            "version": "cached"
-          }
-        },
-        {
-          "raw": "Systèmes",
-          "canonical": "Systèmes",
-          "justification": "mentionné explicitement dans le titre/description (démo 028)",
-          "provenance": {
-            "source": "gemini",
-            "model": "demo-fixture",
-            "version": "cached"
-          }
-        }
-      ]
-    },
-    {
-      "id": "vid-029",
-      "url": "https://www.youtube.com/watch?v=demo029",
-      "title": "sys — Sécurité mémoire (démo 029)",
-      "description": "Vidéo de démonstration fictive n°29 sur : Sécurité mémoire, Rust, Systèmes, Linux.",
-      "topics": [
-        {
-          "raw": "Sécurité mémoire",
-          "canonical": "Sécurité mémoire",
-          "justification": "mentionné explicitement dans le titre/description (démo 029)",
-          "provenance": {
-            "source": "gemini",
-            "model": "demo-fixture",
-            "version": "cached"
-          }
-        },
-        {
-          "raw": "Rust",
-          "canonical": "Rust",
-          "justification": "mentionné explicitement dans le titre/description (démo 029)",
-          "provenance": {
-            "source": "gemini",
-            "model": "demo-fixture",
-            "version": "cached"
-          }
-        },
-        {
-          "raw": "Systèmes",
-          "canonical": "Systèmes",
-          "justification": "mentionné explicitement dans le titre/description (démo 029)",
-          "provenance": {
-            "source": "gemini",
-            "model": "demo-fixture",
-            "version": "cached"
-          }
-        },
-        {
-          "raw": "Linux",
-          "canonical": "Linux",
-          "justification": "mentionné explicitement dans le titre/description (démo 029)",
-          "provenance": {
-            "source": "gemini",
-            "model": "demo-fixture",
-            "version": "cached"
-          }
-        }
-      ]
-    },
-    {
-      "id": "vid-030",
-      "url": "https://www.youtube.com/watch?v=demo030",
-      "title": "Roslyn et les compilateurs .NET (démo 030)",
-      "description": "Vidéo de démonstration fictive n°30 sur : Roslyn, Compilateurs, C#.",
-      "topics": [
-        {
-          "raw": "Roslyn",
-          "canonical": "Roslyn",
-          "justification": "mentionné explicitement dans le titre/description (démo 030)",
-          "provenance": {
-            "source": "gemini",
-            "model": "demo-fixture",
-            "version": "cached"
-          }
-        },
-        {
-          "raw": "Compilateurs",
-          "canonical": "Compilateurs",
-          "justification": "mentionné explicitement dans le titre/description (démo 030)",
-          "provenance": {
-            "source": "gemini",
-            "model": "demo-fixture",
-            "version": "cached"
-          }
-        },
-        {
-          "raw": "C#",
-          "canonical": "C#",
-          "justification": "mentionné explicitement dans le titre/description (démo 030)",
-          "provenance": {
-            "source": "gemini",
-            "model": "demo-fixture",
-            "version": "cached"
-          }
-        }
-      ]
-    },
-    {
-      "id": "vid-031",
-      "url": "https://www.youtube.com/watch?v=demo031",
-      "title": "LLVM, le dos de Rust (démo 031)",
-      "description": "Vidéo de démonstration fictive n°31 sur : LLVM, Rust, Optimisation.",
-      "topics": [
-        {
-          "raw": "LLVM",
-          "canonical": "LLVM",
-          "justification": "mentionné explicitement dans le titre/description (démo 031)",
-          "provenance": {
-            "source": "gemini",
-            "model": "demo-fixture",
-            "version": "cached"
-          }
-        },
-        {
-          "raw": "Rust",
-          "canonical": "Rust",
-          "justification": "mentionné explicitement dans le titre/description (démo 031)",
-          "provenance": {
-            "source": "gemini",
-            "model": "demo-fixture",
-            "version": "cached"
-          }
-        },
-        {
-          "raw": "Optimisation",
-          "canonical": "Optimisation",
-          "justification": "mentionné explicitement dans le titre/description (démo 031)",
-          "provenance": {
-            "source": "gemini",
-            "model": "demo-fixture",
-            "version": "cached"
-          }
-        }
-      ]
-    },
-    {
-      "id": "vid-032",
-      "url": "https://www.youtube.com/watch?v=demo032",
-      "title": "Le compilateur TypeScript (démo 032)",
-      "description": "Vidéo de démonstration fictive n°32 sur : TypeScript, Compilateurs, Parsing.",
-      "topics": [
-        {
-          "raw": "TypeScript",
-          "canonical": "TypeScript",
-          "justification": "mentionné explicitement dans le titre/description (démo 032)",
-          "provenance": {
-            "source": "gemini",
-            "model": "demo-fixture",
-            "version": "cached"
-          }
-        },
-        {
-          "raw": "Compilateurs",
-          "canonical": "Compilateurs",
-          "justification": "mentionné explicitement dans le titre/description (démo 032)",
-          "provenance": {
-            "source": "gemini",
-            "model": "demo-fixture",
-            "version": "cached"
-          }
-        },
-        {
-          "raw": "Parsing",
-          "canonical": "Parsing",
-          "justification": "mentionné explicitement dans le titre/description (démo 032)",
-          "provenance": {
-            "source": "gemini",
-            "model": "demo-fixture",
-            "version": "cached"
-          }
-        }
-      ]
-    },
-    {
-      "id": "vid-033",
-      "url": "https://www.youtube.com/watch?v=demo033",
-      "title": "Servir du ML sur le Web (démo 033)",
-      "description": "Vidéo de démonstration fictive n°33 sur : Python, Machine Learning, Web.",
-      "topics": [
-        {
-          "raw": "Python",
-          "canonical": "Python",
-          "justification": "mentionné explicitement dans le titre/description (démo 033)",
-          "provenance": {
-            "source": "gemini",
-            "model": "demo-fixture",
-            "version": "cached"
-          }
-        },
-        {
-          "raw": "Machine Learning",
-          "canonical": "Machine Learning",
-          "justification": "mentionné explicitement dans le titre/description (démo 033)",
-          "provenance": {
-            "source": "gemini",
-            "model": "demo-fixture",
-            "version": "cached"
-          }
-        },
-        {
-          "raw": "Web",
-          "canonical": "Web",
-          "justification": "mentionné explicitement dans le titre/description (démo 033)",
-          "provenance": {
-            "source": "gemini",
-            "model": "demo-fixture",
-            "version": "cached"
-          }
-        }
-      ]
-    },
-    {
-      "id": "vid-034",
-      "url": "https://www.youtube.com/watch?v=demo034",
-      "title": "Rust dans le noyau Linux (démo 034)",
-      "description": "Vidéo de démonstration fictive n°34 sur : Rust, Systèmes, Noyau.",
-      "topics": [
-        {
-          "raw": "Rust",
-          "canonical": "Rust",
-          "justification": "mentionné explicitement dans le titre/description (démo 034)",
-          "provenance": {
-            "source": "gemini",
-            "model": "demo-fixture",
-            "version": "cached"
-          }
-        },
-        {
-          "raw": "Systèmes",
-          "canonical": "Systèmes",
-          "justification": "mentionné explicitement dans le titre/description (démo 034)",
-          "provenance": {
-            "source": "gemini",
-            "model": "demo-fixture",
-            "version": "cached"
-          }
-        },
-        {
-          "raw": "Noyau",
-          "canonical": "Noyau",
-          "justification": "mentionné explicitement dans le titre/description (démo 034)",
-          "provenance": {
-            "source": "gemini",
-            "model": "demo-fixture",
-            "version": "cached"
-          }
-        }
-      ]
-    },
-    {
-      "id": "vid-035",
-      "url": "https://www.youtube.com/watch?v=demo035",
-      "title": "Compilateurs et ML : optimisation automatique (démo 035)",
-      "description": "Vidéo de démonstration fictive n°35 sur : Machine Learning, Optimisation, Compilateurs.",
-      "topics": [
-        {
-          "raw": "Machine Learning",
-          "canonical": "Machine Learning",
-          "justification": "mentionné explicitement dans le titre/description (démo 035)",
-          "provenance": {
-            "source": "gemini",
-            "model": "demo-fixture",
-            "version": "cached"
-          }
-        },
-        {
-          "raw": "Optimisation",
-          "canonical": "Optimisation",
-          "justification": "mentionné explicitement dans le titre/description (démo 035)",
-          "provenance": {
-            "source": "gemini",
-            "model": "demo-fixture",
-            "version": "cached"
-          }
-        },
-        {
-          "raw": "Compilateurs",
-          "canonical": "Compilateurs",
-          "justification": "mentionné explicitement dans le titre/description (démo 035)",
           "provenance": {
             "source": "gemini",
             "model": "demo-fixture",
