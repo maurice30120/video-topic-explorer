@@ -235,8 +235,11 @@ def parcours(corpus: dict[str, Any], start: str, mode: str, radius: int | None =
         run = _extend(graph, corpus, chain, allowed, topic_nodes, mode, radius, start, start_kind)
         run.transitions.insert(0, {
             "from": None,
+            "from_node": None,
             "to": chain[0],
+            "to_node": f"video:{chain[0]}",
             "topic_path": [start],
+            "topic_nodes": [f"topic:{start}"],
             "explanation": f"sujet de départ : {start}",
         })
         return run
@@ -281,8 +284,11 @@ def _extend(
         common, chosen, best = next_candidates[0]
         run.transitions.append({
             "from": current,
+            "from_node": f"video:{current}",
             "to": chosen,
+            "to_node": f"video:{chosen}",
             "topic_path": best,
+            "topic_nodes": [f"topic:{t}" for t in best],
             "explanation": " → ".join(best),
         })
         chain.append(chosen)

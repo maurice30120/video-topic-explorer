@@ -180,3 +180,23 @@ def test_tiebreak_is_common_topics_then_id_only():
     assert run.videos == ["s", "br", "c", "y", "z"]
 
 
+def test_run_transitions_carry_explicit_node_ids(chain_corpus):
+    """run.json : chaque transition porte les IDs de noeuds du graphe biparti."""
+    run = graph_engine.parcours(chain_corpus, "a", "decouvrir")
+    graph = graph_engine.build_graph(chain_corpus)
+    for transition in run.transitions:
+        assert transition["from_node"] == f"video:{transition['from']}"
+        assert transition["to_node"] == f"video:{transition['to']}"
+        assert transition["topic_nodes"] == [f"topic:{t}" for t in transition["topic_path"]]
+        for node in [transition["from_node"], transition["to_node"], *transition["topic_nodes"]]:
+            assert graph.has_node(node), f"noeud inexistant dans le graphe : {node}"
+
+
+def test_run_topic_start_first_transition_node_ids(rich_corpus):
+    """Depart par sujet : la premiere transition part de None, le noeud sujet reste explicite."""
+    run = graph_engine.parcours(rich_corpus, "Roslyn", "approfondir")
+    first = run.transitions[0]
+    assert first["from"] is None
+    assert first["from_node"] is None
+    assert first["to_node"] == f"video:{first['to']}"
+    assert first["topic_nodes"] == ["topic:Roslyn"]
