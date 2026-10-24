@@ -281,6 +281,8 @@ def make_handler(corpus: dict[str, Any], runs_dir: Path) -> type[BaseHTTPRequest
                 self._send_html(200, index_page(corpus, start, run))
             elif parsed.path == "/etape":
                 self._handle_etape(parse_qs(parsed.query))
+            elif parsed.path == "/sortie":
+                self._handle_sortie(parse_qs(parsed.query))
             elif parsed.path == "/parcours":
                 self._handle_parcours(parse_qs(parsed.query))
             elif parsed.path == "/graphe.png":
@@ -331,6 +333,31 @@ def make_handler(corpus: dict[str, Any], runs_dir: Path) -> type[BaseHTTPRequest
             if step is None:
                 self._send_json(404, {"erreur": "plus aucune vidéo atteignable depuis " + start + " (exclusions ou topologie)"})
                 return
+            self._send_step(step)
+
+        def _handle_sortie(self, query: dict[str, list[str]]) -> None:
+            """Sortie de branche dirigée par sujet, servie en JSON au panneau.
+
+            Point d'accès distinct du pas suivant (navigation explicite,
+            jamais un jugement de la carte en cours, spec #27) : le premier
+            pas depuis un sujet canonique réel du corpus figé, hors
+            déjà-vues. Sujet mort ou inconnu → 400 explicite ; aucune
+            candidate restante → 404 fin honnête.
+            """
+            sujet = (query.get("sujet") or [""])[0]
+            exclu = set(query.get("exclu") or [])
+            try:
+                step = graph_engine.first_step(corpus, sujet, exclude=exclu)
+            except graph_engine.PathfindingError as exc:
+                self._send_json(400, {"erreur": str(exc)})
+                return
+            if step is None:
+                self._send_json(404, {"erreur": "plus aucune vidéo candidate pour le sujet " + sujet + " (exclusions ou topologie)"})
+                return
+            self._send_step(step)
+
+        def _send_step(self, step: dict[str, Any]) -> None:
+            """Contrat JSON commun du pas : départ, arrivée, vidéo, chemin de sujets."""
             video = videos_by_id(corpus)[step["to"]]
             self._send_json(200, {
                 "from": step["from"],

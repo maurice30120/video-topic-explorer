@@ -146,3 +146,68 @@ def test_etape_depart_inconnu_avec_duree_erreur_explicite(server):
     assert status == 400
     data = json.loads(body)
     assert "inconnu" in data["erreur"]
+
+
+# --- /sortie : la sortie de branche dirigée par sujet, point d'accès distinct ---
+
+
+def test_sortie_premiere_candidate_200(server):
+    """La sortie dirigée vers un sujet canonique réel redémarre le parcours :
+    200 avec la première candidate porteuse du sujet, départage par ID
+    croissant (règle unique du moteur ; source de vérité indépendante : le
+    JSON du corpus). Le contrat JSON reste identique : départ (null — la
+    sortie ne juge aucune carte), arrivée, vidéo, chemin de sujets."""
+    status, body = get(server, "/sortie?sujet=Roslyn")
+    assert status == 200
+    data = json.loads(body)
+    porteurs = sorted(
+        v["id"]
+        for v in server.corpus["videos"]
+        if "Roslyn" in topics_of(v)
+    )
+    assert data["from"] is None
+    assert data["to"] == porteurs[0]
+    assert data["topic_path"] == ["Roslyn"]
+    assert data["explanation"] == "sujet de départ : Roslyn"
+    video = data["video"]
+    assert video["id"] == data["to"]
+    assert video["url"].startswith("https://")
+    assert video["title"]
+    assert "Roslyn" in video["topics"]
+
+
+def test_sortie_hors_deja_vues(server):
+    """La sortie ne répète jamais une carte de la session : les déjà-vues sont
+    exclues, la candidate suivante porte le sujet."""
+    status, body = get(server, "/sortie?sujet=Roslyn&exclu=v1")
+    assert status == 200
+    data = json.loads(body)
+    assert data["to"] == "v4"
+    assert data["topic_path"] == ["Roslyn"]
+
+
+def test_sortie_sujet_inconnu_erreur_explicite(server):
+    """Sortie vers un sujet qui n'existe pas dans le corpus figé : requête
+    invalide → 400, message explicite — jamais un repli silencieux."""
+    status, body = get(server, "/sortie?sujet=Nimporte")
+    assert status == 400
+    data = json.loads(body)
+    assert "sujet inconnu" in data["erreur"]
+
+
+def test_sortie_sujet_mort_erreur_explicite(chain_server):
+    """Sortie vers un sujet mort (porté par une seule vidéo, GLOSSARY) :
+    400 avec message explicite — il ne peut orienter aucun premier pas."""
+    status, body = get(chain_server, "/sortie?sujet=SujetUnique")
+    assert status == 400
+    data = json.loads(body)
+    assert "sujet mort" in data["erreur"]
+
+
+def test_sortie_plus_aucune_candidate_fin_honnete(server):
+    """Toutes les porteuses du sujet déjà vues : 404 fin honnête, pas une
+    erreur — la fin est explicite."""
+    status, body = get(server, "/sortie?sujet=Roslyn&exclu=v1&exclu=v4")
+    assert status == 404
+    data = json.loads(body)
+    assert "erreur" in data
