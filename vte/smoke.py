@@ -62,3 +62,19 @@ def check_site_content(doc: str, first_video: str) -> None:
 
     if problems:
         raise SmokeCheckError(" ; ".join(problems))
+
+
+def check_site_dir(site_dir: Path, first_video: str, graph_name: str = "graphe.png") -> None:
+    """Vérifie le site généré par la CI : le feed à la racine + le graphe statique.
+
+    C'est le miroir local du site publié : index.html servi par la racine,
+    plus le graphe référencé par le feed. Aucun réseau.
+    """
+    site_dir = Path(site_dir)
+    index = site_dir / "index.html"
+    if not index.is_file():
+        raise SmokeCheckError(f"la racine du site ne sert pas le feed : {index} est absent")
+    graph = site_dir / graph_name
+    if not graph.is_file():
+        raise SmokeCheckError(f"le graphe statique est absent du site : {graph}")
+    check_site_content(index.read_text(encoding="utf-8"), first_video=first_video)

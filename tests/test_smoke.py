@@ -45,3 +45,35 @@ def test_content_rejects_feed_without_embedded_player(rich_corpus):
 
     with pytest.raises(smoke.SmokeCheckError, match="lecteur"):
         smoke.check_site_content(doc, first_video="v1")
+
+
+# ------------------------------------------------------------------ site local
+
+
+def make_site(rich_corpus, tmp_path) -> object:
+    site = tmp_path / "site"
+    render_feed_html(rich_corpus, both_runs(rich_corpus, "v1"), site / "index.html")
+    (site / "graphe.png").write_bytes(b"\x89PNG fake")
+    return site
+
+
+def test_site_dir_accepts_generated_site(rich_corpus, tmp_path):
+    site = make_site(rich_corpus, tmp_path)
+
+    smoke.check_site_dir(site, first_video="v1")
+
+
+def test_site_dir_requires_feed_at_root(rich_corpus, tmp_path):
+    site = make_site(rich_corpus, tmp_path)
+    (site / "index.html").rename(site / "parcours.html")
+
+    with pytest.raises(smoke.SmokeCheckError, match="index.html"):
+        smoke.check_site_dir(site, first_video="v1")
+
+
+def test_site_dir_requires_graph(rich_corpus, tmp_path):
+    site = make_site(rich_corpus, tmp_path)
+    (site / "graphe.png").unlink()
+
+    with pytest.raises(smoke.SmokeCheckError, match="graphe.png"):
+        smoke.check_site_dir(site, first_video="v1")
