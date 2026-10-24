@@ -2,7 +2,8 @@
 
 Go (Phase 2) seulement si Découvrir bat la baseline sur « surprise utile »
 avec une marge >= 1 point en moyenne sur ~5 départs, et si aucun mode ne perd
-sur « cohérence ».
+sur « cohérence ». Les moyennes de « clarté » sont calculées et affichées,
+mais le seuil pré-engagé ne porte que sur surprise utile et cohérence.
 """
 
 import argparse
@@ -24,8 +25,8 @@ def reveal(order_path: str, scores_path: str, mapping_path: str) -> dict:
         raise SystemExit(f"notation incomplète ({missing}) ; la révélation est refusée.")
 
     buckets: dict[str, list[dict]] = {}
-    for letter, kind in mapping.items():
-        buckets.setdefault(kind, []).append(scores[letter])
+    for letter, entry in mapping.items():
+        buckets.setdefault(entry["kind"], []).append(scores[letter])
 
     def avg(kind, criterion):
         rows = buckets.get(kind, [])
@@ -53,6 +54,7 @@ def reveal(order_path: str, scores_path: str, mapping_path: str) -> dict:
                 "decouvrir": coherence_decouvrir,
             },
             "surprise": {"baseline": surprise_baseline, "decouvrir": surprise_decouvrir},
+            "clarte": {kind: avg(kind, "clarte") for kind in ("baseline", "approfondir", "decouvrir")},
         },
         "marge_surprise": surprise_margin,
         "seuil": {"marge_min": MARGIN, "adr": "docs/adr/0001-seuil-go-no-go-pre-engage.md"},
