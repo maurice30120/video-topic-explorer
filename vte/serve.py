@@ -87,13 +87,10 @@ body {{ font-family: sans-serif; margin: 2rem; }}
 
 def parcours_page(corpus: dict[str, Any], run: graph_engine.Run, start: str, mode: str) -> str:
     """Rend la page du parcours avec le lien vers le graphe surligné à la demande."""
-    from .render import render_html
+    from .render import build_html
 
     graph_href = f"/graphe.png?start={quote_plus(start)}&mode={quote_plus(mode)}"
-    with tempfile.TemporaryDirectory() as tmp:
-        out = Path(tmp) / "parcours.html"
-        render_html(corpus, run.to_dict(), out, graph_href=graph_href)
-        return out.read_text(encoding="utf-8")
+    return build_html(corpus, run.to_dict(), graph_href)
 
 
 def graph_png(corpus: dict[str, Any], start: str, mode: str) -> bytes:

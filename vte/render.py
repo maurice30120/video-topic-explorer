@@ -10,9 +10,8 @@ from typing import Any
 from .graph_engine import build_graph
 
 
-def render_html(
-    corpus: dict[str, Any], run: dict[str, Any], out: Path, graph_href: str | None = None
-) -> None:
+def build_html(corpus: dict[str, Any], run: dict[str, Any], graph_href: str | None = None) -> str:
+    """Construit la page HTML du parcours et la renvoie en chaîne."""
     by_id = {video["id"]: video for video in corpus["videos"]}
     topic_videos: dict[str, list[str]] = {}
     for video in corpus["videos"]:
@@ -86,6 +85,14 @@ ol li {{ margin: 0.75rem 0; }}
 </body>
 </html>
 """
+    return doc
+
+
+def render_html(
+    corpus: dict[str, Any], run: dict[str, Any], out: Path, graph_href: str | None = None
+) -> None:
+    """Sauvegarde la page HTML du parcours (voir build_html pour la chaîne)."""
+    doc = build_html(corpus, run, graph_href)
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(doc, encoding="utf-8")
 
