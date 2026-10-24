@@ -139,3 +139,46 @@ def test_extract_cache_never_recalls_an_extracted_video(monkeypatch, tmp_path):
     assert main(["extract", str(FIXTURE_RAW), "--output", str(out), "--model", MODEL]) == 0
     assert counter[0] == 2  # aucun nouvel appel Gemini
     assert json.loads(out.read_text(encoding="utf-8")) == before  # provenance d'origine intacte
+
+
+def test_extract_out_of_range_count_is_flagged_not_accepted(monkeypatch, tmp_path, capsys):
+    """AC 3-5 sujets : un compte hors plage est enregistré/flaggé dans le
+    corpus (extraction_error), jamais accepté en silence ; le batch continue."""
+    counter = install_fake_gemini(monkeypatch, {
+        "Roslyn sous le capot": topics_payload("C Sharp", "Roslyn", "Compilateurs"),
+        "Promenade dans l'optimiseur LLVM": topics_payload("LLVM IR", "Optimisation"),
+    })
+    out = tmp_path / "corpus.json"
+
+    rc = main(["extract", str(FIXTURE_RAW), "--output", str(out), "--model", MODEL])
+
+    assert rc == 1  # l'échec est visible dans le code retour
+    corpus = load_corpus(out)
+    by_id = {v["id"]: v for v in corpus["videos"]}
+    assert "topics" not in by_id["dd44ee55ff66"]
+    assert "2 sujets extraits" in by_id["dd44ee55ff66"]["extraction_error"]
+    # l'autre vidéo est extraite normalement : le batch continue
+    assert len(by_id["aa11bb22cc33"]["topics"]) == 3
+    assert counter[0] == 2
+    assert "dd44ee55ff66" in capsys.readouterr().err  # exception visible sur stderr
+
+
+def test_extract_api_failure_is_flagged_and_batch_continues(monkeypatch, tmp_path, capsys):
+    """Une vidéo dont l'appel échoue est flaggée (extraction_error) avec son
+    motif ; les vidéos suivantes du batch sont quand même extraites."""
+    counter = install_fake_gemini(monkeypatch, {
+        "Roslyn sous le capot": RuntimeError("quota dépassé"),
+        "Promenade dans l'optimiseur LLVM": topics_payload("LLVM IR", "Compilateurs", "Optimisation"),
+    })
+    out = tmp_path / "corpus.json"
+
+    rc = main(["extract", str(FIXTURE_RAW), "--output", str(out), "--model", MODEL])
+
+    assert rc == 1
+    corpus = load_corpus(out)
+    by_id = {v["id"]: v for v in corpus["videos"]}
+    assert by_id["aa11bb22cc33"]["extraction_error"] == "quota dépassé"
+    assert "topics" not in by_id["aa11bb22cc33"]
+    assert len(by_id["dd44ee55ff66"]["topics"]) == 3  # le batch continue
+    assert counter[0] == 2
+    assert "quota dépassé" in capsys.readouterr().err
