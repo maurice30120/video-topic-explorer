@@ -42,6 +42,13 @@ def reveal(order_path: str, scores_path: str, mapping_path: str) -> dict:
     coherence_decouvrir = avg("decouvrir", "coherence")
 
     surprise_margin = surprise_decouvrir - surprise_baseline
+    comparaisons = {
+        mode: {
+            criterion: float(avg(mode, criterion) - avg("baseline", criterion))
+            for criterion in ("coherence", "surprise", "clarte")
+        }
+        for mode in ("approfondir", "decouvrir")
+    }
     go = (
         surprise_margin >= MARGIN
         and coherence_approfondir >= coherence_baseline
@@ -60,6 +67,7 @@ def reveal(order_path: str, scores_path: str, mapping_path: str) -> dict:
             "clarte": {origine: float(avg(origine, "clarte")) for origine in ("baseline", "approfondir", "decouvrir")},
         },
         "marge_surprise": float(surprise_margin),
+        "comparaisons": comparaisons,
         "seuil": {"marge_min": MARGIN, "adr": "docs/adr/0001-seuil-go-no-go-pre-engage.md"},
         "decision": decision,
         "correspondance": mapping,

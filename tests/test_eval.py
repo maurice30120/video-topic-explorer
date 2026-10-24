@@ -269,6 +269,30 @@ class TestReveal:
             assert kind in result["moyennes"]["coherence"]
         assert result["moyennes"]["clarte"]["decouvrir"] == 5.0
 
+    def test_reports_per_mode_comparisons_vs_baseline(self, tmp_path):
+        """La révélation rapporte la comparaison (parcours vs baseline) par mode,
+        sur les trois critères — la clarté pour information, hors formule."""
+        reveal = load_eval("reveal")
+        mapping = {
+            "A": {"start": "v1", "origine": "baseline"},
+            "B": {"start": "v1", "origine": "approfondir"},
+            "C": {"start": "v1", "origine": "decouvrir"},
+        }
+        scores = {
+            "A": {"coherence": 4, "surprise": 2, "clarte": 5},
+            "B": {"coherence": 5, "surprise": 3, "clarte": 4},
+            "C": {"coherence": 4, "surprise": 4, "clarte": 3},
+        }
+        paths = self.write_inputs(tmp_path, ["A", "B", "C"], mapping, scores)
+        result = reveal.reveal(*paths)
+        assert result["comparaisons"]["approfondir"] == {
+            "coherence": 1.0, "surprise": 1.0, "clarte": -1.0,
+        }
+        assert result["comparaisons"]["decouvrir"] == {
+            "coherence": 0.0, "surprise": 2.0, "clarte": -2.0,
+        }
+        assert result["decision"].startswith("GO")
+
     def test_exact_margin_of_one_is_go(self, tmp_path):
         """ADR-0001 : marge ≥ 1. Une marge vraie de 1 (8/3 - 5/3) ne doit pas
         être rejetée par un artefact d'arrondi flottant."""
