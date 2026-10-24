@@ -141,3 +141,36 @@ def test_feed_end_card_complete_run_announces_completion(rich_corpus):
     doc = build_feed_html(rich_corpus, runs)
     assert runs["decouvrir"]["complete"] is True
     assert "Parcours complet : 5 vidéos." in doc
+
+
+def test_feed_discreet_graph_link(rich_corpus):
+    runs = both_runs(rich_corpus, "v1")
+    doc = build_feed_html(rich_corpus, runs, graph_href="graphe.png")
+    assert '<a class="graphe" href="graphe.png">' in doc
+    doc_sans_graphe = build_feed_html(rich_corpus, runs)
+    assert 'class="graphe"' not in doc_sans_graphe
+
+
+def test_feed_shell_mobile_first_snap_focus_and_reduced_motion(rich_corpus):
+    runs = both_runs(rich_corpus, "v1")
+    doc = build_feed_html(rich_corpus, runs, graph_href="graphe.png")
+
+    # colonne verticale centrée ~480px, identique au mobile
+    assert "480px" in doc
+    # défilement aimanté carte par carte
+    assert "scroll-snap-type: y mandatory" in doc
+    assert "scroll-snap-align: start" in doc
+    assert "scroll-snap-stop: always" in doc
+    # focus clavier visible et mouvement réduit respectés
+    assert ":focus-visible" in doc
+    assert "prefers-reduced-motion" in doc
+    # comportements lecteur : lecture de la carte active (muette), tap = son, pause des autres
+    assert "IntersectionObserver" in doc
+    assert "playVideo" in doc
+    assert "pauseVideo" in doc
+    assert "unMute" in doc
+    assert "mute" in doc
+    # départ direct sur le parcours du mode par défaut
+    assert '<body data-mode="decouvrir">' in doc
+    # indication du geste son, en français
+    assert "Un appui sur la vidéo active le son." in doc

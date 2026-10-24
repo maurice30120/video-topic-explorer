@@ -215,6 +215,7 @@ def _card_html(
             '<div class="chemin"><div class="ligne-sujets">'
             '<span class="station depart"><span class="pastille"></span>'
             '<span class="nom">Départ</span></span></div></div>'
+            '<p class="indice">Un appui sur la vidéo active le son.</p>'
         )
     else:
         path_html = ""
@@ -278,13 +279,288 @@ def _parcours_html(
     )
 
 
+_FEED_CSS = """
+:root {
+  --encre: #10151d;
+  --trait: #232c3a;
+  --texte: #e9edf3;
+  --discret: #97a1b2;
+  --ligne: #45d0b8;
+  --ligne-ambre: #e8a33d;
+  --sur-ligne: #0c2019;
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  margin: 0;
+  display: grid;
+  place-items: center;
+  background: var(--encre);
+  color: var(--texte);
+  font-family: "Overpass", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  line-height: 1.45;
+}
+body[data-mode="approfondir"] { --ligne: var(--ligne-ambre); --sur-ligne: #241a0b; }
+
+.page {
+  width: min(480px, 100%);
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+.barre {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.55rem 1rem;
+  padding-top: calc(0.55rem + env(safe-area-inset-top));
+  border-bottom: 1px solid var(--trait);
+  background: rgba(16, 21, 29, 0.94);
+}
+.marque { margin: 0; font-size: 0.78rem; font-weight: 800; color: var(--discret); }
+.modes {
+  display: flex;
+  gap: 0.2rem;
+  margin-left: auto;
+  padding: 0.18rem;
+  border: 1px solid var(--trait);
+  border-radius: 999px;
+}
+.mode {
+  border: 0;
+  padding: 0.32rem 0.85rem;
+  border-radius: 999px;
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--discret);
+  background: transparent;
+  cursor: pointer;
+}
+.mode[aria-pressed="true"] { background: var(--ligne); color: var(--sur-ligne); }
+.graphe { font-size: 0.78rem; color: var(--discret); text-decoration: none; }
+.graphe:hover { color: var(--texte); }
+
+.feed {
+  flex: 1;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scroll-snap-type: y mandatory;
+  scroll-behavior: smooth;
+}
+.carte {
+  min-height: 100%;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  display: flex;
+  flex-direction: column;
+  padding: 0 1rem;
+  padding-bottom: calc(1rem + env(safe-area-inset-bottom));
+}
+.lecteur {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  margin-top: 1rem;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #000;
+}
+.lecteur iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+.lecteur::after { content: ""; position: absolute; inset: 0; }
+.lecteur-lien { margin-top: 1rem; padding: 1rem; color: var(--discret); }
+.legende { padding: 0.85rem 0.2rem 0; }
+.titre { margin: 0; font-size: 1.12rem; font-weight: 800; line-height: 1.28; }
+.chaine { margin: 0.2rem 0 0; font-size: 0.82rem; color: var(--discret); }
+
+.chemin { margin-top: 0.75rem; overflow-x: auto; }
+.ligne-sujets { display: flex; width: max-content; min-width: 100%; }
+.station {
+  position: relative;
+  flex: 1;
+  min-width: 4.6rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.28rem;
+}
+.station:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  top: 5px;
+  left: calc(50% + 9px);
+  width: calc(100% - 18px);
+  height: 2px;
+  background: var(--ligne);
+  opacity: 0.55;
+}
+.pastille {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--ligne);
+  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.05);
+}
+.station.depart .pastille {
+  width: 10px;
+  height: 10px;
+  background: transparent;
+  border: 2px solid var(--ligne);
+  box-shadow: none;
+}
+.station .nom {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--discret);
+  white-space: nowrap;
+}
+.indice { margin: 0.9rem 0 0; font-size: 0.75rem; color: var(--discret); }
+
+.carte.fin { justify-content: center; }
+.fin-contenu { max-width: 26rem; padding: 0 0.4rem; }
+.carte.fin .titre { font-size: 1.5rem; }
+.raison { margin: 0.4rem 0 0; color: var(--discret); }
+.actions { display: flex; flex-wrap: wrap; gap: 0.55rem; margin-top: 1.3rem; }
+.action {
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  padding: 0.55rem 1.05rem;
+  border-radius: 999px;
+  border: 1px solid var(--trait);
+  background: transparent;
+  color: var(--texte);
+  cursor: pointer;
+}
+.action.rejouer { background: var(--ligne); border-color: transparent; color: var(--sur-ligne); }
+
+:focus-visible { outline: 2px solid var(--ligne); outline-offset: 2px; }
+:focus:not(:focus-visible) { outline: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .feed { scroll-behavior: auto; }
+}
+"""
+
+_FEED_JS = """
+(function () {
+  "use strict";
+  var feed = document.getElementById("feed");
+  if (!feed) { return; }
+  var body = document.body;
+  var reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
+  var toggles = Array.prototype.slice.call(document.querySelectorAll(".mode"));
+  var sections = Array.prototype.slice.call(feed.querySelectorAll(".parcours"));
+
+  function post(iframe, func) {
+    iframe.contentWindow.postMessage(
+      JSON.stringify({ event: "command", func: func, args: [] }), "*");
+  }
+  function players(section) {
+    return Array.prototype.slice.call(section.querySelectorAll("iframe"));
+  }
+  function pauseSection(section) {
+    players(section).forEach(function (iframe) { post(iframe, "pauseVideo"); });
+  }
+
+  var activeCard = null;
+  function setActive(card) {
+    if (activeCard === card) { return; }
+    if (activeCard) {
+      var previous = activeCard.querySelector("iframe");
+      if (previous) { post(previous, "pauseVideo"); }
+      activeCard.classList.remove("active");
+    }
+    activeCard = card;
+    card.classList.add("active");
+    var iframe = card.querySelector("iframe");
+    if (iframe) {
+      post(iframe, "playVideo");
+      post(iframe, card.dataset.son === "1" ? "unMute" : "mute");
+    }
+  }
+
+  function sectionOf(mode) {
+    for (var i = 0; i < sections.length; i += 1) {
+      if (sections[i].dataset.mode === mode) { return sections[i]; }
+    }
+    return null;
+  }
+  function showMode(mode) {
+    var target = sectionOf(mode);
+    if (!target) { return; }
+    sections.forEach(function (section) {
+      section.hidden = section.dataset.mode !== mode;
+      if (section.hidden) { pauseSection(section); }
+    });
+    toggles.forEach(function (button) {
+      button.setAttribute("aria-pressed", String(button.dataset.mode === mode));
+    });
+    body.dataset.mode = mode;
+    feed.scrollTo({ top: 0, behavior: reduced.matches ? "auto" : "smooth" });
+    setActive(target.querySelector(".carte"));
+  }
+
+  toggles.forEach(function (button) {
+    button.addEventListener("click", function () { showMode(button.dataset.mode); });
+  });
+  Array.prototype.slice.call(document.querySelectorAll(".basculer")).forEach(function (button) {
+    button.addEventListener("click", function () { showMode(button.dataset.modeVers); });
+  });
+  Array.prototype.slice.call(document.querySelectorAll(".rejouer")).forEach(function (button) {
+    button.addEventListener("click", function () {
+      var first = button.closest(".parcours").querySelector(".carte");
+      first.scrollIntoView({ behavior: reduced.matches ? "auto" : "smooth" });
+      setActive(first);
+    });
+  });
+
+  /* un appui sur le lecteur active ou coupe le son */
+  feed.addEventListener("click", function (event) {
+    var lecteur = event.target.closest(".lecteur");
+    if (!lecteur) { return; }
+    var card = lecteur.closest(".carte");
+    var iframe = card.querySelector("iframe");
+    if (!iframe) { return; }
+    var avecSon = card.dataset.son === "1";
+    card.dataset.son = avecSon ? "0" : "1";
+    post(iframe, avecSon ? "mute" : "unMute");
+  });
+
+  /* la carte visible joue (muette), les autres se mettent en pause */
+  if ("IntersectionObserver" in window) {
+    var observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.intersectionRatio >= 0.55 &&
+            !entry.target.closest(".parcours").hidden) {
+          setActive(entry.target);
+        }
+      });
+    }, { threshold: [0.55] });
+    Array.prototype.slice.call(feed.querySelectorAll(".carte")).forEach(function (card) {
+      observer.observe(card);
+    });
+  } else {
+    var visible = feed.querySelector(".parcours:not([hidden]) .carte");
+    if (visible) { setActive(visible); }
+  }
+})();
+"""
+
+
 def build_feed_html(
     corpus: dict[str, Any],
     runs: dict[str, dict[str, Any]],
     graph_href: str | None = None,
     default_mode: str = "decouvrir",
 ) -> str:
-    """Construit la page unique du feed vertical (les deux modes embarqués) et la renvoie."""
+    """Construit la page unique du feed vertical (les deux modes embarqués) et la renvoie.
+
+    Les parcours des deux modes sont rendus côté serveur et embarqués : le
+    basculeur ne fait que changer la section visible, sans rechargement ni
+    réimplémentation du moteur en JavaScript.
+    """
     from .corpus import videos_by_id
 
     by_id = videos_by_id(corpus)
@@ -293,6 +569,12 @@ def build_feed_html(
         raise ValueError("le feed exige au moins un parcours (mode decouvrir ou approfondir)")
     if default_mode not in modes:
         default_mode = modes[0]
+    toggles = "".join(
+        f'<button class="mode" data-mode="{mode}" '
+        f'aria-pressed="{"true" if mode == default_mode else "false"}" type="button">'
+        f"{MODE_LABELS[mode]}</button>"
+        for mode in modes
+    )
     sections = "\n".join(
         _parcours_html(
             by_id, runs[mode], mode, mode == default_mode,
@@ -300,29 +582,34 @@ def build_feed_html(
         )
         for mode in modes
     )
-    toggles = "".join(
-        f'<button class="mode" data-mode="{mode}" '
-        f'aria-pressed="{"true" if mode == default_mode else "false"}" type="button">'
-        f"{MODE_LABELS[mode]}</button>"
-        for mode in modes
-    )
+    graph_html = ""
+    if graph_href:
+        graph_html = f'<a class="graphe" href="{html.escape(graph_href, quote=True)}">Graphe</a>'
     doc = f"""<!doctype html>
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Parcours — Video Topic Explorer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Overpass:wght@400;600;800&amp;display=swap" rel="stylesheet">
+<style>{_FEED_CSS}</style>
 </head>
-<body>
+<body data-mode="{html.escape(default_mode, quote=True)}">
+<div class="page">
 <header class="barre">
 <p class="marque">Video Topic Explorer</p>
 <nav class="modes" aria-label="Mode du parcours">
 {toggles}
 </nav>
+{graph_html}
 </header>
 <main class="feed" id="feed">
 {sections}
 </main>
+</div>
+<script>{_FEED_JS}</script>
 </body>
 </html>
 """
