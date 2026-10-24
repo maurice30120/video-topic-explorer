@@ -9,6 +9,7 @@ Utilisation :
     python -m vte graph data/corpus.json --run data/runs/<fichier>.json --out out/graphe.png (ou .svg)
     python -m vte stats data/corpus.json
     python -m vte serve data/corpus.json --port 8000
+    python -m vte.cli smoke --site out/site --first-video ghnY4S8unMM (ou --url https://…)
 """
 
 from __future__ import annotations
@@ -234,6 +235,33 @@ def cmd_stats(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_smoke(args: argparse.Namespace) -> int:
+    """Contrôle de fumée du site : contenu généré (répertoire) ou URL publique.
+
+    Le déploiement GitHub Pages est lent à propager : le contrôle distant
+    retente (attempts x delay) avant d'échouer.
+    """
+    from .smoke import SmokeCheckError, check_deployed_url, check_site_dir
+
+    try:
+        if args.url:
+            check_deployed_url(
+                args.url,
+                first_video=args.first_video,
+                graph_name=args.graph,
+                attempts=args.attempts,
+                delay=args.delay,
+            )
+            print(f"contrôle de fumée : {args.url} sert le feed (première carte {args.first_video})")
+        else:
+            check_site_dir(args.site, first_video=args.first_video, graph_name=args.graph)
+            print(f"contrôle de fumée : {args.site} — la racine sert le feed (première carte {args.first_video})")
+    except SmokeCheckError as exc:
+        print(f"ERREUR : {exc}", file=sys.stderr)
+        return 1
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="vte", description="Video Topic Explorer — MVP")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -290,6 +318,15 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--host", default="127.0.0.1")
     p.add_argument("--port", type=int, default=8000)
     p.set_defaults(func=cmd_serve)
+
+    p = sub.add_parser("smoke", help="contrôle de fumée du site : répertoire généré ou URL publique")
+    p.add_argument("--site", default="out/site", help="répertoire du site généré (contrôle local)")
+    p.add_argument("--url", default=None, help="URL publique de la racine du site (contrôle distant)")
+    p.add_argument("--first-video", required=True, help="première vidéo attendue du parcours par défaut")
+    p.add_argument("--graph", default="graphe.png")
+    p.add_argument("--attempts", type=int, default=10, help="tentatives du contrôle distant")
+    p.add_argument("--delay", type=float, default=30.0, help="secondes entre deux tentatives distantes")
+    p.set_defaults(func=cmd_smoke)
 
     args = parser.parse_args(argv)
     return args.func(args)
