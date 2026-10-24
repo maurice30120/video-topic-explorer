@@ -194,6 +194,30 @@ def test_feed_shell_mobile_first_snap_focus_and_reduced_motion(rich_corpus):
     assert "Un appui sur la vidéo active le son." in doc
 
 
+def _feed_js(doc: str) -> str:
+    return doc.split("<script>")[1].split("</script>")[0]
+
+
+def test_feed_player_commands_queue_until_on_ready(rich_corpus):
+    js = _feed_js(build_feed_html(rich_corpus, both_runs(rich_corpus, "v1")))
+    # le lecteur YouTube signale sa mise en place par onReady ; la page écoute
+    assert 'addEventListener("message"' in js
+    assert "onReady" in js
+    # les commandes passent par une file d'attente vidée à la mise en place
+    assert "pending" in js
+    assert "readyPlayers" in js
+
+
+def test_feed_tap_starts_playback_and_unmutes(rich_corpus):
+    js = _feed_js(build_feed_html(rich_corpus, both_runs(rich_corpus, "v1")))
+    tap = js[js.index('feed.addEventListener("click"'):]
+    # activer le son démarre aussi la lecture, pas seulement le démutage
+    assert 'post(iframe, "unMute")' in tap
+    assert tap.index('"unMute"') < tap.index('"playVideo"')
+    # un appui alors que le son est actif le coupe, sans arrêter la lecture
+    assert 'post(iframe, "mute")' in tap
+
+
 def test_render_feed_html_writes_page_and_parent_dirs(rich_corpus, tmp_path):
     runs = both_runs(rich_corpus, "v1")
     out = tmp_path / "site" / "index.html"

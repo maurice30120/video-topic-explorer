@@ -492,10 +492,39 @@ _FEED_JS = """
   var toggles = Array.prototype.slice.call(document.querySelectorAll(".mode"));
   var sections = Array.prototype.slice.call(feed.querySelectorAll(".parcours"));
 
+  /* Commandes au lecteur : en file d'attente jusqu'à son onReady (API iframe
+     YouTube) — une commande envoyée avant la mise en place est ignorée par lui. */
+  var readyPlayers = [];
+  var pending = new Map();
+
   function post(iframe, func) {
+    if (readyPlayers.indexOf(iframe) === -1) {
+      if (!pending.has(iframe)) { pending.set(iframe, []); }
+      pending.get(iframe).push(func);
+      return;
+    }
     iframe.contentWindow.postMessage(
       JSON.stringify({ event: "command", func: func, args: [] }), "*");
   }
+  function playerFor(source) {
+    var frames = document.querySelectorAll("iframe");
+    for (var i = 0; i < frames.length; i += 1) {
+      if (frames[i].contentWindow === source) { return frames[i]; }
+    }
+    return null;
+  }
+  window.addEventListener("message", function (event) {
+    var player = playerFor(event.source);
+    if (!player) { return; }
+    var data;
+    try { data = JSON.parse(event.data); } catch (err) { return; }
+    if (data.event !== "onReady") { return; }
+    readyPlayers.push(player);
+    if (pending.has(player)) {
+      pending.get(player).forEach(function (func) { post(player, func); });
+      pending.delete(player);
+    }
+  });
   function players(section) {
     return Array.prototype.slice.call(section.querySelectorAll("iframe"));
   }
@@ -555,7 +584,9 @@ _FEED_JS = """
     });
   });
 
-  /* un appui sur le lecteur active ou coupe le son */
+  /* un appui sur le lecteur active ou coupe le son ; activer le son
+     démarre aussi la lecture (un lecteur jamais démarré ne doit pas
+     juste être démueté) */
   feed.addEventListener("click", function (event) {
     var lecteur = event.target.closest(".lecteur");
     if (!lecteur) { return; }
@@ -564,7 +595,12 @@ _FEED_JS = """
     if (!iframe) { return; }
     var avecSon = card.dataset.son === "1";
     card.dataset.son = avecSon ? "0" : "1";
-    post(iframe, avecSon ? "mute" : "unMute");
+    if (avecSon) {
+      post(iframe, "mute");
+    } else {
+      post(iframe, "unMute");
+      post(iframe, "playVideo");
+    }
   });
 
   /* la carte visible joue (muette), les autres se mettent en pause */
