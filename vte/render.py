@@ -144,7 +144,7 @@ def render_graph_png(corpus: dict[str, Any], run: dict[str, Any] | None, out: Pa
 # ------------------------------------------------------------------ feed vertical
 
 MODE_LABELS = {"decouvrir": "Découvrir", "approfondir": "Approfondir"}
-MODE_SWITCH_LABELS = {"decouvrir": "Passer en Approfondir", "approfondir": "Passer en Découvrir"}
+MODE_SWITCH_LABELS = {"decouvrir": "Basculer en Approfondir", "approfondir": "Basculer en Découvrir"}
 _FEED_MODES = ("decouvrir", "approfondir")
 
 
@@ -231,11 +231,44 @@ def _card_html(
     )
 
 
-def _parcours_html(by_id: dict[str, dict], run: dict[str, Any], mode: str, active: bool) -> str:
+def _end_card_html(run: dict[str, Any], mode: str, other_mode: str | None) -> str:
+    """Carte de fin : raison d'arrêt du moteur, rejouer, basculer de mode."""
+    if run["complete"]:
+        reason = f"Parcours complet : {len(run['videos'])} vidéos."
+    else:
+        reason = run.get("reason") or "Parcours interrompu."
+    switch_html = ""
+    if other_mode:
+        switch_html = (
+            f'<button class="action basculer" data-mode-vers="{other_mode}" type="button">'
+            f"{MODE_SWITCH_LABELS[mode]}</button>"
+        )
+    return (
+        '<article class="carte fin">'
+        '<div class="fin-contenu">'
+        '<h2 class="titre">Fin du parcours</h2>'
+        f'<p class="raison">{html.escape(reason)}</p>'
+        '<div class="actions">'
+        '<button class="action rejouer" type="button">Revoir le parcours</button>'
+        f"{switch_html}"
+        "</div>"
+        "</div>"
+        "</article>"
+    )
+
+
+def _parcours_html(
+    by_id: dict[str, dict],
+    run: dict[str, Any],
+    mode: str,
+    active: bool,
+    other_mode: str | None,
+) -> str:
     cards = []
     for index, video_id in enumerate(run["videos"]):
         transition = next((t for t in run["transitions"] if t["to"] == video_id), None)
         cards.append(_card_html(by_id, video_id, transition, index == 0))
+    cards.append(_end_card_html(run, mode, other_mode))
     return (
         f'<section class="parcours" data-mode="{html.escape(mode, quote=True)}"'
         + ("" if active else " hidden")
@@ -261,7 +294,11 @@ def build_feed_html(
     if default_mode not in modes:
         default_mode = modes[0]
     sections = "\n".join(
-        _parcours_html(by_id, runs[mode], mode, mode == default_mode) for mode in modes
+        _parcours_html(
+            by_id, runs[mode], mode, mode == default_mode,
+            next((m for m in modes if m != mode), None),
+        )
+        for mode in modes
     )
     toggles = "".join(
         f'<button class="mode" data-mode="{mode}" '

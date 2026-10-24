@@ -119,3 +119,25 @@ def test_feed_single_page_with_pinned_mode_toggle(rich_corpus):
     assert '<button class="mode" data-mode="approfondir" aria-pressed="false"' in doc
     assert ">Découvrir</button>" in doc
     assert ">Approfondir</button>" in doc
+
+
+def test_feed_end_card_shows_reason_replay_and_mode_switch(chain_corpus):
+    import html as html_module
+
+    runs = both_runs(chain_corpus, "a")
+    doc = build_feed_html(chain_corpus, runs)
+
+    assert '<article class="carte fin">' in doc
+    assert "Fin du parcours" in doc
+    for run in runs.values():
+        assert html_module.escape(run["reason"]) in doc
+    assert ">Revoir le parcours</button>" in doc
+    assert ">Basculer en Approfondir</button>" in doc
+    assert ">Basculer en Découvrir</button>" in doc
+
+
+def test_feed_end_card_complete_run_announces_completion(rich_corpus):
+    runs = both_runs(rich_corpus, "v1")
+    doc = build_feed_html(rich_corpus, runs)
+    assert runs["decouvrir"]["complete"] is True
+    assert "Parcours complet : 5 vidéos." in doc
