@@ -53,7 +53,7 @@ jobs:
             echo "::warning::data/videos_raw.json absent — extraction ignorée"
           fi
 
-      - name: Extraction Gemini (cache incrémental : les vidéos déjà extraites sont sautées)
+      - name: "Extraction Gemini (cache incrémental : les vidéos déjà extraites sont sautées)"
         if: steps.raw.outputs.present == 'true'
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
