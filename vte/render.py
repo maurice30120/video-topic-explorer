@@ -475,6 +475,26 @@ body[data-mode="approfondir"] { --ligne: var(--ligne-ambre); --sur-ligne: #241a0
 :focus-visible { outline: 2px solid var(--ligne); outline-offset: 2px; }
 :focus:not(:focus-visible) { outline: none; }
 
+/* Écran large : salle de projection — le lecteur occupe la hauteur
+   disponible, la légende garde une mesure lisible sous l'écran. */
+@media (min-width: 720px) {
+  .page {
+    width: min(1100px, 94vw, calc((100dvh - 280px) * 16 / 9));
+  }
+  .carte { padding: 0 1.5rem; }
+  .lecteur {
+    flex: 1 1 auto;
+    min-height: 0;
+    aspect-ratio: auto;
+    margin-top: 1.25rem;
+    border-radius: 14px;
+  }
+  .legende { max-width: 46rem; padding-top: 1rem; }
+  .titre { font-size: 1.3rem; }
+  .chaine { font-size: 0.9rem; }
+  .fin-contenu { max-width: 34rem; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .feed { scroll-behavior: auto; }
 }
@@ -522,6 +542,17 @@ _FEED_JS = """
       pending.get(player).forEach(function (func) { post(player, func); });
       pending.delete(player);
     }
+  });
+  /* le lecteur YouTube n'envoie onReady qu'après un salut « listening » ;
+     sans lui, le canal postMessage reste fermé et aucune commande —
+     lecture, pause, son — ne partirait jamais */
+  function openChannel(iframe, id) {
+    iframe.contentWindow.postMessage(
+      JSON.stringify({ event: "listening", id: id, channel: "widget" }), "*");
+  }
+  Array.prototype.slice.call(document.querySelectorAll("iframe")).forEach(function (iframe, index) {
+    openChannel(iframe, index + 1);
+    iframe.addEventListener("load", function () { openChannel(iframe, index + 1); });
   });
   function players(section) {
     return Array.prototype.slice.call(section.querySelectorAll("iframe"));

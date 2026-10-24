@@ -181,8 +181,10 @@ def test_feed_shell_mobile_first_snap_focus_and_reduced_motion(rich_corpus):
     runs = both_runs(rich_corpus, "v1")
     doc = build_feed_html(rich_corpus, runs, graph_href="graphe.png")
 
-    # colonne verticale centrée ~480px, identique au mobile
+    # mobile : colonne verticale centrée ~480px ; écran large : salle de
+    # projection ~1100px, bornée par la hauteur disponible
     assert "480px" in doc
+    assert "1100px" in doc
     # défilement aimanté carte par carte
     assert "scroll-snap-type: y mandatory" in doc
     assert "scroll-snap-align: start" in doc
@@ -214,6 +216,8 @@ def test_feed_player_commands_queue_until_on_ready(rich_corpus):
     # les commandes passent par une file d'attente vidée à la mise en place
     assert "pending" in js
     assert "readyPlayers" in js
+    # le canal ne s'ouvre que si la page salue chaque lecteur « listening »
+    assert '"listening"' in js
 
 
 def test_feed_tap_starts_playback_and_unmutes(rich_corpus):

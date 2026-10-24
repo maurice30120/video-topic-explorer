@@ -1,0 +1,3865 @@
+{
+  "videos": [
+    {
+      "id": "vid-ro-001",
+      "url": "https://www.youtube.com/watch?v=arbrero1",
+      "title": "Roslyn : C# et .NET",
+      "description": "Vidéo fictive de la branche Roslyn n°1 sur : Roslyn, C#, .NET.",
+      "topics": [
+        {
+          "raw": "Roslyn",
+          "canonical": "Roslyn",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "C#",
+          "canonical": "C#",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": ".NET",
+          "canonical": ".NET",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "vid-ro-002",
+      "url": "https://www.youtube.com/watch?v=arbrero2",
+      "title": "Roslyn : .NET et Analyse statique",
+      "description": "Vidéo fictive de la branche Roslyn n°2 sur : Roslyn, .NET, Analyse statique.",
+      "topics": [
+        {
+          "raw": "Roslyn",
+          "canonical": "Roslyn",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": ".NET",
+          "canonical": ".NET",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Analyse statique",
+          "canonical": "Analyse statique",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "vid-ro-003",
+      "url": "https://www.youtube.com/watch?v=arbrero3",
+      "title": "Roslyn : Analyse statique et Génériques",
+      "description": "Vidéo fictive de la branche Roslyn n°3 sur : Roslyn, Analyse statique, Génériques.",
+      "topics": [
+        {
+          "raw": "Roslyn",
+          "canonical": "Roslyn",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Analyse statique",
+          "canonical": "Analyse statique",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Génériques",
+          "canonical": "Génériques",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "vid-ro-004",
+      "url": "https://www.youtube.com/watch?v=arbrero4",
+      "title": "Roslyn : Génériques et C#",
+      "description": "Vidéo fictive de la branche Roslyn n°4 sur : Roslyn, Génériques, C#.",
+      "topics": [
+        {
+          "raw": "Roslyn",
+          "canonical": "Roslyn",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Génériques",
+          "canonical": "Génériques",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "C#",
+          "canonical": "C#",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "vid-co-001",
+      "url": "https://www.youtube.com/watch?v=arbreco1",
+      "title": "Compilateurs : LLVM et Parsing",
+      "description": "Vidéo fictive de la branche Compilateurs n°1 sur : Compilateurs, LLVM, Parsing.",
+      "topics": [
+        {
+          "raw": "Compilateurs",
+          "canonical": "Compilateurs",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "LLVM",
+          "canonical": "LLVM",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Parsing",
+          "canonical": "Parsing",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "vid-co-002",
+      "url": "https://www.youtube.com/watch?v=arbreco2",
+      "title": "Compilateurs : Parsing et IR",
+      "description": "Vidéo fictive de la branche Compilateurs n°2 sur : Compilateurs, Parsing, IR.",
+      "topics": [
+        {
+          "raw": "Compilateurs",
+          "canonical": "Compilateurs",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Parsing",
+          "canonical": "Parsing",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "IR",
+          "canonical": "IR",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "vid-co-003",
+      "url": "https://www.youtube.com/watch?v=arbreco3",
+      "title": "Compilateurs : IR et Optimisation",
+      "description": "Vidéo fictive de la branche Compilateurs n°3 sur : Compilateurs, IR, Optimisation.",
+      "topics": [
+        {
+          "raw": "Compilateurs",
+          "canonical": "Compilateurs",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "IR",
+          "canonical": "IR",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Optimisation",
+          "canonical": "Optimisation",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "vid-co-004",
+      "url": "https://www.youtube.com/watch?v=arbreco4",
+      "title": "Compilateurs : Optimisation et LLVM",
+      "description": "Vidéo fictive de la branche Compilateurs n°4 sur : Compilateurs, Optimisation, LLVM.",
+      "topics": [
+        {
+          "raw": "Compilateurs",
+          "canonical": "Compilateurs",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Optimisation",
+          "canonical": "Optimisation",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "LLVM",
+          "canonical": "LLVM",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "vid-ru-001",
+      "url": "https://www.youtube.com/watch?v=arbreru1",
+      "title": "Rust : Ownership et Sécurité mémoire",
+      "description": "Vidéo fictive de la branche Rust n°1 sur : Rust, Ownership, Sécurité mémoire.",
+      "topics": [
+        {
+          "raw": "Rust",
+          "canonical": "Rust",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Ownership",
+          "canonical": "Ownership",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Sécurité mémoire",
+          "canonical": "Sécurité mémoire",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "vid-ru-002",
+      "url": "https://www.youtube.com/watch?v=arbreru2",
+      "title": "Rust : Sécurité mémoire et Systèmes",
+      "description": "Vidéo fictive de la branche Rust n°2 sur : Rust, Sécurité mémoire, Systèmes.",
+      "topics": [
+        {
+          "raw": "Rust",
+          "canonical": "Rust",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Sécurité mémoire",
+          "canonical": "Sécurité mémoire",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Systèmes",
+          "canonical": "Systèmes",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "vid-ru-003",
+      "url": "https://www.youtube.com/watch?v=arbreru3",
+      "title": "Rust : Systèmes et Performance",
+      "description": "Vidéo fictive de la branche Rust n°3 sur : Rust, Systèmes, Performance.",
+      "topics": [
+        {
+          "raw": "Rust",
+          "canonical": "Rust",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Systèmes",
+          "canonical": "Systèmes",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Performance",
+          "canonical": "Performance",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "vid-ru-004",
+      "url": "https://www.youtube.com/watch?v=arbreru4",
+      "title": "Rust : Performance et Ownership",
+      "description": "Vidéo fictive de la branche Rust n°4 sur : Rust, Performance, Ownership, Histoire de l'informatique.",
+      "topics": [
+        {
+          "raw": "Rust",
+          "canonical": "Rust",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Performance",
+          "canonical": "Performance",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Ownership",
+          "canonical": "Ownership",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Histoire de l'informatique",
+          "canonical": "Histoire de l'informatique",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "vid-ts-001",
+      "url": "https://www.youtube.com/watch?v=arbrets1",
+      "title": "TypeScript : JavaScript et Web",
+      "description": "Vidéo fictive de la branche TypeScript n°1 sur : TypeScript, JavaScript, Web.",
+      "topics": [
+        {
+          "raw": "TypeScript",
+          "canonical": "TypeScript",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "JavaScript",
+          "canonical": "JavaScript",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Web",
+          "canonical": "Web",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "vid-ts-002",
+      "url": "https://www.youtube.com/watch?v=arbrets2",
+      "title": "TypeScript : Web et Typage",
+      "description": "Vidéo fictive de la branche TypeScript n°2 sur : TypeScript, Web, Typage.",
+      "topics": [
+        {
+          "raw": "TypeScript",
+          "canonical": "TypeScript",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Web",
+          "canonical": "Web",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Typage",
+          "canonical": "Typage",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "vid-ts-003",
+      "url": "https://www.youtube.com/watch?v=arbrets3",
+      "title": "TypeScript : Typage et Transpilation",
+      "description": "Vidéo fictive de la branche TypeScript n°3 sur : TypeScript, Typage, Transpilation.",
+      "topics": [
+        {
+          "raw": "TypeScript",
+          "canonical": "TypeScript",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Typage",
+          "canonical": "Typage",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Transpilation",
+          "canonical": "Transpilation",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "vid-ts-004",
+      "url": "https://www.youtube.com/watch?v=arbrets4",
+      "title": "TypeScript : Transpilation et JavaScript",
+      "description": "Vidéo fictive de la branche TypeScript n°4 sur : TypeScript, Transpilation, JavaScript.",
+      "topics": [
+        {
+          "raw": "TypeScript",
+          "canonical": "TypeScript",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Transpilation",
+          "canonical": "Transpilation",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "JavaScript",
+          "canonical": "JavaScript",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "vid-ml-001",
+      "url": "https://www.youtube.com/watch?v=arbreml1",
+      "title": "Machine Learning : Deep Learning et Réseaux de neurones",
+      "description": "Vidéo fictive de la branche Machine Learning n°1 sur : Machine Learning, Deep Learning, Réseaux de neurones.",
+      "topics": [
+        {
+          "raw": "Machine Learning",
+          "canonical": "Machine Learning",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Deep Learning",
+          "canonical": "Deep Learning",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Réseaux de neurones",
+          "canonical": "Réseaux de neurones",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "vid-ml-002",
+      "url": "https://www.youtube.com/watch?v=arbreml2",
+      "title": "Machine Learning : Réseaux de neurones et TensorFlow",
+      "description": "Vidéo fictive de la branche Machine Learning n°2 sur : Machine Learning, Réseaux de neurones, TensorFlow.",
+      "topics": [
+        {
+          "raw": "Machine Learning",
+          "canonical": "Machine Learning",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Réseaux de neurones",
+          "canonical": "Réseaux de neurones",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "TensorFlow",
+          "canonical": "TensorFlow",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "vid-ml-003",
+      "url": "https://www.youtube.com/watch?v=arbreml3",
+      "title": "Machine Learning : TensorFlow et Python",
+      "description": "Vidéo fictive de la branche Machine Learning n°3 sur : Machine Learning, TensorFlow, Python.",
+      "topics": [
+        {
+          "raw": "Machine Learning",
+          "canonical": "Machine Learning",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "TensorFlow",
+          "canonical": "TensorFlow",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Python",
+          "canonical": "Python",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "vid-ml-004",
+      "url": "https://www.youtube.com/watch?v=arbreml4",
+      "title": "Machine Learning : Python et Deep Learning",
+      "description": "Vidéo fictive de la branche Machine Learning n°4 sur : Machine Learning, Python, Deep Learning.",
+      "topics": [
+        {
+          "raw": "Machine Learning",
+          "canonical": "Machine Learning",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Python",
+          "canonical": "Python",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Deep Learning",
+          "canonical": "Deep Learning",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "vid-nx-001",
+      "url": "https://www.youtube.com/watch?v=arbrenx1",
+      "title": "Noyau Linux : Pilotes et Réseaux",
+      "description": "Vidéo fictive de la branche Noyau Linux n°1 sur : Noyau Linux, Pilotes, Réseaux.",
+      "topics": [
+        {
+          "raw": "Noyau Linux",
+          "canonical": "Noyau Linux",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Pilotes",
+          "canonical": "Pilotes",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Réseaux",
+          "canonical": "Réseaux",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "vid-nx-002",
+      "url": "https://www.youtube.com/watch?v=arbrenx2",
+      "title": "Noyau Linux : Réseaux et Instrumentation",
+      "description": "Vidéo fictive de la branche Noyau Linux n°2 sur : Noyau Linux, Réseaux, Instrumentation.",
+      "topics": [
+        {
+          "raw": "Noyau Linux",
+          "canonical": "Noyau Linux",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Réseaux",
+          "canonical": "Réseaux",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Instrumentation",
+          "canonical": "Instrumentation",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "vid-nx-003",
+      "url": "https://www.youtube.com/watch?v=arbrenx3",
+      "title": "Noyau Linux : Instrumentation et Ordonnanceur",
+      "description": "Vidéo fictive de la branche Noyau Linux n°3 sur : Noyau Linux, Instrumentation, Ordonnanceur.",
+      "topics": [
+        {
+          "raw": "Noyau Linux",
+          "canonical": "Noyau Linux",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Instrumentation",
+          "canonical": "Instrumentation",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Ordonnanceur",
+          "canonical": "Ordonnanceur",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "vid-nx-004",
+      "url": "https://www.youtube.com/watch?v=arbrenx4",
+      "title": "Noyau Linux : Ordonnanceur et Pilotes",
+      "description": "Vidéo fictive de la branche Noyau Linux n°4 sur : Noyau Linux, Ordonnanceur, Pilotes.",
+      "topics": [
+        {
+          "raw": "Noyau Linux",
+          "canonical": "Noyau Linux",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Ordonnanceur",
+          "canonical": "Ordonnanceur",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Pilotes",
+          "canonical": "Pilotes",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "vid-as-001",
+      "url": "https://www.youtube.com/watch?v=arbreas1",
+      "title": "Asynchrone : Concurrence et Boucle d'événements",
+      "description": "Vidéo fictive de la branche Asynchrone n°1 sur : Asynchrone, Concurrence, Boucle d'événements.",
+      "topics": [
+        {
+          "raw": "Asynchrone",
+          "canonical": "Asynchrone",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Concurrence",
+          "canonical": "Concurrence",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Boucle d'événements",
+          "canonical": "Boucle d'événements",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "vid-as-002",
+      "url": "https://www.youtube.com/watch?v=arbreas2",
+      "title": "Asynchrone : Boucle d'événements et E/S",
+      "description": "Vidéo fictive de la branche Asynchrone n°2 sur : Asynchrone, Boucle d'événements, E/S.",
+      "topics": [
+        {
+          "raw": "Asynchrone",
+          "canonical": "Asynchrone",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Boucle d'événements",
+          "canonical": "Boucle d'événements",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "E/S",
+          "canonical": "E/S",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "vid-as-003",
+      "url": "https://www.youtube.com/watch?v=arbreas3",
+      "title": "Asynchrone : E/S et Latence",
+      "description": "Vidéo fictive de la branche Asynchrone n°3 sur : Asynchrone, E/S, Latence.",
+      "topics": [
+        {
+          "raw": "Asynchrone",
+          "canonical": "Asynchrone",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "E/S",
+          "canonical": "E/S",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Latence",
+          "canonical": "Latence",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "vid-as-004",
+      "url": "https://www.youtube.com/watch?v=arbreas4",
+      "title": "Asynchrone : Latence et Concurrence",
+      "description": "Vidéo fictive de la branche Asynchrone n°4 sur : Asynchrone, Latence, Concurrence.",
+      "topics": [
+        {
+          "raw": "Asynchrone",
+          "canonical": "Asynchrone",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Latence",
+          "canonical": "Latence",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Concurrence",
+          "canonical": "Concurrence",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "vid-ar-001",
+      "url": "https://www.youtube.com/watch?v=arbrear1",
+      "title": "Architecture : Microservices et Découpage",
+      "description": "Vidéo fictive de la branche Architecture n°1 sur : Architecture, Microservices, Découpage.",
+      "topics": [
+        {
+          "raw": "Architecture",
+          "canonical": "Architecture",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Microservices",
+          "canonical": "Microservices",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Découpage",
+          "canonical": "Découpage",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "vid-ar-002",
+      "url": "https://www.youtube.com/watch?v=arbrear2",
+      "title": "Architecture : Découpage et Domaines",
+      "description": "Vidéo fictive de la branche Architecture n°2 sur : Architecture, Découpage, Domaines.",
+      "topics": [
+        {
+          "raw": "Architecture",
+          "canonical": "Architecture",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Découpage",
+          "canonical": "Découpage",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Domaines",
+          "canonical": "Domaines",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "vid-ar-003",
+      "url": "https://www.youtube.com/watch?v=arbrear3",
+      "title": "Architecture : Domaines et Événements",
+      "description": "Vidéo fictive de la branche Architecture n°3 sur : Architecture, Domaines, Événements.",
+      "topics": [
+        {
+          "raw": "Architecture",
+          "canonical": "Architecture",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Domaines",
+          "canonical": "Domaines",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Événements",
+          "canonical": "Événements",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "vid-ar-004",
+      "url": "https://www.youtube.com/watch?v=arbrear4",
+      "title": "Architecture : Événements et Microservices",
+      "description": "Vidéo fictive de la branche Architecture n°4 sur : Architecture, Événements, Microservices.",
+      "topics": [
+        {
+          "raw": "Architecture",
+          "canonical": "Architecture",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Événements",
+          "canonical": "Événements",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Microservices",
+          "canonical": "Microservices",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "vid-se-001",
+      "url": "https://www.youtube.com/watch?v=arbrese1",
+      "title": "Sécurité : Vulnérabilités et Sandbox",
+      "description": "Vidéo fictive de la branche Sécurité n°1 sur : Sécurité, Vulnérabilités, Sandbox.",
+      "topics": [
+        {
+          "raw": "Sécurité",
+          "canonical": "Sécurité",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Vulnérabilités",
+          "canonical": "Vulnérabilités",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Sandbox",
+          "canonical": "Sandbox",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "vid-se-002",
+      "url": "https://www.youtube.com/watch?v=arbrese2",
+      "title": "Sécurité : Sandbox et Chiffrement",
+      "description": "Vidéo fictive de la branche Sécurité n°2 sur : Sécurité, Sandbox, Chiffrement.",
+      "topics": [
+        {
+          "raw": "Sécurité",
+          "canonical": "Sécurité",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Sandbox",
+          "canonical": "Sandbox",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Chiffrement",
+          "canonical": "Chiffrement",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "vid-se-003",
+      "url": "https://www.youtube.com/watch?v=arbrese3",
+      "title": "Sécurité : Chiffrement et Audit",
+      "description": "Vidéo fictive de la branche Sécurité n°3 sur : Sécurité, Chiffrement, Audit.",
+      "topics": [
+        {
+          "raw": "Sécurité",
+          "canonical": "Sécurité",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Chiffrement",
+          "canonical": "Chiffrement",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Audit",
+          "canonical": "Audit",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "vid-se-004",
+      "url": "https://www.youtube.com/watch?v=arbrese4",
+      "title": "Sécurité : Audit et Vulnérabilités",
+      "description": "Vidéo fictive de la branche Sécurité n°4 sur : Sécurité, Audit, Vulnérabilités.",
+      "topics": [
+        {
+          "raw": "Sécurité",
+          "canonical": "Sécurité",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Audit",
+          "canonical": "Audit",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Vulnérabilités",
+          "canonical": "Vulnérabilités",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "vid-ba-001",
+      "url": "https://www.youtube.com/watch?v=arbreba1",
+      "title": "Bases de données : Requêtes et Index",
+      "description": "Vidéo fictive de la branche Bases de données n°1 sur : Bases de données, Requêtes, Index.",
+      "topics": [
+        {
+          "raw": "Bases de données",
+          "canonical": "Bases de données",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Requêtes",
+          "canonical": "Requêtes",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Index",
+          "canonical": "Index",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "vid-ba-002",
+      "url": "https://www.youtube.com/watch?v=arbreba2",
+      "title": "Bases de données : Index et Transactions",
+      "description": "Vidéo fictive de la branche Bases de données n°2 sur : Bases de données, Index, Transactions.",
+      "topics": [
+        {
+          "raw": "Bases de données",
+          "canonical": "Bases de données",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Index",
+          "canonical": "Index",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Transactions",
+          "canonical": "Transactions",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "vid-ba-003",
+      "url": "https://www.youtube.com/watch?v=arbreba3",
+      "title": "Bases de données : Transactions et Stockage",
+      "description": "Vidéo fictive de la branche Bases de données n°3 sur : Bases de données, Transactions, Stockage.",
+      "topics": [
+        {
+          "raw": "Bases de données",
+          "canonical": "Bases de données",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Transactions",
+          "canonical": "Transactions",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Stockage",
+          "canonical": "Stockage",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "vid-ba-004",
+      "url": "https://www.youtube.com/watch?v=arbreba4",
+      "title": "Bases de données : Stockage et Requêtes",
+      "description": "Vidéo fictive de la branche Bases de données n°4 sur : Bases de données, Stockage, Requêtes.",
+      "topics": [
+        {
+          "raw": "Bases de données",
+          "canonical": "Bases de données",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Stockage",
+          "canonical": "Stockage",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Requêtes",
+          "canonical": "Requêtes",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "vid-we-001",
+      "url": "https://www.youtube.com/watch?v=arbrewe1",
+      "title": "Accessibilité : ARIA et Contraste",
+      "description": "Vidéo fictive de la branche Accessibilité n°1 sur : Accessibilité, ARIA, Contraste.",
+      "topics": [
+        {
+          "raw": "Accessibilité",
+          "canonical": "Accessibilité",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "ARIA",
+          "canonical": "ARIA",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Contraste",
+          "canonical": "Contraste",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "vid-we-002",
+      "url": "https://www.youtube.com/watch?v=arbrewe2",
+      "title": "Accessibilité : Contraste et Lecteurs d'écran",
+      "description": "Vidéo fictive de la branche Accessibilité n°2 sur : Accessibilité, Contraste, Lecteurs d'écran.",
+      "topics": [
+        {
+          "raw": "Accessibilité",
+          "canonical": "Accessibilité",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Contraste",
+          "canonical": "Contraste",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Lecteurs d'écran",
+          "canonical": "Lecteurs d'écran",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "vid-we-003",
+      "url": "https://www.youtube.com/watch?v=arbrewe3",
+      "title": "Accessibilité : Lecteurs d'écran et Navigation clavier",
+      "description": "Vidéo fictive de la branche Accessibilité n°3 sur : Accessibilité, Lecteurs d'écran, Navigation clavier.",
+      "topics": [
+        {
+          "raw": "Accessibilité",
+          "canonical": "Accessibilité",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Lecteurs d'écran",
+          "canonical": "Lecteurs d'écran",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Navigation clavier",
+          "canonical": "Navigation clavier",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "vid-we-004",
+      "url": "https://www.youtube.com/watch?v=arbrewe4",
+      "title": "Accessibilité : Navigation clavier et ARIA",
+      "description": "Vidéo fictive de la branche Accessibilité n°4 sur : Accessibilité, Navigation clavier, ARIA.",
+      "topics": [
+        {
+          "raw": "Accessibilité",
+          "canonical": "Accessibilité",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Navigation clavier",
+          "canonical": "Navigation clavier",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "ARIA",
+          "canonical": "ARIA",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "vid-gp-001",
+      "url": "https://www.youtube.com/watch?v=arbregp1",
+      "title": "Graphisme : Rendu et GPU",
+      "description": "Vidéo fictive de la branche Graphisme n°1 sur : Graphisme, Rendu, GPU.",
+      "topics": [
+        {
+          "raw": "Graphisme",
+          "canonical": "Graphisme",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Rendu",
+          "canonical": "Rendu",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "GPU",
+          "canonical": "GPU",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "vid-gp-002",
+      "url": "https://www.youtube.com/watch?v=arbregp2",
+      "title": "Graphisme : GPU et Shaders",
+      "description": "Vidéo fictive de la branche Graphisme n°2 sur : Graphisme, GPU, Shaders.",
+      "topics": [
+        {
+          "raw": "Graphisme",
+          "canonical": "Graphisme",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "GPU",
+          "canonical": "GPU",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Shaders",
+          "canonical": "Shaders",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "vid-gp-003",
+      "url": "https://www.youtube.com/watch?v=arbregp3",
+      "title": "Graphisme : Shaders et Images",
+      "description": "Vidéo fictive de la branche Graphisme n°3 sur : Graphisme, Shaders, Images.",
+      "topics": [
+        {
+          "raw": "Graphisme",
+          "canonical": "Graphisme",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Shaders",
+          "canonical": "Shaders",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Images",
+          "canonical": "Images",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "vid-gp-004",
+      "url": "https://www.youtube.com/watch?v=arbregp4",
+      "title": "Graphisme : Images et Rendu",
+      "description": "Vidéo fictive de la branche Graphisme n°4 sur : Graphisme, Images, Rendu.",
+      "topics": [
+        {
+          "raw": "Graphisme",
+          "canonical": "Graphisme",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Images",
+          "canonical": "Images",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Rendu",
+          "canonical": "Rendu",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "vid-ed-001",
+      "url": "https://www.youtube.com/watch?v=arbreed1",
+      "title": "Éditeurs : LSP et Complétion",
+      "description": "Vidéo fictive de la branche Éditeurs n°1 sur : Éditeurs, LSP, Complétion.",
+      "topics": [
+        {
+          "raw": "Éditeurs",
+          "canonical": "Éditeurs",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "LSP",
+          "canonical": "LSP",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Complétion",
+          "canonical": "Complétion",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "vid-ed-002",
+      "url": "https://www.youtube.com/watch?v=arbreed2",
+      "title": "Éditeurs : Complétion et Refactoring",
+      "description": "Vidéo fictive de la branche Éditeurs n°2 sur : Éditeurs, Complétion, Refactoring.",
+      "topics": [
+        {
+          "raw": "Éditeurs",
+          "canonical": "Éditeurs",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Complétion",
+          "canonical": "Complétion",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Refactoring",
+          "canonical": "Refactoring",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "vid-ed-003",
+      "url": "https://www.youtube.com/watch?v=arbreed3",
+      "title": "Éditeurs : Refactoring et Extensions",
+      "description": "Vidéo fictive de la branche Éditeurs n°3 sur : Éditeurs, Refactoring, Extensions.",
+      "topics": [
+        {
+          "raw": "Éditeurs",
+          "canonical": "Éditeurs",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Refactoring",
+          "canonical": "Refactoring",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Extensions",
+          "canonical": "Extensions",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "vid-ed-004",
+      "url": "https://www.youtube.com/watch?v=arbreed4",
+      "title": "Éditeurs : Extensions et LSP",
+      "description": "Vidéo fictive de la branche Éditeurs n°4 sur : Éditeurs, Extensions, LSP.",
+      "topics": [
+        {
+          "raw": "Éditeurs",
+          "canonical": "Éditeurs",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Extensions",
+          "canonical": "Extensions",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "LSP",
+          "canonical": "LSP",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "vid-te-001",
+      "url": "https://www.youtube.com/watch?v=arbrete1",
+      "title": "Tests : Propriétés et Mutation",
+      "description": "Vidéo fictive de la branche Tests n°1 sur : Tests, Propriétés, Mutation.",
+      "topics": [
+        {
+          "raw": "Tests",
+          "canonical": "Tests",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Propriétés",
+          "canonical": "Propriétés",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Mutation",
+          "canonical": "Mutation",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "vid-te-002",
+      "url": "https://www.youtube.com/watch?v=arbrete2",
+      "title": "Tests : Mutation et Couverture",
+      "description": "Vidéo fictive de la branche Tests n°2 sur : Tests, Mutation, Couverture.",
+      "topics": [
+        {
+          "raw": "Tests",
+          "canonical": "Tests",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Mutation",
+          "canonical": "Mutation",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Couverture",
+          "canonical": "Couverture",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "vid-te-003",
+      "url": "https://www.youtube.com/watch?v=arbrete3",
+      "title": "Tests : Couverture et Fuzzing",
+      "description": "Vidéo fictive de la branche Tests n°3 sur : Tests, Couverture, Fuzzing.",
+      "topics": [
+        {
+          "raw": "Tests",
+          "canonical": "Tests",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Couverture",
+          "canonical": "Couverture",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Fuzzing",
+          "canonical": "Fuzzing",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "vid-te-004",
+      "url": "https://www.youtube.com/watch?v=arbrete4",
+      "title": "Tests : Fuzzing et Propriétés",
+      "description": "Vidéo fictive de la branche Tests n°4 sur : Tests, Fuzzing, Propriétés.",
+      "topics": [
+        {
+          "raw": "Tests",
+          "canonical": "Tests",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Fuzzing",
+          "canonical": "Fuzzing",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Propriétés",
+          "canonical": "Propriétés",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "vid-mu-001",
+      "url": "https://www.youtube.com/watch?v=arbremu1",
+      "title": "Musique : Théorie musicale et Harmonie",
+      "description": "Vidéo fictive de la branche Musique n°1 sur : Musique, Théorie musicale, Harmonie.",
+      "topics": [
+        {
+          "raw": "Musique",
+          "canonical": "Musique",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Théorie musicale",
+          "canonical": "Théorie musicale",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Harmonie",
+          "canonical": "Harmonie",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "vid-mu-002",
+      "url": "https://www.youtube.com/watch?v=arbremu2",
+      "title": "Musique : Harmonie et Synthèse sonore",
+      "description": "Vidéo fictive de la branche Musique n°2 sur : Musique, Harmonie, Synthèse sonore.",
+      "topics": [
+        {
+          "raw": "Musique",
+          "canonical": "Musique",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Harmonie",
+          "canonical": "Harmonie",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Synthèse sonore",
+          "canonical": "Synthèse sonore",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "vid-mu-003",
+      "url": "https://www.youtube.com/watch?v=arbremu3",
+      "title": "Musique : Synthèse sonore et Composition",
+      "description": "Vidéo fictive de la branche Musique n°3 sur : Musique, Synthèse sonore, Composition.",
+      "topics": [
+        {
+          "raw": "Musique",
+          "canonical": "Musique",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Synthèse sonore",
+          "canonical": "Synthèse sonore",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Composition",
+          "canonical": "Composition",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "vid-mu-004",
+      "url": "https://www.youtube.com/watch?v=arbremu4",
+      "title": "Musique : Composition et Théorie musicale",
+      "description": "Vidéo fictive de la branche Musique n°4 sur : Musique, Composition, Théorie musicale.",
+      "topics": [
+        {
+          "raw": "Musique",
+          "canonical": "Musique",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Composition",
+          "canonical": "Composition",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Théorie musicale",
+          "canonical": "Théorie musicale",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "vid-fu-001",
+      "url": "https://www.youtube.com/watch?v=arbrefu1",
+      "title": "Fun : Humour et Improvisation",
+      "description": "Vidéo fictive de la branche Fun n°1 sur : Fun, Humour, Improvisation.",
+      "topics": [
+        {
+          "raw": "Fun",
+          "canonical": "Fun",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Humour",
+          "canonical": "Humour",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Improvisation",
+          "canonical": "Improvisation",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "vid-fu-002",
+      "url": "https://www.youtube.com/watch?v=arbrefu2",
+      "title": "Fun : Improvisation et Jeux",
+      "description": "Vidéo fictive de la branche Fun n°2 sur : Fun, Improvisation, Jeux.",
+      "topics": [
+        {
+          "raw": "Fun",
+          "canonical": "Fun",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Improvisation",
+          "canonical": "Improvisation",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Jeux",
+          "canonical": "Jeux",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "vid-fu-003",
+      "url": "https://www.youtube.com/watch?v=arbrefu3",
+      "title": "Fun : Jeux et Parodie",
+      "description": "Vidéo fictive de la branche Fun n°3 sur : Fun, Jeux, Parodie.",
+      "topics": [
+        {
+          "raw": "Fun",
+          "canonical": "Fun",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Jeux",
+          "canonical": "Jeux",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Parodie",
+          "canonical": "Parodie",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "vid-fu-004",
+      "url": "https://www.youtube.com/watch?v=arbrefu4",
+      "title": "Fun : Parodie et Humour",
+      "description": "Vidéo fictive de la branche Fun n°4 sur : Fun, Parodie, Humour.",
+      "topics": [
+        {
+          "raw": "Fun",
+          "canonical": "Fun",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Parodie",
+          "canonical": "Parodie",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Humour",
+          "canonical": "Humour",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "vid-sc-001",
+      "url": "https://www.youtube.com/watch?v=arbresc1",
+      "title": "Science : Physique et Chimie",
+      "description": "Vidéo fictive de la branche Science n°1 sur : Science, Physique, Chimie.",
+      "topics": [
+        {
+          "raw": "Science",
+          "canonical": "Science",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Physique",
+          "canonical": "Physique",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Chimie",
+          "canonical": "Chimie",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "vid-sc-002",
+      "url": "https://www.youtube.com/watch?v=arbresc2",
+      "title": "Science : Chimie et Biologie",
+      "description": "Vidéo fictive de la branche Science n°2 sur : Science, Chimie, Biologie.",
+      "topics": [
+        {
+          "raw": "Science",
+          "canonical": "Science",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Chimie",
+          "canonical": "Chimie",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Biologie",
+          "canonical": "Biologie",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "vid-sc-003",
+      "url": "https://www.youtube.com/watch?v=arbresc3",
+      "title": "Science : Biologie et Espace",
+      "description": "Vidéo fictive de la branche Science n°3 sur : Science, Biologie, Espace.",
+      "topics": [
+        {
+          "raw": "Science",
+          "canonical": "Science",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Biologie",
+          "canonical": "Biologie",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Espace",
+          "canonical": "Espace",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "vid-sc-004",
+      "url": "https://www.youtube.com/watch?v=arbresc4",
+      "title": "Science : Espace et Physique",
+      "description": "Vidéo fictive de la branche Science n°4 sur : Science, Espace, Physique.",
+      "topics": [
+        {
+          "raw": "Science",
+          "canonical": "Science",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Espace",
+          "canonical": "Espace",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Physique",
+          "canonical": "Physique",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "vid-ma-001",
+      "url": "https://www.youtube.com/watch?v=arbrema1",
+      "title": "Mathématiques : Topologie et Algèbre",
+      "description": "Vidéo fictive de la branche Mathématiques n°1 sur : Mathématiques, Topologie, Algèbre.",
+      "topics": [
+        {
+          "raw": "Mathématiques",
+          "canonical": "Mathématiques",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Topologie",
+          "canonical": "Topologie",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Algèbre",
+          "canonical": "Algèbre",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "vid-ma-002",
+      "url": "https://www.youtube.com/watch?v=arbrema2",
+      "title": "Mathématiques : Algèbre et Statistiques",
+      "description": "Vidéo fictive de la branche Mathématiques n°2 sur : Mathématiques, Algèbre, Statistiques.",
+      "topics": [
+        {
+          "raw": "Mathématiques",
+          "canonical": "Mathématiques",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Algèbre",
+          "canonical": "Algèbre",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Statistiques",
+          "canonical": "Statistiques",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "vid-ma-003",
+      "url": "https://www.youtube.com/watch?v=arbrema3",
+      "title": "Mathématiques : Statistiques et Probabilités",
+      "description": "Vidéo fictive de la branche Mathématiques n°3 sur : Mathématiques, Statistiques, Probabilités.",
+      "topics": [
+        {
+          "raw": "Mathématiques",
+          "canonical": "Mathématiques",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Statistiques",
+          "canonical": "Statistiques",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Probabilités",
+          "canonical": "Probabilités",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "vid-ma-004",
+      "url": "https://www.youtube.com/watch?v=arbrema4",
+      "title": "Mathématiques : Probabilités et Topologie",
+      "description": "Vidéo fictive de la branche Mathématiques n°4 sur : Mathématiques, Probabilités, Topologie.",
+      "topics": [
+        {
+          "raw": "Mathématiques",
+          "canonical": "Mathématiques",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Probabilités",
+          "canonical": "Probabilités",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Topologie",
+          "canonical": "Topologie",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "vid-ci-001",
+      "url": "https://www.youtube.com/watch?v=arbreci1",
+      "title": "Cuisine : Recettes et Fermentation",
+      "description": "Vidéo fictive de la branche Cuisine n°1 sur : Cuisine, Recettes, Fermentation.",
+      "topics": [
+        {
+          "raw": "Cuisine",
+          "canonical": "Cuisine",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Recettes",
+          "canonical": "Recettes",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Fermentation",
+          "canonical": "Fermentation",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "vid-ci-002",
+      "url": "https://www.youtube.com/watch?v=arbreci2",
+      "title": "Cuisine : Fermentation et Techniques de cuisine",
+      "description": "Vidéo fictive de la branche Cuisine n°2 sur : Cuisine, Fermentation, Techniques de cuisine.",
+      "topics": [
+        {
+          "raw": "Cuisine",
+          "canonical": "Cuisine",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Fermentation",
+          "canonical": "Fermentation",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Techniques de cuisine",
+          "canonical": "Techniques de cuisine",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "vid-ci-003",
+      "url": "https://www.youtube.com/watch?v=arbreci3",
+      "title": "Cuisine : Techniques de cuisine et Matériel",
+      "description": "Vidéo fictive de la branche Cuisine n°3 sur : Cuisine, Techniques de cuisine, Matériel.",
+      "topics": [
+        {
+          "raw": "Cuisine",
+          "canonical": "Cuisine",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Techniques de cuisine",
+          "canonical": "Techniques de cuisine",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Matériel",
+          "canonical": "Matériel",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "vid-ci-004",
+      "url": "https://www.youtube.com/watch?v=arbreci4",
+      "title": "Cuisine : Matériel et Recettes",
+      "description": "Vidéo fictive de la branche Cuisine n°4 sur : Cuisine, Matériel, Recettes.",
+      "topics": [
+        {
+          "raw": "Cuisine",
+          "canonical": "Cuisine",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Matériel",
+          "canonical": "Matériel",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Recettes",
+          "canonical": "Recettes",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "vid-pont-01",
+      "url": "https://www.youtube.com/watch?v=arbrepont1",
+      "title": "TypeScript × Roslyn : deux compilateurs au service du développeur",
+      "description": "Vidéo fictive pont n°1 entre TypeScript et Roslyn sur : TypeScript, Roslyn, JavaScript, C#.",
+      "topics": [
+        {
+          "raw": "TypeScript",
+          "canonical": "TypeScript",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Roslyn",
+          "canonical": "Roslyn",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "JavaScript",
+          "canonical": "JavaScript",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "C#",
+          "canonical": "C#",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "vid-pont-02",
+      "url": "https://www.youtube.com/watch?v=arbrepont2",
+      "title": "Roslyn × Compilateurs : les analyseurs au cœur des compilateurs",
+      "description": "Vidéo fictive pont n°2 entre Roslyn et Compilateurs sur : Roslyn, Compilateurs, C#, LLVM.",
+      "topics": [
+        {
+          "raw": "Roslyn",
+          "canonical": "Roslyn",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Compilateurs",
+          "canonical": "Compilateurs",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "C#",
+          "canonical": "C#",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "LLVM",
+          "canonical": "LLVM",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "vid-pont-03",
+      "url": "https://www.youtube.com/watch?v=arbrepont3",
+      "title": "Compilateurs × Rust : un backend de compilateur pour la sécurité mémoire",
+      "description": "Vidéo fictive pont n°3 entre Compilateurs et Rust sur : Compilateurs, Rust, LLVM, Ownership.",
+      "topics": [
+        {
+          "raw": "Compilateurs",
+          "canonical": "Compilateurs",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Rust",
+          "canonical": "Rust",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "LLVM",
+          "canonical": "LLVM",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Ownership",
+          "canonical": "Ownership",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "vid-pont-04",
+      "url": "https://www.youtube.com/watch?v=arbrepont4",
+      "title": "Rust × Noyau Linux : écrire des pilotes sûrs pour le noyau",
+      "description": "Vidéo fictive pont n°4 entre Rust et Noyau Linux sur : Rust, Noyau Linux, Ownership, Pilotes.",
+      "topics": [
+        {
+          "raw": "Rust",
+          "canonical": "Rust",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Noyau Linux",
+          "canonical": "Noyau Linux",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Ownership",
+          "canonical": "Ownership",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Pilotes",
+          "canonical": "Pilotes",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "vid-pont-05",
+      "url": "https://www.youtube.com/watch?v=arbrepont5",
+      "title": "Noyau Linux × Asynchrone : gestion des interruptions et concurrence",
+      "description": "Vidéo fictive pont n°5 entre Noyau Linux et Asynchrone sur : Noyau Linux, Asynchrone, Pilotes, Concurrence.",
+      "topics": [
+        {
+          "raw": "Noyau Linux",
+          "canonical": "Noyau Linux",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Asynchrone",
+          "canonical": "Asynchrone",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Pilotes",
+          "canonical": "Pilotes",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Concurrence",
+          "canonical": "Concurrence",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "vid-pont-06",
+      "url": "https://www.youtube.com/watch?v=arbrepont6",
+      "title": "Asynchrone × Architecture : architectures événementielles et latence",
+      "description": "Vidéo fictive pont n°6 entre Asynchrone et Architecture sur : Asynchrone, Architecture, Concurrence, Microservices.",
+      "topics": [
+        {
+          "raw": "Asynchrone",
+          "canonical": "Asynchrone",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Architecture",
+          "canonical": "Architecture",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Concurrence",
+          "canonical": "Concurrence",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Microservices",
+          "canonical": "Microservices",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "vid-pont-07",
+      "url": "https://www.youtube.com/watch?v=arbrepont7",
+      "title": "Architecture × Bases de données : le découpage et ses bases de données",
+      "description": "Vidéo fictive pont n°7 entre Architecture et Bases de données sur : Architecture, Bases de données, Microservices, Requêtes.",
+      "topics": [
+        {
+          "raw": "Architecture",
+          "canonical": "Architecture",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Bases de données",
+          "canonical": "Bases de données",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Microservices",
+          "canonical": "Microservices",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Requêtes",
+          "canonical": "Requêtes",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "vid-pont-08",
+      "url": "https://www.youtube.com/watch?v=arbrepont8",
+      "title": "Bases de données × Tests : des propriétés testables jusqu'au stockage",
+      "description": "Vidéo fictive pont n°8 entre Bases de données et Tests sur : Bases de données, Tests, Requêtes, Propriétés.",
+      "topics": [
+        {
+          "raw": "Bases de données",
+          "canonical": "Bases de données",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Tests",
+          "canonical": "Tests",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Requêtes",
+          "canonical": "Requêtes",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Propriétés",
+          "canonical": "Propriétés",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "vid-pont-09",
+      "url": "https://www.youtube.com/watch?v=arbrepont9",
+      "title": "Tests × Sécurité : le fuzzing contre les vulnérabilités",
+      "description": "Vidéo fictive pont n°9 entre Tests et Sécurité sur : Tests, Sécurité, Propriétés, Vulnérabilités.",
+      "topics": [
+        {
+          "raw": "Tests",
+          "canonical": "Tests",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Sécurité",
+          "canonical": "Sécurité",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Propriétés",
+          "canonical": "Propriétés",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Vulnérabilités",
+          "canonical": "Vulnérabilités",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "vid-pont-10",
+      "url": "https://www.youtube.com/watch?v=arbrepont10",
+      "title": "Sécurité × Graphisme : calcul et affichage sûrs des images",
+      "description": "Vidéo fictive pont n°10 entre Sécurité et Graphisme sur : Sécurité, Graphisme, Vulnérabilités, Rendu.",
+      "topics": [
+        {
+          "raw": "Sécurité",
+          "canonical": "Sécurité",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Graphisme",
+          "canonical": "Graphisme",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Vulnérabilités",
+          "canonical": "Vulnérabilités",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Rendu",
+          "canonical": "Rendu",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "vid-pont-11",
+      "url": "https://www.youtube.com/watch?v=arbrepont11",
+      "title": "Graphisme × Éditeurs : le rendu dans l'éditeur",
+      "description": "Vidéo fictive pont n°11 entre Graphisme et Éditeurs sur : Graphisme, Éditeurs, Rendu, LSP.",
+      "topics": [
+        {
+          "raw": "Graphisme",
+          "canonical": "Graphisme",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Éditeurs",
+          "canonical": "Éditeurs",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Rendu",
+          "canonical": "Rendu",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "LSP",
+          "canonical": "LSP",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "vid-pont-12",
+      "url": "https://www.youtube.com/watch?v=arbrepont12",
+      "title": "Éditeurs × Accessibilité : l'accessibilité dans l'outillage",
+      "description": "Vidéo fictive pont n°12 entre Éditeurs et Accessibilité sur : Éditeurs, Accessibilité, LSP, ARIA.",
+      "topics": [
+        {
+          "raw": "Éditeurs",
+          "canonical": "Éditeurs",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Accessibilité",
+          "canonical": "Accessibilité",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "LSP",
+          "canonical": "LSP",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "ARIA",
+          "canonical": "ARIA",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "vid-pont-13",
+      "url": "https://www.youtube.com/watch?v=arbrepont13",
+      "title": "Accessibilité × Machine Learning : recommandations et accessibilité",
+      "description": "Vidéo fictive pont n°13 entre Accessibilité et Machine Learning sur : Accessibilité, Machine Learning, ARIA, Deep Learning.",
+      "topics": [
+        {
+          "raw": "Accessibilité",
+          "canonical": "Accessibilité",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Machine Learning",
+          "canonical": "Machine Learning",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "ARIA",
+          "canonical": "ARIA",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Deep Learning",
+          "canonical": "Deep Learning",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "vid-pont-14",
+      "url": "https://www.youtube.com/watch?v=arbrepont14",
+      "title": "Machine Learning × Science : des réseaux de neurones pour les données de physique",
+      "description": "Vidéo fictive pont n°14 entre Machine Learning et Science sur : Machine Learning, Science, Deep Learning, Physique.",
+      "topics": [
+        {
+          "raw": "Machine Learning",
+          "canonical": "Machine Learning",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Science",
+          "canonical": "Science",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Deep Learning",
+          "canonical": "Deep Learning",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Physique",
+          "canonical": "Physique",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "vid-pont-15",
+      "url": "https://www.youtube.com/watch?v=arbrepont15",
+      "title": "Science × Musique : l'acoustique : quand la physique fait de la musique",
+      "description": "Vidéo fictive pont n°15 entre Science et Musique sur : Science, Musique, Physique, Théorie musicale.",
+      "topics": [
+        {
+          "raw": "Science",
+          "canonical": "Science",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Musique",
+          "canonical": "Musique",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Physique",
+          "canonical": "Physique",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Théorie musicale",
+          "canonical": "Théorie musicale",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "vid-pont-16",
+      "url": "https://www.youtube.com/watch?v=arbrepont16",
+      "title": "Musique × Mathématiques : le rythme et l'harmonie en fractions",
+      "description": "Vidéo fictive pont n°16 entre Musique et Mathématiques sur : Musique, Mathématiques, Théorie musicale, Topologie.",
+      "topics": [
+        {
+          "raw": "Musique",
+          "canonical": "Musique",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Mathématiques",
+          "canonical": "Mathématiques",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Théorie musicale",
+          "canonical": "Théorie musicale",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Topologie",
+          "canonical": "Topologie",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "vid-pont-17",
+      "url": "https://www.youtube.com/watch?v=arbrepont17",
+      "title": "Mathématiques × Tests : les tests de propriétés : des maths appliquées au code",
+      "description": "Vidéo fictive pont n°17 entre Mathématiques et Tests sur : Mathématiques, Tests, Topologie, Propriétés.",
+      "topics": [
+        {
+          "raw": "Mathématiques",
+          "canonical": "Mathématiques",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Tests",
+          "canonical": "Tests",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Topologie",
+          "canonical": "Topologie",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Propriétés",
+          "canonical": "Propriétés",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "vid-pont-18",
+      "url": "https://www.youtube.com/watch?v=arbrepont18",
+      "title": "Fun × Graphisme : jeux vidéo : le fun du rendu",
+      "description": "Vidéo fictive pont n°18 entre Fun et Graphisme sur : Fun, Graphisme, Humour, Rendu.",
+      "topics": [
+        {
+          "raw": "Fun",
+          "canonical": "Fun",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Graphisme",
+          "canonical": "Graphisme",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Humour",
+          "canonical": "Humour",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Rendu",
+          "canonical": "Rendu",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "vid-pont-19",
+      "url": "https://www.youtube.com/watch?v=arbrepont19",
+      "title": "Fun × Cuisine : la cuisine en improvisation : le fun au fourneau",
+      "description": "Vidéo fictive pont n°19 entre Fun et Cuisine sur : Fun, Cuisine, Humour, Recettes.",
+      "topics": [
+        {
+          "raw": "Fun",
+          "canonical": "Fun",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Cuisine",
+          "canonical": "Cuisine",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Humour",
+          "canonical": "Humour",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Recettes",
+          "canonical": "Recettes",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "vid-pont-20",
+      "url": "https://www.youtube.com/watch?v=arbrepont20",
+      "title": "Cuisine × Science : la chimie de la fermentation",
+      "description": "Vidéo fictive pont n°20 entre Cuisine et Science sur : Cuisine, Science, Recettes, Physique.",
+      "topics": [
+        {
+          "raw": "Cuisine",
+          "canonical": "Cuisine",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Science",
+          "canonical": "Science",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Recettes",
+          "canonical": "Recettes",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        },
+        {
+          "raw": "Physique",
+          "canonical": "Physique",
+          "justification": "assigné depuis le titre fictif (corpus arbre)",
+          "provenance": {
+            "source": "gemini",
+            "model": "demo-fixture",
+            "version": "arbre-2026-10"
+          }
+        }
+      ]
+    }
+  ],
+  "dead_topics": [
+    "Histoire de l'informatique"
+  ]
+}
