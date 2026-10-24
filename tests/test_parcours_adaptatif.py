@@ -130,7 +130,7 @@ def test_interests_replace_the_video_and_move_the_interest_point(server):
     assert first_status == 200
     assert first["transition"]["from"] == "v1"
     assert first["video"]["id"] == "v2"
-    assert first["point_interet"] == "v1"
+    assert first["interest_point"] == "v1"
     assert_real_transition(server.corpus, first["transition"])
 
     second_status, _, second_body = request(
@@ -144,7 +144,7 @@ def test_interests_replace_the_video_and_move_the_interest_point(server):
     assert second_status == 200
     assert second["transition"]["from"] == "v2"
     assert second["video"]["id"] == "v3"
-    assert second["point_interet"] == "v2"
+    assert second["interest_point"] == "v2"
     assert_real_transition(server.corpus, second["transition"])
 
 
@@ -300,7 +300,7 @@ def test_zap_after_interest_uses_current_video_and_drops_old_interest(branch_ser
     interest = json.loads(interest_body)
     assert interest_status == 200
     assert interest["video"]["id"] == "b-current"
-    assert interest["point_interet"] == "a-start"
+    assert interest["interest_point"] == "a-start"
     assert_real_transition(branch_server.corpus, interest["transition"])
 
     zap_status, _, zap_body = request(
@@ -311,7 +311,7 @@ def test_zap_after_interest_uses_current_video_and_drops_old_interest(branch_ser
     assert zap_status == 200
     assert zap["transition"]["from"] == "b-current"
     assert zap["video"]["id"] == "d-neighbor"
-    assert zap["point_interet"] is None
+    assert zap["interest_point"] is None
     assert zap["transition"]["topic_path"] == ["Beta"]
     assert_real_transition(branch_server.corpus, zap["transition"])
 
@@ -325,7 +325,7 @@ def test_first_zap_explores_and_a_later_interest_restores_the_pivot(branch_serve
     zap = json.loads(zap_body)
     assert zap_status == 200
     assert zap["video"]["id"] == "c-old-pivot"
-    assert zap["point_interet"] is None
+    assert zap["interest_point"] is None
     assert zap["transition"]["topic_path"] == ["OldPivot"]
     assert_real_transition(branch_server.corpus, zap["transition"])
 
@@ -337,7 +337,7 @@ def test_first_zap_explores_and_a_later_interest_restores_the_pivot(branch_serve
     assert interest_status == 200
     assert interest["transition"]["from"] == "c-old-pivot"
     assert interest["video"]["id"] == "e-after-zap-interest"
-    assert interest["point_interet"] == "c-old-pivot"
+    assert interest["interest_point"] == "c-old-pivot"
     assert_real_transition(branch_server.corpus, interest["transition"])
 
 
@@ -417,7 +417,7 @@ def test_exhausted_interest_path_restarts_at_an_unseen_canonical_topic(restart_s
         "zy-root-two-a", "zz-root-two-b", "zy-root-five-a", "zz-root-five-b"
     }
     shown.add(restarted["video"]["id"])
-    assert restarted["point_interet"] is None
+    assert restarted["interest_point"] is None
     assert restarted["message"] == (
         "Tu as exploré les branches disponibles. "
         "On repart sur un autre arbre choisi au hasard."
@@ -488,7 +488,7 @@ def test_zap_after_local_exploration_restarts_away_from_the_rejected_direction(r
     assert restarted["status"] == "active"
     assert restarted["video"]["id"] not in seen
     assert restarted["video"]["id"].startswith(("zy-root-", "zz-root-"))
-    assert restarted["point_interet"] is None
+    assert restarted["interest_point"] is None
     assert restarted["transition"]["kind"] == "restart"
     assert restarted["transition"]["root_topic"] in {"T2", "T5"}
     assert restarted["transition"]["root_topic"] not in {"T9", "T0"}
@@ -515,7 +515,7 @@ def test_interest_after_restart_establishes_a_new_interest_point(restart_server)
     assert continued["status"] == "active"
     assert continued["video"]["id"] != root_video
     assert continued["video"]["id"].startswith(("zy-root-", "zz-root-"))
-    assert continued["point_interet"] == root_video
+    assert continued["interest_point"] == root_video
     assert continued["transition"]["kind"] == "linked"
     assert continued["transition"]["from"] == root_video
     assert continued["transition"]["to"] == continued["video"]["id"]
@@ -575,14 +575,14 @@ def test_zaps_progress_from_a_near_branch_to_a_farther_topic(widening_server):
     status, state = post_action(widening_server, cookie, state, "zap")
     assert status == 200
     assert state["video"]["id"] == "03-near"
-    assert state["point_interet"] is None
+    assert state["interest_point"] is None
     assert_real_transition(widening_server.corpus, state["transition"])
     seen.add(state["video"]["id"])
 
     status, state = post_action(widening_server, cookie, state, "zap")
     assert status == 200
     assert state["video"]["id"] == "04-far"
-    assert state["point_interet"] is None
+    assert state["interest_point"] is None
     assert state["transition"]["topic_path"] == ["C", "X", "Z"]
     assert_real_transition(widening_server.corpus, state["transition"])
     assert state["video"]["id"] not in seen
@@ -594,7 +594,7 @@ def test_zaps_progress_from_a_near_branch_to_a_farther_topic(widening_server):
     # 08-close partage deux sujets avec le point d’intérêt, contre un pour
     # 06-farther et 09-relay ; le classement par sujets communs l’emporte.
     assert state["video"]["id"] == "08-close"
-    assert state["point_interet"] == "04-far"
+    assert state["interest_point"] == "04-far"
     assert state["transition"]["topic_path"] == ["R"]
     assert_real_transition(widening_server.corpus, state["transition"])
 
@@ -604,7 +604,7 @@ def test_zaps_progress_from_a_near_branch_to_a_farther_topic(widening_server):
     assert status == 200
     assert state["transition"]["from"] == "08-close"
     assert state["video"]["id"] == "09-relay"
-    assert state["point_interet"] is None
+    assert state["interest_point"] is None
     assert state["transition"]["topic_path"] == ["M"]
     assert_real_transition(widening_server.corpus, state["transition"])
 
@@ -617,7 +617,7 @@ def test_repeated_zaps_without_an_initial_interest_keep_exploring(branch_server)
         status, state = post_action(branch_server, cookie, state, "zap")
         assert status == 200
         assert state["video"]["id"] == expected
-        assert state["point_interet"] is None
+        assert state["interest_point"] is None
         assert state["video"]["id"] not in seen
         assert_real_transition(branch_server.corpus, state["transition"])
         seen.add(state["video"]["id"])

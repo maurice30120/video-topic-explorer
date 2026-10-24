@@ -58,7 +58,7 @@ def _session_payload(corpus: dict[str, Any], state: dict[str, Any]) -> dict[str,
     return {
         "version": state["version"],
         "video": _video_payload(videos_by_id(corpus)[state["video_id"]]),
-        "point_interet": state["point_interet"],
+        "interest_point": state["interest_point"],
         "status": state["status"],
         "transition": state["transition"],
         "message": state["message"],
@@ -111,9 +111,9 @@ def _restart_or_finish(
         state["used_roots"],
         rng,
     )
-    state["point_interet"] = None
+    state["interest_point"] = None
     state["rejected_directions"] = set()
-    state["zaps_consecutifs"] = 0
+    state["consecutive_zaps"] = 0
     if restart is None:
         state["status"] = "exhausted"
         state["message"] = "Plus aucune vidéo inédite n'est disponible."
@@ -412,14 +412,14 @@ def make_handler(
         session_id = uuid.uuid4().hex
         state = {
             "video_id": start,
-            "point_interet": None,
+            "interest_point": None,
             "shown": {start},
             "version": 0,
             "status": "active",
             "transition": None,
             "rejected_directions": set(),
             "used_roots": set(),
-            "zaps_consecutifs": 0,
+            "consecutive_zaps": 0,
             "message": "",
         }
         with sessions_lock:
@@ -513,9 +513,9 @@ def make_handler(
                 else:
                     current = state["video_id"]
                     rejected = set(state["rejected_directions"])
-                    point_interet = current if action == "interest" else None
-                    zaps_consecutifs = (
-                        0 if action == "interest" else state["zaps_consecutifs"] + 1
+                    interest_point = current if action == "interest" else None
+                    consecutive_zaps = (
+                        0 if action == "interest" else state["consecutive_zaps"] + 1
                     )
                     try:
                         if action == "interest":
@@ -548,7 +548,7 @@ def make_handler(
                                 # Au-delà, le parcours reprend à une autre racine.
                                 radius=min(
                                     graph_engine.MODE_RADIUS[graph_engine.Mode.APPROFONDIR]
-                                    + zaps_consecutifs
+                                    + consecutive_zaps
                                     - 1,
                                     graph_engine.MODE_RADIUS[graph_engine.Mode.DECOUVRIR],
                                 ),
@@ -570,9 +570,9 @@ def make_handler(
                             result_code = 400
                             result = {"erreur": str(exc)}
                     else:
-                        state["point_interet"] = point_interet
+                        state["interest_point"] = interest_point
                         state["rejected_directions"] = rejected
-                        state["zaps_consecutifs"] = zaps_consecutifs
+                        state["consecutive_zaps"] = consecutive_zaps
                         state["version"] += 1
                         if step is None:
                             _restart_or_finish(
