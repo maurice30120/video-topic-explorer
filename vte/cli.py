@@ -320,7 +320,7 @@ def main(argv: list[str] | None = None) -> int:
     p.set_defaults(func=cmd_stats)
 
     p = sub.add_parser("serve", help="page locale : sélection, parcours, graphe à la demande")
-    p.add_argument("corpus")
+    p.add_argument("corpus", nargs="?", default="data/corpus_real.json", help="chemin du corpus (défaut : data/corpus_real.json)")
     p.add_argument("--runs-dir", default="data/runs")
     p.add_argument("--host", default="127.0.0.1")
     p.add_argument("--port", type=int, default=8000)

@@ -52,8 +52,12 @@ def test_html_transitions_show_topic_path_with_anchors(chain_corpus, tmp_path):
     assert 'id="topic-Roslyn"' in doc
     assert "<a href=\"#topic-Roslyn\"" in doc
     for transition in run.transitions:
-        chain = " &#8594; ".join(transition["topic_path"])
-        assert chain in doc
+        # le chemin complet rendu avec ses ancres, y compris multi-sujets
+        chain_html = " → ".join(
+            f'<a href="#topic-{t}" title="voir les vidéos portant ce sujet">{t}</a>'
+            for t in transition["topic_path"]
+        )
+        assert f"chemin de sujets : {chain_html}" in doc
 
 
 def test_html_escapes_titles_and_topics(tmp_path):

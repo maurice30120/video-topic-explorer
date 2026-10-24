@@ -130,11 +130,11 @@ Le grilling du plan MVP a validé les décisions suivantes ; elles complètent l
 
 ### Modes
 
-Même algorithme, un seul paramètre : le rayon de hops de sujets depuis l'ensemble des sujets du point de départ. **Approfondir : rayon 1. Découvrir : rayon 2–3.** Depuis une vidéo, Découvrir peut atteindre des vidéos sans sujet commun avec le départ, tant que le chemin de sujets affiché reste continu.
+Même algorithme, deux paramètres : le rayon de hops de sujets depuis l'ensemble des sujets du point de départ et le classement des candidates à chaque extension. **Approfondir : rayon 1, suivre la branche.** **Découvrir : rayon 2–3, sauter de branche plus tôt.** Depuis une vidéo, Découvrir peut atteindre des vidéos sans sujet commun avec le départ, tant que le chemin de sujets affiché reste continu.
 
 ### Parcours
 
-Un parcours est une **chaîne** : chaque vidéo partage un sujet (direct ou via un sujet intermédiaire) avec la précédente. Départage à égalité : nombre de sujets communs, puis ID de vidéo croissant. Pas de diversité forcée : les 5 premières candidates gagnent. Les **sujets morts** (une seule vidéo) restent dans le JSON et le graphe visuel mais sont exclus des candidats.
+Un parcours est une **chaîne** : chaque vidéo partage un sujet (direct ou via un sujet intermédiaire) avec la précédente. Classement des candidates selon le mode : **Approfondir suit la branche** (sujets communs avec la vidéo courante, décroissants) ; **Découvrir saute de branche plus tôt** (sujets nouveaux apportés par la candidate, décroissants). Départage à égalité : sujets communs, puis ID de vidéo croissant — la longueur du chemin de sujets ne participe jamais au classement. Les **sujets morts** (une seule vidéo) restent dans le JSON et le graphe visuel mais sont exclus des candidats.
 
 ### Explications
 

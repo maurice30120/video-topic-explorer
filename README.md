@@ -8,6 +8,18 @@ Parcours explicable de vidéos YouTube dans un graphe de sujets. Pipeline Python
 pip install -e ".[extract,render,test]"   # ou : pip install networkx pytest
 ```
 
+## Commandes courtes
+
+Après `pip install -e .`, la commande `vte` est disponible (`vte serve` lance le serveur local directement). Un `Makefile` offre aussi des cibles courtes :
+
+```bash
+make serve   # serveur local : sélection, parcours, graphe
+make run     # parcours Découvrir depuis la vidéo de départ par défaut
+make feed    # feed statique out/site/index.html
+make test    # suite pytest
+make help    # liste complète
+```
+
 ## Démarrage rapide (corpus réel de 35 vidéos YouTube vérifiées)
 
 Les 35 vidéos (`data/corpus_real.json`) sont de vraies conférences/tutoriels YouTube,
@@ -26,7 +38,7 @@ python -m vte.cli feed data/corpus_real.json --out out/site/index.html  # dépar
 python -m vte.cli serve data/corpus_real.json --port 8000                    # page locale : sélection, parcours, graphe
 ```
 
-## Démarrage rapide (corpus de démonstration fictif)
+## Corpus élargi (57 vidéos : technique + musique, fun, science, économie, jeux)\r\n\r\n`data/corpus_elargi.json` étend le corpus réel avec 22 vidéos YouTube réelles\r\ncouvrant un panel de genres : musique (Rick Astley, Queen, Rick Beato),\r\nfun/culture internet (bill wurtz, « Me at the zoo »), science (3Blue1Brown,\r\nKurzgesagt, Veritasium), économie (CrashCourse, Economics Explained), jeux\r\nvidéo (Game Maker's Toolkit). Chaque ID est validé via l'oEmbed public ;\r\nle panel reste une seule composante connectée via des ponts réels\r\n(« Machine Learning », « Apprentissage », « Tutoriels », « Histoire »,\r\n« Pédagogie », « Mème internet »).\r\n\r\n```bash\r\nmake elargi       # régénère data/corpus_elargi.json\r\nmake elargi-site  # régénère out/site depuis le corpus élargi (feed + parcours + graphe)\r\npython -m vte.cli serve data/corpus_elargi.json --port 8380   # page locale : sélection, parcours, graphe\r\n```\r\n\r\n## Démarrage rapide (corpus de démonstration fictif)
 
 ```bash
 python scripts/make_demo_corpus.py                 # ~35 vidéos fictives en 6 clusters + ponts

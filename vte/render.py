@@ -253,16 +253,23 @@ def _card_html(
             '<div class="chemin"><div class="ligne-sujets">'
             '<span class="station depart"><span class="pastille"></span>'
             '<span class="nom">Départ</span></span></div></div>'
-            '<p class="indice">Un appui sur la vidéo active le son.</p>'
+            '<p class="indice">Le bouton « Activer le son » débloque l\'audio ; '
+            "avance et volume se règlent directement dans le lecteur.</p>"
         )
     else:
         path_html = ""
+    son_html = ""
+    if _embed_url(video.get("url", "")) is not None:
+        son_html = (
+            '<button class="son" type="button" aria-pressed="false">'
+            "Activer le son</button>"
+        )
     return (
         f'<article class="carte{" depart" if departure else ""}" '
         f'data-video="{html.escape(video_id, quote=True)}">'
         f"{_player_html(video)}"
         '<div class="legende">'
-        f'<h2 class="titre">{html.escape(video["title"])}</h2>'
+        f'<div class="entete"><h2 class="titre">{html.escape(video["title"])}</h2>{son_html}</div>'
         f"{channel_html}"
         f"{path_html}"
         "</div>"
@@ -405,9 +412,26 @@ body[data-mode="approfondir"] { --ligne: var(--ligne-ambre); --sur-ligne: #241a0
   background: #000;
 }
 .lecteur iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
-.lecteur::after { content: ""; position: absolute; inset: 0; }
+/* pas de calque au-dessus de l'iframe : les commandes du lecteur YouTube
+   (avance, volume, plein écran) doivent rester manipulables directement */
 .lecteur-lien { margin-top: 1rem; padding: 1rem; color: var(--discret); }
 .legende { padding: 0.85rem 0.2rem 0; }
+.entete { display: flex; align-items: flex-start; gap: 0.6rem; }
+.entete .titre { flex: 1; }
+.son {
+  flex: none;
+  margin-top: 0.15rem;
+  font: inherit;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.3rem 0.7rem;
+  border-radius: 999px;
+  border: 1px solid var(--trait);
+  background: transparent;
+  color: var(--texte);
+  cursor: pointer;
+}
+.son[aria-pressed="true"] { background: var(--ligne); border-color: transparent; color: var(--sur-ligne); }
 .titre { margin: 0; font-size: 1.12rem; font-weight: 800; line-height: 1.28; }
 .chaine { margin: 0.2rem 0 0; font-size: 0.82rem; color: var(--discret); }
 
@@ -475,6 +499,26 @@ body[data-mode="approfondir"] { --ligne: var(--ligne-ambre); --sur-ligne: #241a0
 :focus-visible { outline: 2px solid var(--ligne); outline-offset: 2px; }
 :focus:not(:focus-visible) { outline: none; }
 
+/* Écran large : salle de projection — le lecteur occupe la hauteur
+   disponible, la légende garde une mesure lisible sous l'écran. */
+@media (min-width: 720px) {
+  .page {
+    width: min(1100px, 94vw, calc((100dvh - 280px) * 16 / 9));
+  }
+  .carte { padding: 0 1.5rem; }
+  .lecteur {
+    flex: 1 1 auto;
+    min-height: 0;
+    aspect-ratio: auto;
+    margin-top: 1.25rem;
+    border-radius: 14px;
+  }
+  .legende { max-width: 46rem; padding-top: 1rem; }
+  .titre { font-size: 1.3rem; }
+  .chaine { font-size: 0.9rem; }
+  .fin-contenu { max-width: 34rem; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .feed { scroll-behavior: auto; }
 }
@@ -522,6 +566,17 @@ _FEED_JS = """
       pending.get(player).forEach(function (func) { post(player, func); });
       pending.delete(player);
     }
+  });
+  /* le lecteur YouTube n'envoie onReady qu'après un salut « listening » ;
+     sans lui, le canal postMessage reste fermé et aucune commande —
+     lecture, pause, son — ne partirait jamais */
+  function openChannel(iframe, id) {
+    iframe.contentWindow.postMessage(
+      JSON.stringify({ event: "listening", id: id, channel: "widget" }), "*");
+  }
+  Array.prototype.slice.call(document.querySelectorAll("iframe")).forEach(function (iframe, index) {
+    openChannel(iframe, index + 1);
+    iframe.addEventListener("load", function () { openChannel(iframe, index + 1); });
   });
   function players(section) {
     return Array.prototype.slice.call(section.querySelectorAll("iframe"));
@@ -582,17 +637,25 @@ _FEED_JS = """
     });
   });
 
-  /* un appui sur le lecteur active ou coupe le son ; activer le son
-     démarre aussi la lecture (un lecteur jamais démarré ne doit pas
-     juste être démueté) */
+  /* un appui sur le bouton « son » active ou coupe l'audio ; les clics sur
+     le lecteur vont au lecteur YouTube lui-même (avance, volume), aucun
+     calque ne les intercepte */
+  function setSon(card, actif) {
+    card.dataset.son = actif ? "1" : "0";
+    var bouton = card.querySelector(".son");
+    if (bouton) {
+      bouton.textContent = actif ? "Couper le son" : "Activer le son";
+      bouton.setAttribute("aria-pressed", String(actif));
+    }
+  }
   feed.addEventListener("click", function (event) {
-    var lecteur = event.target.closest(".lecteur");
-    if (!lecteur) { return; }
-    var card = lecteur.closest(".carte");
+    var bouton = event.target.closest(".son");
+    if (!bouton) { return; }
+    var card = bouton.closest(".carte");
     var iframe = card.querySelector("iframe");
     if (!iframe) { return; }
     var avecSon = card.dataset.son === "1";
-    card.dataset.son = avecSon ? "0" : "1";
+    setSon(card, !avecSon);
     if (avecSon) {
       post(iframe, "mute");
     } else {
