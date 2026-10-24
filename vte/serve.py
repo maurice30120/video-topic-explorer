@@ -114,7 +114,7 @@ def adaptive_page(corpus: dict[str, Any], state: dict[str, Any]) -> str:
     """Rend une seule vidéo active et ses deux commandes de parcours."""
     video = videos_by_id(corpus)[state["video_id"]]
     video_html = _adaptive_video_html(video, state["transition"])
-    zap_disabled = ' disabled aria-disabled="true"'  # Le zap est livré par le ticket #40.
+    zap_disabled = " disabled" if state["status"] != "active" else ""
     interest_disabled = " disabled" if state["status"] != "active" else ""
     message = html.escape(state["message"])
     return f"""<!doctype html>
@@ -156,7 +156,7 @@ body {{ background:var(--fond); color:var(--texte); font:16px/1.45 system-ui,san
 {video_html}
 <div class="actions" aria-label="Actions de parcours">
 <button class="action principal" type="button" data-action="interest"{interest_disabled}>Simuler un visionnage long</button>
-<button class="action" type="button" data-action="zap" title="Le zap sera activé dans l'étape suivante"{zap_disabled}>Zapper</button>
+<button class="action" type="button" data-action="zap"{zap_disabled}>Zapper</button>
 </div>
 <p class="message" id="message" aria-live="polite">{message}</p>
 </main>
@@ -186,7 +186,7 @@ body {{ background:var(--fond); color:var(--texte); font:16px/1.45 system-ui,san
       root.dataset.version = String(data.version);
       version = data.version;
       termine = true;
-      interest.disabled = true;
+      buttons.forEach(function (button) {{ button.disabled = true; }});
       message.classList.remove("erreur");
       message.textContent = data.message || "Plus aucune vidéo liée n'est disponible dans cette branche.";
       return;
@@ -233,10 +233,10 @@ body {{ background:var(--fond); color:var(--texte); font:16px/1.45 system-ui,san
     message.classList.remove("erreur");
     message.textContent = data.message || "";
     termine = data.status !== "active";
-    interest.disabled = termine;
+    buttons.forEach(function (item) {{ item.disabled = termine; }});
   }}
   root.addEventListener("click", function (event) {{
-    var button = event.target.closest('button[data-action="interest"]');
+    var button = event.target.closest("button[data-action]");
     if (!button || enCours || termine) return;
     enCours = true;
     buttons.forEach(function (item) {{ item.disabled = true; }});
@@ -246,7 +246,7 @@ body {{ background:var(--fond); color:var(--texte); font:16px/1.45 system-ui,san
       method: "POST",
       headers: {{ "Content-Type": "application/json" }},
       credentials: "same-origin",
-      body: JSON.stringify({{ action: "interest", version: version }})
+      body: JSON.stringify({{ action: button.dataset.action, version: version }})
     }}).then(function (response) {{
       return response.json().then(function (data) {{
         if (response.status === 409 && data.video) return data;
@@ -255,7 +255,7 @@ body {{ background:var(--fond); color:var(--texte); font:16px/1.45 system-ui,san
       }});
     }}).then(afficher).catch(function () {{
       afficherErreur("Impossible de charger la prochaine vidéo. Réessaie.");
-      interest.disabled = false;
+      buttons.forEach(function (item) {{ item.disabled = termine; }});
     }}).finally(function () {{
       enCours = false;
     }});
@@ -334,6 +334,7 @@ def make_handler(corpus: dict[str, Any], runs_dir: Path) -> type[BaseHTTPRequest
             "version": 0,
             "status": "active",
             "transition": None,
+            "rejected_directions": set(),
             "message": "",
         }
         with sessions_lock:
@@ -403,8 +404,8 @@ def make_handler(corpus: dict[str, Any], runs_dir: Path) -> type[BaseHTTPRequest
 
             action = payload.get("action")
             version = payload.get("version")
-            if action != "interest":
-                self._send_json(400, {"erreur": "action inconnue (attendu : interest)"})
+            if action not in {"interest", "zap"}:
+                self._send_json(400, {"erreur": "action inconnue (attendu : interest ou zap)"})
                 return
             if not isinstance(version, int) or isinstance(version, bool):
                 self._send_json(400, {"erreur": "version de session invalide"})
@@ -426,10 +427,36 @@ def make_handler(corpus: dict[str, Any], runs_dir: Path) -> type[BaseHTTPRequest
                     result["erreur"] = "cette session a terminé son exploration locale"
                 else:
                     current = state["video_id"]
+                    rejected = set(state["rejected_directions"])
+                    point_interet = current if action == "interest" else None
                     try:
-                        step = graph_engine.next_step(
-                            corpus, current, "approfondir", exclude=state["shown"]
-                        )
+                        if action == "interest":
+                            rejected.clear()
+                            step = graph_engine.next_step(
+                                corpus, current, "approfondir", exclude=state["shown"]
+                            )
+                        else:
+                            previous_transition = state["transition"]
+                            if previous_transition and previous_transition.get("topic_path"):
+                                direction = previous_transition["topic_path"][-1]
+                            else:
+                                natural = graph_engine.next_step(
+                                    corpus,
+                                    current,
+                                    "approfondir",
+                                    exclude=state["shown"],
+                                    exclude_directions=rejected,
+                                )
+                                direction = natural["topic_path"][0] if natural else None
+                            if direction:
+                                rejected.add(direction)
+                            step = graph_engine.next_step(
+                                corpus,
+                                current,
+                                "approfondir",
+                                exclude=state["shown"],
+                                exclude_directions=rejected,
+                            )
                     except graph_engine.PathfindingError as exc:
                         current_video = videos_by_id(corpus).get(current)
                         alive_topics = set()
@@ -438,7 +465,8 @@ def make_handler(corpus: dict[str, Any], runs_dir: Path) -> type[BaseHTTPRequest
                                 topic["canonical"] for topic in current_video.get("topics", [])
                             } - set(corpus.get("dead_topics", ()))
                         if not alive_topics and current_video is not None:
-                            state["point_interet"] = current
+                            state["point_interet"] = point_interet
+                            state["rejected_directions"] = rejected
                             state["version"] += 1
                             state["status"] = "exhausted"
                             state["message"] = "Plus aucune vidéo liée n'est disponible dans cette branche."
@@ -448,7 +476,8 @@ def make_handler(corpus: dict[str, Any], runs_dir: Path) -> type[BaseHTTPRequest
                             result_code = 400
                             result = {"erreur": str(exc)}
                     else:
-                        state["point_interet"] = current
+                        state["point_interet"] = point_interet
+                        state["rejected_directions"] = rejected
                         state["version"] += 1
                         if step is None:
                             state["status"] = "exhausted"

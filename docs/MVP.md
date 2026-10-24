@@ -62,7 +62,7 @@ Chaque transition affiche les sujets communs ou les sujets intermédiaires réel
 ## 5. Sorties attendues
 
 - Un **JSON local** inspectable : vidéos, sujets normalisés, liens et provenance de l'extraction.
-- Une **page HTML minimale** : démarrage direct sur une vidéo, intérêt simulé et remplacement immédiat par une vidéo liée, avec son chemin de sujets.
+- Une **page HTML minimale** : démarrage direct sur une vidéo, intérêt simulé ou zap, puis remplacement immédiat par une vidéo liée avec son chemin de sujets.
 - Une **visualisation facultative** du graphe ou du sous-graphe pertinent.
 - Des erreurs et limites présentées clairement, sans données fictives cachées.
 

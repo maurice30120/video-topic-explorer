@@ -62,7 +62,8 @@ def test_index_starts_directly_on_one_video_with_the_two_actions(server):
     assert "<select" not in doc
     assert '<button class="action principal"' in doc
     assert "Simuler un visionnage long" in doc
-    assert re.search(r'<button[^>]*data-action="zap"[^>]*disabled', doc)
+    zap = re.search(r'<button[^>]*data-action="zap"[^>]*>', doc)
+    assert zap is not None and "disabled" not in zap.group(0)
     assert "Zapper" in doc
 
 

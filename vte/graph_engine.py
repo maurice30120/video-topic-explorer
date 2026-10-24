@@ -154,8 +154,12 @@ def _shortest_topic_path(
     seules les candidates sont filtrées par éligibilité, jamais le chemin.
     Le chemin affiché est choisi ici, à l'affichage — il ne participe à aucun tri.
     """
-    from_topics = sorted(f"topic:{t}" for t in topics_in(graph, from_video))
-    to_topics = sorted(f"topic:{t}" for t in topics_in(graph, to_video))
+    from_topics = sorted(
+        node for t in topics_in(graph, from_video) if (node := f"topic:{t}") in projected
+    )
+    to_topics = sorted(
+        node for t in topics_in(graph, to_video) if (node := f"topic:{t}") in projected
+    )
     best: list[str] | None = None
     for origin in from_topics:
         lengths = nx.single_source_shortest_path_length(projected, origin)
@@ -305,6 +309,7 @@ def _next_transition(
     current: str,
     used: set[str],
     mode: Mode,
+    exclude_directions: set[str] | None = None,
 ) -> dict[str, Any] | None:
     """Pas unique : la prochaine vidéo orientée par la vidéo courante, hors « used ».
 
@@ -312,13 +317,17 @@ def _next_transition(
     le parcours complet ; None si épuisé.
     """
     paths: dict[str, list[str]] = {}
+    path_graph = projected
+    if exclude_directions:
+        blocked = {f"topic:{topic}" for topic in exclude_directions}
+        path_graph = projected.subgraph(set(projected) - blocked)
     for node, data in graph.nodes(data=True):
         if data["kind"] != "video" or data["video_id"] in used:
             continue
         video_id = data["video_id"]
         if not topics_in(graph, video_id, allowed):
             continue  # le rayon filtre l'éligibilité, jamais la recherche de chemin
-        path = _shortest_topic_path(projected, graph, current, video_id)
+        path = _shortest_topic_path(path_graph, graph, current, video_id)
         if path is not None:
             paths[video_id] = path
     ranked = _ranked_steps(graph, current, paths, mode)
@@ -338,14 +347,21 @@ def _next_transition(
 
 
 def next_step(
-    corpus: dict[str, Any], current: str, mode: str | Mode, exclude: set[str] | None = None
+    corpus: dict[str, Any],
+    current: str,
+    mode: str | Mode,
+    exclude: set[str] | None = None,
+    *,
+    exclude_directions: set[str] | None = None,
 ) -> dict[str, Any] | None:
     """Fonction pure : (corpus figé, vidéo regardée, mode, déjà montrées) → pas suivant.
 
     Le visionnage de la vidéo courante oriente la suggestion : le pas part
     d'un sujet de la vidéo regardée et aboutit à un sujet de la vidéo suggérée,
     par un chemin de sujets réel. Les vidéos déjà montrées (et la vidéo
-    regardée) sont exclues : le panneau ne répète jamais une carte.
+    regardée) sont exclues : le panneau ne répète jamais une carte. Les sujets
+    de `exclude_directions` ne peuvent apparaître dans le chemin sortant, ce qui
+    permet d'explorer une branche différente après un zap.
     Renvoie None quand aucune candidate ne reste — fin honnête, pas une erreur.
     """
     try:
@@ -368,7 +384,9 @@ def next_step(
             f"({MODE_RADIUS[mode]} hop(s)) ; affichez le graphe du corpus pour visualiser sa topologie"
         )
     used = set(exclude or ()) | {current}
-    return _next_transition(graph, allowed, projected, current, used, mode)
+    return _next_transition(
+        graph, allowed, projected, current, used, mode, exclude_directions=exclude_directions
+    )
 
 
 def _extend(

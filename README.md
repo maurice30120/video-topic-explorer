@@ -13,7 +13,7 @@ pip install -e ".[extract,render,test]"   # ou : pip install networkx pytest
 Après `pip install -e .`, la commande `vte` est disponible (`vte serve` lance le serveur local directement). Un `Makefile` offre aussi des cibles courtes :
 
 ```bash
-make serve   # serveur local : vidéo directe, intérêt simulé, parcours et graphe
+make serve   # serveur local : vidéo directe, intérêt simulé, zap et parcours
 make run     # parcours Découvrir depuis la vidéo de départ par défaut
 make feed    # feed statique out/site/index.html
 make test    # suite pytest

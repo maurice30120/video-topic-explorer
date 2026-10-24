@@ -24,13 +24,13 @@ Exemple : une vidéo sur l’IA intéresse la personne ; elle zappe ensuite les 
 ## Questions encore ouvertes
 
 - L’instrumentation réelle et son seuil sont différés : cette étape teste les transitions au moyen des deux boutons.
-- Politique de répétition des vidéos et comportement si aucun autre arbre n’est disponible.
 
-## Tranche #39 livrée
+## Tranches #39 et #40 livrées
 
-- La page serveur commence par une seule vidéo active et montre « Simuler un visionnage long » et « Zapper ». Le zap reste désactivé jusqu’au ticket #40.
-- L’intérêt simulé indique que la vidéo courante devient le point d’intérêt ; le serveur calcule aussitôt une candidate liée, privilégie les sujets communs et transmet son chemin réel.
-- Le point d’intérêt et les exclusions de vidéos sont limités à la session en mémoire. Aucune durée de lecture n’est mesurée, aucun like ni profil durable n’est enregistré.
-- Si le voisinage local est épuisé, la page garde la dernière vidéo et affiche une fin explicite. La reprise depuis une autre racine relève du ticket #42.
+- La page serveur commence par une seule vidéo active et montre « Simuler un visionnage long » et « Zapper ». Chaque action remplace immédiatement la vidéo et affiche un chemin réel.
+- L’intérêt simulé fait de la vidéo quittée le nouveau point d’intérêt et privilégie ses sujets communs. Un zap efface ce repère et cherche depuis la vidéo quittée une direction différente de celle qui vient d’être rejetée.
+- Le serveur garde les directions rejetées séparément des vidéos déjà montrées ; toutes deux restent limitées à la session en mémoire. Un nouvel intérêt rétablit le repère et efface les rejets précédents.
+- Aucune durée de lecture n’est mesurée, aucun like ni profil durable n’est enregistré. L’élargissement après plusieurs zaps relève de #41 ; la reprise depuis une autre racine relève de #42.
+- Si aucune candidate locale ne reste, la page garde la dernière vidéo et affiche une fin explicite.
 
 Les feeds exportés en HTML restent précalculés et distincts de cette page interactive. L’ADR 0002 conserve son rôle : la mesure réelle de rétention appartient à l’évaluation ultérieure, pas à ce bouton de test.

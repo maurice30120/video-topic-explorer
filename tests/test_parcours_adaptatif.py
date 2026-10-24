@@ -111,7 +111,8 @@ def test_arrival_starts_with_one_video_and_two_controls(server):
     assert 'data-action="interest"' in doc
     assert "Zapper" in doc
     assert 'data-action="zap"' in doc
-    assert re.search(r'<button[^>]*data-action="zap"[^>]*disabled', doc)
+    zap = re.search(r'<button[^>]*data-action="zap"[^>]*>', doc)
+    assert zap is not None and "disabled" not in zap.group(0)
 
 
 def test_interests_replace_the_video_and_move_the_interest_point(server):
@@ -145,14 +146,15 @@ def test_interests_replace_the_video_and_move_the_interest_point(server):
     assert_real_transition(server.corpus, second["transition"])
 
 
-def test_stale_action_does_not_create_an_extra_transition(server):
+@pytest.mark.parametrize("action", ["interest", "zap"])
+def test_stale_action_does_not_create_an_extra_transition(server, action):
     cookie, initial, _ = begin_session(server)
     accepted_status, _, accepted_body = request(
         server,
         "POST",
         "/action",
         cookie=cookie,
-        payload={"action": "interest", "version": initial["version"]},
+        payload={"action": action, "version": initial["version"]},
     )
     accepted = json.loads(accepted_body)
     assert accepted_status == 200
@@ -162,7 +164,7 @@ def test_stale_action_does_not_create_an_extra_transition(server):
         "POST",
         "/action",
         cookie=cookie,
-        payload={"action": "interest", "version": initial["version"]},
+        payload={"action": action, "version": initial["version"]},
     )
     stale = json.loads(stale_body)
     assert stale_status == 409
@@ -191,7 +193,8 @@ def test_invalid_action_keeps_the_current_video_available_for_retry(server):
     assert state["status"] == "active"
 
 
-def test_simultaneous_actions_accept_only_one_transition(server):
+@pytest.mark.parametrize("action", ["interest", "zap"])
+def test_simultaneous_actions_accept_only_one_transition(server, action):
     cookie, initial, _ = begin_session(server)
 
     def act():
@@ -200,7 +203,7 @@ def test_simultaneous_actions_accept_only_one_transition(server):
             "POST",
             "/action",
             cookie=cookie,
-            payload={"action": "interest", "version": initial["version"]},
+            payload={"action": action, "version": initial["version"]},
         )[0]
 
     with ThreadPoolExecutor(max_workers=2) as pool:
@@ -252,3 +255,85 @@ def test_isolated_start_reports_local_exhaustion_without_an_error(isolated_serve
     assert result["status"] == "exhausted"
     assert result["video"]["id"] == "solo"
     assert "plus aucune vidéo" in result["message"].lower()
+
+
+@pytest.fixture
+def branch_server(tmp_path):
+    """Le point d’intérêt initial et la vidéo quittée ont des voisins divergents."""
+    corpus = load_corpus_from_videos([
+        make_video("a-start", ["Alpha", "OldPivot"]),
+        make_video("b-current", ["Alpha", "Beta"]),
+        make_video("c-old-pivot", ["OldPivot", "OldLeaf"]),
+        make_video("d-neighbor", ["Beta", "NeighborLeaf"]),
+        make_video("e-after-zap-interest", ["OldLeaf", "Further"]),
+    ])
+    httpd = start_server(corpus, tmp_path / "runs")
+    httpd.corpus = corpus
+    yield httpd
+    httpd.shutdown()
+    httpd.server_close()
+
+
+def test_zap_after_interest_uses_current_video_and_drops_old_interest(branch_server):
+    cookie, initial, _ = begin_session(branch_server)
+    assert initial["video"]["id"] == "a-start"
+    by_id = {video["id"]: video for video in branch_server.corpus["videos"]}
+    assert topics_of(by_id["a-start"]) & topics_of(by_id["c-old-pivot"]) == {"OldPivot"}
+    assert topics_of(by_id["b-current"]) & topics_of(by_id["d-neighbor"]) == {"Beta"}
+    old_pivot_status, _, old_pivot_body = request(
+        branch_server,
+        "GET",
+        "/etape?from=a-start&mode=approfondir&exclu=b-current",
+    )
+    old_pivot = json.loads(old_pivot_body)
+    assert old_pivot_status == 200
+    assert old_pivot["to"] == "c-old-pivot"
+    assert old_pivot["topic_path"] == ["OldPivot"]
+    assert_real_transition(branch_server.corpus, old_pivot)
+
+    interest_status, _, interest_body = request(
+        branch_server, "POST", "/action", cookie=cookie,
+        payload={"action": "interest", "version": initial["version"]},
+    )
+    interest = json.loads(interest_body)
+    assert interest_status == 200
+    assert interest["video"]["id"] == "b-current"
+    assert interest["point_interet"] == "a-start"
+    assert_real_transition(branch_server.corpus, interest["transition"])
+
+    zap_status, _, zap_body = request(
+        branch_server, "POST", "/action", cookie=cookie,
+        payload={"action": "zap", "version": interest["version"]},
+    )
+    zap = json.loads(zap_body)
+    assert zap_status == 200
+    assert zap["transition"]["from"] == "b-current"
+    assert zap["video"]["id"] == "d-neighbor"
+    assert zap["point_interet"] is None
+    assert zap["transition"]["topic_path"] == ["Beta"]
+    assert_real_transition(branch_server.corpus, zap["transition"])
+
+
+def test_first_zap_explores_and_a_later_interest_restores_the_pivot(branch_server):
+    cookie, initial, _ = begin_session(branch_server)
+    zap_status, _, zap_body = request(
+        branch_server, "POST", "/action", cookie=cookie,
+        payload={"action": "zap", "version": initial["version"]},
+    )
+    zap = json.loads(zap_body)
+    assert zap_status == 200
+    assert zap["video"]["id"] == "c-old-pivot"
+    assert zap["point_interet"] is None
+    assert zap["transition"]["topic_path"] == ["OldPivot"]
+    assert_real_transition(branch_server.corpus, zap["transition"])
+
+    interest_status, _, interest_body = request(
+        branch_server, "POST", "/action", cookie=cookie,
+        payload={"action": "interest", "version": zap["version"]},
+    )
+    interest = json.loads(interest_body)
+    assert interest_status == 200
+    assert interest["transition"]["from"] == "c-old-pivot"
+    assert interest["video"]["id"] == "e-after-zap-interest"
+    assert interest["point_interet"] == "c-old-pivot"
+    assert_real_transition(branch_server.corpus, interest["transition"])
