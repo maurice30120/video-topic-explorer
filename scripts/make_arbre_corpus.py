@@ -128,6 +128,10 @@ def bridge_videos() -> list[dict]:
 def build_corpus() -> dict:
     return {
         "videos": branch_videos() + bridge_videos(),
+        # Métadonnée de premier niveau pour le panneau de départ (ticket #37) :
+        # les 19 noms de branches (les sujets cœur) — les vidéos restent
+        # strictement inchangées (topologie figée arbre-2026-10).
+        "branches": [core for _, core, _ in BRANCHES],
         "dead_topics": list(DEAD_TOPICS),
     }
 
