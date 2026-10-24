@@ -17,7 +17,8 @@ MARGIN = 1.0
 
 def reveal(order_path: str, scores_path: str, mapping_path: str) -> dict:
     order = json.loads(Path(order_path).read_text(encoding="utf-8"))
-    scores = json.loads(Path(scores_path).read_text(encoding="utf-8"))
+    scores_file = Path(scores_path)
+    scores = json.loads(scores_file.read_text(encoding="utf-8")) if scores_file.exists() else {}
     mapping = json.loads(Path(mapping_path).read_text(encoding="utf-8"))
 
     missing = scores_complete(order, scores)

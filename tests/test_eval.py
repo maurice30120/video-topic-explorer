@@ -227,6 +227,20 @@ class TestReveal:
         with pytest.raises(SystemExit, match="clarte"):
             reveal.reveal(*paths)
 
+    def test_refuses_scoring_not_yet_started(self, tmp_path):
+        """Révélation lancée avant toute notation : refus propre, pas de traceback."""
+        reveal = load_eval("reveal")
+        mapping = {"A": {"start": "v1", "origine": "baseline"}, "B": {"start": "v1", "origine": "decouvrir"}}
+        order = {
+            "order": ["A", "B"],
+            "letters": {letter: {"start": "v1", "videos": [{"id": "v2", "title": "Vidéo v2"}]} for letter in "AB"},
+        }
+        tmp_path.joinpath("order.json").write_text(json.dumps(order, ensure_ascii=False), encoding="utf-8")
+        tmp_path.joinpath("mapping.json").write_text(json.dumps(mapping, ensure_ascii=False), encoding="utf-8")
+        with pytest.raises(SystemExit, match="notation incomplète"):
+            reveal.reveal(str(tmp_path / "order.json"), str(tmp_path / "scores.json"),
+                          str(tmp_path / "mapping.json"))
+
     def test_decision_go(self, tmp_path):
         reveal = load_eval("reveal")
         mapping = {
