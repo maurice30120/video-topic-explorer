@@ -5,7 +5,7 @@ Utilisation :
     python -m vte extract data/videos_raw.json data/corpus.json
     python -m vte run data/corpus.json --start vid-001 --mode decouvrir
     python -m vte render data/corpus.json --run data/runs/<fichier>.json --out out/parcours.html
-    python -m vte graph data/corpus.json --run data/runs/<fichier>.json --out out/graphe.png
+    python -m vte graph data/corpus.json --run data/runs/<fichier>.json --out out/graphe.png (ou .svg)
     python -m vte stats data/corpus.json
     python -m vte serve data/corpus.json --port 8000
 """
@@ -181,12 +181,12 @@ def cmd_render(args: argparse.Namespace) -> int:
 
 
 def cmd_graph(args: argparse.Namespace) -> int:
-    from .render import render_graph_png
+    from .render import render_graph
 
     corpus = load_corpus(args.corpus)
     run = json.loads(Path(args.run).read_text(encoding="utf-8")) if args.run else None
     out = Path(args.out) or Path("out/graphe.png")
-    render_graph_png(corpus, run, out)
+    render_graph(corpus, run, out)
     print(f"graphe statique : {out}")
     return 0
 
