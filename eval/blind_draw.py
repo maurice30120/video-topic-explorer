@@ -2,8 +2,9 @@
 
 Génère le protocole complet, sans discipline manuelle (user story 18) :
 - sélectionne ~5 points de départ (déterministe : liste triée des départs
-  éligibles échantillonnée par le RNG seedé ; un départ est éligible s'il
-  produit au moins une suggestion dans chacune des trois listes),
+  éligibles échantillonnée par le RNG seedé ; un départ est éligible si ses
+  trois listes existent et ont toutes la même longueur : la longueur d'une
+  liste ne doit jamais révéler son origine),
 - construit les trois listes par départ via les seams du moteur
   (baseline() et parcours()) : jusqu'à 4 suggestions après le point de
   départ, la même longueur maximale pour les trois origines,
@@ -30,21 +31,21 @@ KINDS = ("baseline", "approfondir", "decouvrir")
 
 
 def eligible_starts(corpus: dict) -> list[str]:
-    """Départs triés produisant une liste non vide pour chaque origine."""
+    """Départs triés dont les trois listes existent et ont la même longueur.
+
+    Trois listes de longueurs différentes révéleraient l'origine au
+    scoreur en aveugle (liste courte = run partiel) : de tels départs sont
+    exclus du protocole.
+    """
     eligible = []
     for video in corpus["videos"]:
         start = video["id"]
         try:
-            if not baseline(corpus, start)[:SUGGESTIONS]:
-                continue
-            for mode in ("approfondir", "decouvrir"):
-                run = parcours(corpus, start, mode)
-                if not run.videos[1:1 + SUGGESTIONS]:
-                    break
-            else:
-                eligible.append(start)
+            lengths = {len(_blind_list(corpus, start, kind)[:SUGGESTIONS]) for kind in KINDS}
         except PathfindingError:
             continue
+        if len(lengths) == 1 and 0 not in lengths:
+            eligible.append(start)
     return sorted(eligible)
 
 
@@ -68,9 +69,12 @@ def build_protocol(corpus: dict, seed: int, starts: list[str] | None = None, cou
             )
         starts = rng.sample(pool, count)
     for start in starts:
-        for kind in KINDS:
-            if not _blind_list(corpus, start, kind):
-                raise SystemExit(f"départ {start!r} : liste {kind} vide ; choisissez un départ éligible")
+        lengths = {len(_blind_list(corpus, start, kind)[:SUGGESTIONS]) for kind in KINDS}
+        if len(lengths) != 1 or 0 in lengths:
+            raise SystemExit(
+                f"départ {start!r} : listes de longueurs différentes {sorted(lengths)} ; "
+                "la longueur ne doit pas révéler l'origine ; choisissez un départ éligible"
+            )
 
     slots = [{"start": start, "kind": kind} for start in starts for kind in KINDS]
     rng.shuffle(slots)

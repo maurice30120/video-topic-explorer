@@ -34,16 +34,18 @@ def load_eval(name: str):
 
 @pytest.fixture
 def protocol_corpus():
-    """Corpus assez dense pour 5 départs complets dans les deux modes."""
+    """Corpus dense : chaque départ éligible donne trois listes de même longueur (4)."""
     return load_corpus_from_videos([
-        make_video("v1", ["C#", ".NET", "Roslyn"]),
-        make_video("v2", ["C#", ".NET"]),
-        make_video("v3", ["C#", "Testing"]),
-        make_video("v4", ["Roslyn", "Compilateurs"]),
-        make_video("v5", ["Compilateurs", "LLVM"]),
-        make_video("v6", ["LLVM", "Rust"]),
-        make_video("v7", ["Rust", "Systèmes"]),
-        make_video("v8", ["Systèmes", "Linux"]),
+        make_video("v1", ["C#", ".NET"]),
+        make_video("v2", [".NET", "Roslyn"]),
+        make_video("v3", ["Roslyn", "Compilateurs"]),
+        make_video("v4", ["Compilateurs", "LLVM"]),
+        make_video("v5", ["LLVM", "Rust"]),
+        make_video("v6", ["Rust", "C#"]),
+        make_video("v7", ["C#", "Roslyn"]),
+        make_video("v8", [".NET", "Compilateurs"]),
+        make_video("v9", ["Roslyn", "LLVM"]),
+        make_video("v10", ["Compilateurs", "Rust"]),
     ])
 
 
@@ -107,6 +109,33 @@ class TestBlindDraw:
         assert first[0]["starts"] == second[0]["starts"]
         assert len(first[0]["starts"]) == 5
         assert len(set(first[0]["starts"])) == 5
+
+    def test_unequal_length_start_is_ineligible_and_rejected(self):
+        """La longueur d'une liste ne doit jamais révéler son origine (story 19, ticket #8)."""
+        blind_draw = load_eval("blind_draw")
+        corpus = load_corpus_from_videos([
+            make_video("s", ["Go"]),
+            make_video("b1", ["Go", "Concurrency"]),
+            make_video("b2", ["Go", "Channels"]),
+            make_video("c1", ["Concurrency", "Pipelines"]),
+            make_video("c2", ["Channels", "Patterns"]),
+        ])
+        lengths = {kind: len(blind_draw._blind_list(corpus, "s", kind)) for kind in KINDS}
+        assert len(set(lengths.values())) > 1, "garde-fou : le départ de test est bien inégal"
+        assert "s" not in blind_draw.eligible_starts(corpus)
+        with pytest.raises(SystemExit, match="longueur"):
+            blind_draw.build_protocol(corpus, seed=7, starts=["s"])
+
+    def test_auto_draw_lists_share_length_per_start(self, protocol_corpus):
+        """Aucune fuite d'origine par la longueur sur un tirage complet (3 x 5 listes)."""
+        blind_draw = load_eval("blind_draw")
+        order, mapping = blind_draw.build_protocol(protocol_corpus, seed=20261020, count=5)
+        per_start = {}
+        for letter, entry in mapping.items():
+            per_start.setdefault(entry["start"], []).append(len(order["letters"][letter]["videos"]))
+        assert len(per_start) == 5
+        for lengths in per_start.values():
+            assert len(set(lengths)) == 1, f"longueurs différentes pour un départ : {lengths}"
 
     def test_writes_order_and_mapping_files(self, protocol_corpus, tmp_path):
         blind_draw = load_eval("blind_draw")
