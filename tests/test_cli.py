@@ -12,6 +12,7 @@ import sys
 import pytest
 
 from vte import cli
+from vte import graph_engine
 
 from conftest import make_video
 
@@ -55,3 +56,32 @@ def test_python_dash_m_vte_delegates_to_cli(chain_corpus_path, monkeypatch, caps
         runpy.run_module("vte", run_name="__main__")
     assert exc.value.code == 0
     assert "composantes connectées : 1" in capsys.readouterr().out
+
+def test_render_without_out_writes_default_page(chain_corpus_path, tmp_path, monkeypatch):
+    """`render` sans --out : code 0, page écrite à l'emplacement par défaut."""
+    monkeypatch.chdir(tmp_path)
+    run_file = tmp_path / "run.json"
+    assert cli.main(["run", str(chain_corpus_path), "--start", "a", "--mode", "approfondir", "--out", str(run_file)]) == 0
+    code = cli.main(["render", str(chain_corpus_path), "--run", str(run_file)])
+    assert code == 0
+    assert (tmp_path / "out" / "parcours.html").is_file()
+
+def test_graph_without_out_writes_default_image(chain_corpus_path, tmp_path, monkeypatch):
+    """`graph` sans --out : code 0, image écrite à l'emplacement par défaut."""
+    monkeypatch.chdir(tmp_path)
+    code = cli.main(["graph", str(chain_corpus_path)])
+    assert code == 0
+    assert (tmp_path / "out" / "graphe.png").is_file()
+
+def test_run_accepts_exactly_the_engine_modes(chain_corpus_path, tmp_path):
+    """Les modes acceptés par la CLI sont exactement ceux du moteur (graph_engine.Mode)."""
+    for mode in graph_engine.Mode:
+        out = tmp_path / f"run-{mode.value}.json"
+        assert cli.main(["run", str(chain_corpus_path), "--start", "a", "--mode", mode.value, "--out", str(out)]) == 0
+
+
+def test_run_rejects_mode_outside_engine_types(chain_corpus_path):
+    """Un mode absent des types du moteur est refusé par argparse (code 2)."""
+    with pytest.raises(SystemExit) as exc:
+        cli.main(["run", str(chain_corpus_path), "--start", "a", "--mode", "teleporter"])
+    assert exc.value.code == 2
