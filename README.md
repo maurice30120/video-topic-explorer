@@ -14,7 +14,7 @@ Après `pip install -e .`, la commande `vte` est disponible (`vte serve` lance l
 
 ```bash
 make serve   # serveur local : sélection, parcours, graphe
-make run     # parcours Découvrir depuis la vidéo de départ par défaut
+make run     # parcours au rayon 3 depuis la vidéo de départ par défaut
 make feed    # feed statique out/site/index.html
 make test    # suite pytest
 make help    # liste complète
@@ -30,7 +30,7 @@ Noyau Linux + ponts inter-clusters.
 
 ```bash
 python scripts/make_real_corpus.py                                          # régénère data/corpus_real.json
-python -m vte.cli run data/corpus_real.json --start ghnY4S8unMM --mode decouvrir --out data/runs/demo.json
+python -m vte.cli run data/corpus_real.json --start ghnY4S8unMM --rayon 3 --out data/runs/demo.json
 python -m vte.cli render data/corpus_real.json --run data/runs/demo.json --out out/parcours.html
 python -m vte.cli graph data/corpus_real.json --run data/runs/demo.json --out out/graphe.png  # ou .svg : PNG/SVG selon l'extension
 python -m vte.cli baseline data/corpus_real.json --start ghnY4S8unMM
@@ -42,7 +42,7 @@ python -m vte.cli serve data/corpus_real.json --port 8000                    # p
 
 ```bash
 python scripts/make_demo_corpus.py                 # ~35 vidéos fictives en 6 clusters + ponts
-python -m vte.cli run data/corpus_demo.json --start vid-001 --mode decouvrir --out data/runs/demo.json
+python -m vte.cli run data/corpus_demo.json --start vid-001 --rayon 3 --out data/runs/demo.json
 ```
 
 ## Provenance des sujets du corpus réel : manuelle aujourd'hui, Gemini pour la prochaine version
@@ -96,11 +96,11 @@ python -m vte.cli extract data/videos_raw.json --output data/corpus.json
 3. **Parcours** (fonction pure, hors ligne, reproductible) :
 
 ```bash
-python -m vte.cli run data/corpus.json --start vid-001 --mode approfondir   # rayon 1
-python -m vte.cli run data/corpus.json --start vid-001 --mode decouvrir     # rayon 3
+python -m vte.cli run data/corpus.json --start vid-001 --rayon 1   # voisinage immédiat
+python -m vte.cli run data/corpus.json --start vid-001 --rayon 3   # s'éloigne du départ
 ```
 
-Chaque parcours produit un `run.json` auditable : départ, mode, rayon, vidéos, chemins de sujets, transitions.
+Chaque parcours produit un `run.json` auditable : départ, rayon, vidéos, chemins de sujets, transitions.
 
 ## Évaluation en aveugle (ADR-0001)
 
@@ -110,7 +110,7 @@ PYTHONPATH=. python eval/record_scores.py                          # notes sans 
 PYTHONPATH=. python eval/reveal.py                                 # go/no-go après notation complète
 ```
 
-Mapping lettres → origine (baseline / approfondir / decouvrir) : construire `eval/mapping.json` avant la révélation, sans la consulter pendant la notation.
+Mapping lettres → origine (baseline / parcours) : construire `eval/mapping.json` avant la révélation, sans la consulter pendant la notation.
 
 ## Tests
 

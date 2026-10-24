@@ -14,8 +14,8 @@ help: ## Liste les cibles disponibles
 serve: ## Serveur local : sélection, parcours, graphe (127.0.0.1, PORT 8000)
 	$(PY) -m vte.cli serve $(CORPUS) --port $(PORT)
 
-run: ## Calcule un parcours Découvrir depuis START
-	$(PY) -m vte.cli run $(CORPUS) --start $(START) --mode decouvrir --out $(RUN)
+run: ## Calcule un parcours au rayon 3 depuis START
+	$(PY) -m vte.cli run $(CORPUS) --start $(START) --rayon 3 --out $(RUN)
 
 feed: ## Génère le feed statique out/site/index.html
 	$(PY) -m vte.cli feed $(CORPUS) --out out/site/index.html
@@ -51,7 +51,7 @@ elargi: ## Régénère le corpus élargi data/corpus_elargi.json (corpus réel +
 	$(PY) scripts/make_elargi_corpus.py
 
 elargi-site: ## Site local depuis le corpus élargi : out/site (feed + parcours + graphe surligné, départ bill wurtz)
-	$(PY) -m vte.cli run $(ELARGI) --start $(ELARGI_START) --mode decouvrir --out out/run/elargi.json
+	$(PY) -m vte.cli run $(ELARGI) --start $(ELARGI_START) --rayon 3 --out out/run/elargi.json
 	$(PY) -m vte.cli feed $(ELARGI) --start $(ELARGI_START) --out out/site/index.html
 	$(PY) -m vte.cli graph $(ELARGI) --run out/run/elargi.json --out out/site/graphe.png
 	$(PY) -m vte.cli render $(ELARGI) --run out/run/elargi.json --out out/site/parcours.html

@@ -9,18 +9,15 @@ par le contrôle de fumée distant (check_deployed_url, avec fetch injecté).
 import pytest
 
 from vte import graph_engine, smoke
-from vte.render import build_feed_html, build_html, render_feed_html
+from vte.render import RAYON_FEED, build_feed_html, build_html, render_feed_html
 
 
-def both_runs(corpus: dict, start: str) -> dict:
-    return {
-        mode: graph_engine.parcours(corpus, start, mode).to_dict()
-        for mode in ("decouvrir", "approfondir")
-    }
+def feed_run(corpus: dict, start: str) -> dict:
+    return graph_engine.parcours(corpus, start, RAYON_FEED).to_dict()
 
 
 def feed_doc(rich_corpus) -> str:
-    return build_feed_html(rich_corpus, both_runs(rich_corpus, "v1"))
+    return build_feed_html(rich_corpus, feed_run(rich_corpus, "v1"))
 
 
 def test_content_accepts_generated_feed(rich_corpus):
@@ -28,7 +25,7 @@ def test_content_accepts_generated_feed(rich_corpus):
 
 
 def test_content_rejects_list_page(rich_corpus):
-    run = graph_engine.parcours(rich_corpus, "v1", "decouvrir").to_dict()
+    run = graph_engine.parcours(rich_corpus, "v1", RAYON_FEED).to_dict()
     list_page = build_html(rich_corpus, run)
 
     with pytest.raises(smoke.SmokeCheckError, match="feed"):
@@ -52,7 +49,7 @@ def test_content_rejects_feed_without_embedded_player(rich_corpus):
 
 def make_site(rich_corpus, tmp_path) -> object:
     site = tmp_path / "site"
-    render_feed_html(rich_corpus, both_runs(rich_corpus, "v1"), site / "index.html")
+    render_feed_html(rich_corpus, feed_run(rich_corpus, "v1"), site / "index.html")
     (site / "graphe.png").write_bytes(b"\x89PNG fake")
     return site
 
@@ -118,7 +115,7 @@ def test_deployed_url_fails_after_all_attempts(rich_corpus):
 
 
 def test_deployed_url_rejects_root_serving_list_page(rich_corpus):
-    run = graph_engine.parcours(rich_corpus, "v1", "decouvrir").to_dict()
+    run = graph_engine.parcours(rich_corpus, "v1", RAYON_FEED).to_dict()
     fetch = make_fetch([(200, build_html(rich_corpus, run))])
 
     with pytest.raises(smoke.SmokeCheckError, match="feed"):

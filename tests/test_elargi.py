@@ -105,9 +105,9 @@ PANEL_STARTS = [
 
 
 @pytest.mark.parametrize("start", PANEL_STARTS)
-@pytest.mark.parametrize("mode", ["approfondir", "decouvrir"])
-def test_elargi_parcours_chain_invariants(elargi_corpus, start, mode):
-    run = graph_engine.parcours(elargi_corpus, start, mode)
+@pytest.mark.parametrize("rayon", [1, 3])
+def test_elargi_parcours_chain_invariants(elargi_corpus, start, rayon):
+    run = graph_engine.parcours(elargi_corpus, start, rayon)
     assert run.videos[0] == start
     assert len(run.videos) == len(set(run.videos))
     assert len(run.videos) <= 5
@@ -119,8 +119,8 @@ def test_elargi_parcours_chain_invariants(elargi_corpus, start, mode):
 
 @pytest.mark.parametrize("start", PANEL_STARTS)
 def test_elargi_parcours_reproducible(elargi_corpus, start):
-    first = graph_engine.parcours(elargi_corpus, start, "decouvrir")
-    second = graph_engine.parcours(elargi_corpus, start, "decouvrir")
+    first = graph_engine.parcours(elargi_corpus, start, 3)
+    second = graph_engine.parcours(elargi_corpus, start, 3)
     assert first.to_dict() == second.to_dict()
 
 
@@ -128,7 +128,7 @@ def test_elargi_dead_topics_excluded_from_runs(elargi_corpus):
     dead = set(elargi_corpus["dead_topics"])
     assert dead
     for start in PANEL_STARTS:
-        run = graph_engine.parcours(elargi_corpus, start, "decouvrir")
+        run = graph_engine.parcours(elargi_corpus, start, 3)
         for transition in run.transitions:
             for topic in transition["topic_path"]:
                 assert topic not in dead

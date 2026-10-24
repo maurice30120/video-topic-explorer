@@ -1,4 +1,4 @@
-"""Saisie des notes en aveugle : l'origine (baseline / Approfondir / Découvrir) n'est jamais révélée.
+"""Saisie des notes en aveugle : l'origine (baseline / parcours sensible à la rétention) n'est jamais révélée.
 
 Les notes sont 1-5 sur trois critères (ADR-0001) : cohérence, surprise utile, clarté.
 Le matériel aveugle (départ + vidéos, explications masquées) est affiché depuis

@@ -49,7 +49,7 @@ jobs:
           python scripts/make_demo_corpus.py
 
       - name: Generate parcours (run)
-        run: python -m vte.cli run data/corpus_real.json --start "$DEFAULT_START" --mode decouvrir --out out/run/demo.json
+        run: python -m vte.cli run data/corpus_real.json --start "$DEFAULT_START" --rayon 3 --out out/run/demo.json
 
       - name: Build site (feed en index.html à la racine + graphe statique)
         run: |
