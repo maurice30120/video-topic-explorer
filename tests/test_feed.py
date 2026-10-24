@@ -161,6 +161,14 @@ def test_feed_end_card_complete_run_announces_completion(rich_corpus):
     assert "Parcours complet : 5 vidéos." in doc
 
 
+def test_feed_requires_runs_for_both_modes(rich_corpus):
+    runs = both_runs(rich_corpus, "v1")
+    del runs["approfondir"]
+
+    with pytest.raises(ValueError, match="approfondir"):
+        build_feed_html(rich_corpus, runs)
+
+
 def test_feed_discreet_graph_link(rich_corpus):
     runs = both_runs(rich_corpus, "v1")
     doc = build_feed_html(rich_corpus, runs, graph_href="graphe.png")

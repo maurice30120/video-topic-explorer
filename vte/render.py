@@ -270,18 +270,17 @@ def _card_html(
     )
 
 
-def _end_card_html(run: dict[str, Any], mode: str, other_mode: str | None) -> str:
+def _end_card_html(run: dict[str, Any], mode: str) -> str:
     """Carte de fin : raison d'arrêt du moteur, rejouer, basculer de mode."""
     if run["complete"]:
         reason = f"Parcours complet : {len(run['videos'])} vidéos."
     else:
         reason = run.get("reason") or "Parcours interrompu."
-    switch_html = ""
-    if other_mode:
-        switch_html = (
-            f'<button class="action basculer" data-mode-vers="{other_mode}" type="button">'
-            f"{MODE_SWITCH_LABELS[mode]}</button>"
-        )
+    other_mode = next(member.value for member in Mode if member.value != mode)
+    switch_html = (
+        f'<button class="action basculer" data-mode-vers="{other_mode}" type="button">'
+        f"{MODE_SWITCH_LABELS[mode]}</button>"
+    )
     return (
         '<article class="carte fin">'
         '<div class="fin-contenu">'
@@ -301,13 +300,12 @@ def _parcours_html(
     run: dict[str, Any],
     mode: str,
     active: bool,
-    other_mode: str | None,
 ) -> str:
     cards = []
     for index, video_id in enumerate(run["videos"]):
         transition = next((t for t in run["transitions"] if t["to"] == video_id), None)
         cards.append(_card_html(by_id, video_id, transition, index == 0))
-    cards.append(_end_card_html(run, mode, other_mode))
+    cards.append(_end_card_html(run, mode))
     return (
         f'<section class="parcours" data-mode="{html.escape(mode, quote=True)}"'
         + ("" if active else " hidden")
@@ -639,12 +637,13 @@ def build_feed_html(
     from .corpus import videos_by_id
 
     by_id = videos_by_id(corpus)
-    modes = [member.value for member in _FEED_MODES if member.value in runs]
-    if not modes:
-        raise ValueError("le feed exige au moins un parcours (mode decouvrir ou approfondir)")
+    missing = [member.value for member in _FEED_MODES if member.value not in runs]
+    if missing:
+        raise ValueError(
+            "le feed exige les parcours des deux modes ; manquant : " + ", ".join(missing)
+        )
+    modes = [member.value for member in _FEED_MODES]
     default_mode = _as_mode(default_mode).value
-    if default_mode not in modes:
-        default_mode = modes[0]
     toggles = "".join(
         f'<button class="mode" data-mode="{mode}" '
         f'aria-pressed="{"true" if mode == default_mode else "false"}" type="button">'
@@ -652,10 +651,7 @@ def build_feed_html(
         for mode in modes
     )
     sections = "\n".join(
-        _parcours_html(
-            by_id, runs[mode], mode, mode == default_mode,
-            next((m for m in modes if m != mode), None),
-        )
+        _parcours_html(by_id, runs[mode], mode, mode == default_mode)
         for mode in modes
     )
     graph_html = ""
