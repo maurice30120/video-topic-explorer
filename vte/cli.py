@@ -23,10 +23,19 @@ from .corpus import CorpusError, canonical, load_corpus
 
 EXTRACTION_PROMPT = (
     "Pour la vidéo suivante, extrais 3 à 5 sujets pertinents, sous forme de liste JSON "
-    'd\'objets {"raw": "<libellé>", "justification": "<courte justification fondée sur les données>"}. '
+    'd\'objets {{"raw": "<libellé>", "justification": "<courte justification fondée sur les données>"}}. '
     "Réponds uniquement avec le JSON, sans texte autour.\n\n"
     "Titre : {title}\nDescription : {description}\nTranscription : {transcript}"
 )
+
+
+def _model_version(response: Any, fallback: str) -> str:
+    """Version réelle du modèle rapportée par la réponse API (jamais « cached »)."""
+    for attr in ("model_version", "modelVersion"):
+        value = getattr(response, attr, None)
+        if value:
+            return str(value)
+    return fallback
 
 
 def cmd_ingest(args: argparse.Namespace) -> int:
@@ -54,6 +63,8 @@ def cmd_extract(args: argparse.Namespace) -> int:
     """Extraction Gemini une seule fois, avec cache immédiat dans le corpus.
 
     Nécessite GEMINI_API_KEY ; le résultat est figé et jamais rappelé pendant les parcours.
+    Une extraction qui échoue ou sort de la plage 3-5 sujets est enregistrée avec
+    un motif visible (extraction_error) : la vidéo est flaggée, pas acceptée en silence.
     """
     raw_path, corpus_path = Path(args.input), Path(args.output)
     raw_videos = json.loads(raw_path.read_text(encoding="utf-8"))
@@ -74,27 +85,48 @@ def cmd_extract(args: argparse.Namespace) -> int:
         return 2
     genai.configure(api_key=api_key)
     model = genai.GenerativeModel(args.model)
+    failures = 0
 
     for video in raw_videos:
         vid = video["id"]
-        if vid in done:
+        # Cache : seules les extractions réussies (sujets figés) sont cachées ;
+        # une vidéo flaggée (extraction_error) n'est pas « déjà extraite » : elle sera réessayée.
+        if vid in done and done[vid].get("topics") and not done[vid].get("extraction_error"):
             continue
         prompt = EXTRACTION_PROMPT.format(
             title=video.get("title", ""),
             description=video.get("description", ""),
             transcript=video.get("transcript") or "(non disponible)",
         )
-        response = model.generate_content(prompt)
-        extracted = json.loads(response.text.strip().removeprefix("```json").removesuffix("```").strip())
-        topics = []
-        for item in extracted:
-            raw_label = item["raw"]
-            topics.append({
-                "raw": raw_label,
-                "canonical": canonical(raw_label),
-                "justification": item.get("justification", ""),
-                "provenance": {"source": "gemini", "model": args.model, "version": "cached"},
-            })
+        try:
+            response = model.generate_content(prompt)
+            extracted = json.loads(response.text.strip().removeprefix("```json").removesuffix("```").strip())
+            if not isinstance(extracted, list):
+                raise ValueError("réponse JSON inattendue (liste attendue)")
+            if not 3 <= len(extracted) <= 5:
+                raise ValueError(f"{len(extracted)} sujets extraits (plage attendue : 3 à 5)")
+            version = _model_version(response, args.model)
+            topics = []
+            for item in extracted:
+                raw_label = item["raw"]
+                topics.append({
+                    "raw": raw_label,
+                    "canonical": canonical(raw_label),
+                    "justification": item.get("justification", ""),
+                    "provenance": {"source": "gemini", "model": args.model, "version": version},
+                })
+        except Exception as exc:
+            # Exception visible : la vidéo est flaggée dans le corpus, jamais acceptée en silence.
+            flagged = dict(video)
+            flagged.pop("topics", None)
+            flagged["extraction_error"] = str(exc)
+            done[vid] = flagged
+            corpus = {"videos": list(done.values())}
+            corpus_path.parent.mkdir(parents=True, exist_ok=True)
+            corpus_path.write_text(json.dumps(corpus, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+            print(f"ÉCHEC extraction : {vid} ({exc})", file=sys.stderr)
+            failures += 1
+            continue
         enriched = dict(video)
         enriched["topics"] = topics
         done[vid] = enriched
@@ -103,6 +135,9 @@ def cmd_extract(args: argparse.Namespace) -> int:
         corpus_path.parent.mkdir(parents=True, exist_ok=True)
         corpus_path.write_text(json.dumps(corpus, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
         print(f"extrait : {vid} ({len(topics)} sujets)")
+    if failures:
+        print(f"{failures} exception(s) d'extraction enregistrée(s) dans le corpus (extraction_error).", file=sys.stderr)
+        return 1
     print(f"corpus figé : {corpus_path}")
     return 0
 
