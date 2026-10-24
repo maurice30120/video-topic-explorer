@@ -176,7 +176,7 @@ def cmd_render(args: argparse.Namespace) -> int:
 
     corpus = load_corpus(args.corpus)
     run = json.loads(Path(args.run).read_text(encoding="utf-8"))
-    out = Path(args.out) or Path("out/parcours.html")
+    out = Path(args.out) if args.out else Path("out/parcours.html")
     render_html(corpus, run, out)
     print(f"page HTML : {out}")
     return 0
@@ -205,7 +205,7 @@ def cmd_graph(args: argparse.Namespace) -> int:
 
     corpus = load_corpus(args.corpus)
     run = json.loads(Path(args.run).read_text(encoding="utf-8")) if args.run else None
-    out = Path(args.out) or Path("out/graphe.png")
+    out = Path(args.out) if args.out else Path("out/graphe.png")
     render_graph(corpus, run, out)
     print(f"graphe statique : {out}")
     return 0
@@ -280,7 +280,7 @@ def main(argv: list[str] | None = None) -> int:
     p = sub.add_parser("run", help="calcule un parcours (Approfondir ou Découvrir)")
     p.add_argument("corpus")
     p.add_argument("--start", required=True)
-    p.add_argument("--mode", required=True, choices=["approfondir", "decouvrir"])
+    p.add_argument("--mode", required=True, choices=[mode.value for mode in graph_engine.Mode])
     p.add_argument("--out", default=None)
     p.set_defaults(func=cmd_run)
 
