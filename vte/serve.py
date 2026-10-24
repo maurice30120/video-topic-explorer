@@ -1,7 +1,10 @@
-"""Serveur local minimal (stdlib uniquement) pour la page de parcours.
+"""Serveur local minimal (stdlib uniquement) pour le parcours sensible à la rétention.
 
-Sert la page de sélection (départ vidéo ou sujet, mode Approfondir/Découvrir),
-lance les parcours via le moteur pur, écrit un run.json par parcours lancé,
+Sert le panneau piloté par le visionnage (chaîne initiale embarquée, mesure
+de durée par carte, sélecteur de sujets et commande de sortie de branche),
+les points d'accès JSON du pas suivant (/etape, durée de la carte quittée,
+rayon dérivé côté serveur) et de la sortie dirigée (/sortie), la page
+du parcours complet via le moteur pur avec un run.json par parcours lancé,
 affiche les motifs d'erreur (parcours partiel, départ isolé) et sert le
 graphe statique surligné à la demande. Pas de framework, pas de réseau externe.
 """
@@ -60,25 +63,18 @@ def card_html(video: dict[str, Any], chemin: str) -> str:
 
 
 _PANEL_JS = """
-var SEUIL_MS = 5000;
 var panneau = document.getElementById("panneau");
-var mode = panneau.dataset.mode;
-var pivot = null;
-var timerPivot = null;
+var selecteur = document.getElementById("sujet");
+var message = document.getElementById("message");
+var carteActive = null;
+var activation = null;
 var enCours = false;
 var terminee = false;
 
-function cartes() { return Array.prototype.slice.call(panneau.querySelectorAll(".carte")); }
+function cartes() { return Array.prototype.slice.call(panneau.querySelectorAll(".carte[data-video]")); }
 
-/* rétention applicative : rester SEUIL_MS sur une carte en fait le pivot */
-function marquerPivot(carte) {
-  pivot = carte.dataset.video;
-  var ancien = panneau.querySelector(".pivot-badge");
-  if (ancien) { ancien.remove(); }
-  var badge = document.createElement("p");
-  badge.className = "pivot-badge";
-  badge.textContent = "orientation : " + carte.querySelector(".titre").textContent;
-  carte.appendChild(badge);
+function exclus() {
+  return cartes().map(function (c) { return c.dataset.video; }).join("&exclu=");
 }
 
 function ajouterCarte(data) {
@@ -87,7 +83,7 @@ function ajouterCarte(data) {
   section.dataset.video = data.video.id;
   var chemin = document.createElement("p");
   chemin.className = "chemin";
-  chemin.textContent = data.topic_path.join(" \u2192 ");
+  chemin.textContent = data.topic_path.join(" → ");
   var titre = document.createElement("h2");
   titre.className = "titre";
   titre.textContent = data.video.title;
@@ -97,64 +93,101 @@ function ajouterCarte(data) {
   var lien = document.createElement("a");
   lien.className = "lien";
   lien.href = data.video.url;
-  lien.textContent = "voir la vid\u00e9o";
+  lien.textContent = "voir la vidéo";
   section.appendChild(chemin); section.appendChild(titre);
   section.appendChild(sujets); section.appendChild(lien);
   panneau.appendChild(section);
   observer.observe(section);
 }
 
-/* la suite est demandée depuis le pivot (la vidéo réellement regardée),
-   jamais depuis l'ordre linéaire des cartes déjà défilées vite */
-function etendre() {
+/* la fin honnête est explicite : plus aucune candidate ne reste */
+function arreterHonnetement() {
+  terminee = true;
+  var fin = document.createElement("section");
+  fin.className = "carte";
+  var p = document.createElement("p");
+  p.className = "chemin";
+  p.textContent = "fin honnête : plus aucune candidate ne reste";
+  fin.appendChild(p);
+  panneau.appendChild(fin);
+}
+
+/* rétention applicative : la durée de visionnage d'une carte se mesure
+   entre son activation et son départ ; la demande part au moment exact
+   où la carte courante est quittée, avec sa durée — le serveur dérive
+   le rayon (rester longtemps = rayon 1, passer vite = rayon 3) */
+function pasSuivant(depuis, duree) {
   if (enCours || terminee) { return; }
-  var liste = cartes();
-  var derniere = liste[liste.length - 1];
-  var depuis = pivot || derniere.dataset.video;
-  var exclus = liste.map(function (c) { return c.dataset.video; }).join("&exclu=");
   enCours = true;
-  fetch("/etape?from=" + encodeURIComponent(depuis) + "&mode=" + mode + "&exclu=" + exclus)
+  fetch("/etape?from=" + encodeURIComponent(depuis) + "&duree=" + duree + "&exclu=" + exclus())
     .then(function (reponse) {
-      if (reponse.status === 404) { terminee = true; return null; }
-      if (!reponse.ok) { return null; }
+      if (reponse.status === 404) { arreterHonnetement(); return null; }
+      if (!reponse.ok) { return reponse.json().then(function (data) { throw new Error(data.erreur); }); }
       return reponse.json();
     })
     .then(function (data) { if (data) { ajouterCarte(data); } })
+    .catch(function (erreur) { message.textContent = erreur.message; })
+    .finally(function () { enCours = false; });
+}
+
+/* sortie de branche dirigée : navigation explicite, distincte de la
+   rétention — elle ne juge jamais la carte en cours, la durée en cours
+   est abandonnée, jamais envoyée : ni zap ni like */
+function changerDeBranche() {
+  if (enCours || terminee) { return; }
+  var sujet = selecteur.value;
+  carteActive = null;
+  activation = null;
+  enCours = true;
+  fetch("/sortie?sujet=" + encodeURIComponent(sujet) + "&exclu=" + exclus())
+    .then(function (reponse) {
+      if (reponse.status === 404) { arreterHonnetement(); return null; }
+      if (!reponse.ok) { return reponse.json().then(function (data) { throw new Error(data.erreur); }); }
+      return reponse.json();
+    })
+    .then(function (data) { if (data) { ajouterCarte(data); } })
+    .catch(function (erreur) { message.textContent = erreur.message; })
     .finally(function () { enCours = false; });
 }
 
 var observer = new IntersectionObserver(function (entries) {
   entries.forEach(function (entry) {
     if (entry.intersectionRatio >= 0.6) { activer(entry.target); }
+    else if (entry.target === carteActive) { quitter(entry.target); }
   });
 }, { threshold: [0.6] });
 
+/* chaque carte oriente le pas suivant, entre son activation et son départ */
 function activer(carte) {
-  if (timerPivot) { clearTimeout(timerPivot); }
-  timerPivot = setTimeout(function () { marquerPivot(carte); }, SEUIL_MS);
-  var liste = cartes();
-  if (carte === liste[liste.length - 1]) { etendre(); }
+  carteActive = carte;
+  activation = Date.now();
 }
 
+function quitter(carte) {
+  var duree = Date.now() - activation;
+  carteActive = null;
+  pasSuivant(carte.dataset.video, duree);
+}
+
+document.getElementById("changer-branche").addEventListener("click", changerDeBranche);
 cartes().forEach(function (c) { observer.observe(c); });
 """
 
 
 def index_page(corpus: dict[str, Any], start: str | None = None, run: graph_engine.Run | None = None) -> str:
-    """Sélection départ/mode + panneau scroll à rétention.
+    """Panneau du parcours sensible à la rétention : le feed piloté par le visionnage.
 
-    Le panneau embarque la chaîne initiale du moteur (chemins de sujets affichés
-    sur chaque transition) ; la suite est demandée à /etape depuis la vidéo
-    réellement regardée : rester sur une carte en fait le pivot, le scroll
-    suit la branche du pivot (GLOSSARY, « Rétention applicative »).
+    La page embarque la chaîne initiale du moteur (chemins de sujets affichés
+    sur chaque transition) ; la durée de visionnage de chaque carte se mesure
+    entre son activation et son départ, et le pas suivant est demandé au
+    moment exact où la carte courante est quittée, avec sa durée — le rayon
+    est dérivé côté serveur (GLOSSARY, « Rétention applicative »). Le
+    sélecteur des sujets canoniques du corpus figé et la commande « changer
+    de branche » portent la sortie dirigée (navigation explicite : elle ne
+    juge jamais la carte en cours). Aucune référence aux modes dans la page
+    servie (spec #27, ticket #34).
     """
-    videos = sorted(corpus["videos"], key=lambda v: v["id"])
     topics = sorted({t["canonical"] for v in corpus["videos"] for t in v.get("topics", [])})
-    video_options = "\n".join(
-        f'<option value="{html.escape(v["id"])}">'
-        f"{html.escape(v['title'])} ({html.escape(v['id'])})</option>"
-        for v in videos
-    )
     topic_options = "\n".join(
         f'<option value="{html.escape(t)}">{html.escape(t)}</option>' for t in topics
     )
@@ -177,39 +210,32 @@ body {{ font-family: sans-serif; display: flex; flex-direction: column; }}
 .entete {{ padding: 0.75rem 2rem; }}
 .entete h1 {{ font-size: 1.1rem; margin: 0 0 0.5rem; }}
 label {{ display: block; margin: 0.25rem 0; }}
+.sortie button {{ margin-left: 0.5rem; }}
 .panneau {{ flex: 1; overflow-y: auto; scroll-snap-type: y mandatory; background: #faf7f2; }}
 .carte {{ min-height: 92%; scroll-snap-align: start; max-width: 560px; margin: 0 auto; padding: 1.5rem 1rem; border-top: 1px solid #e0d8cc; }}
 .chemin {{ color: #a0642a; font-size: 0.9rem; margin: 0 0 0.5rem; }}
 .titre {{ margin: 0 0 0.5rem; }}
 .sujets {{ color: #555; font-size: 0.9rem; }}
 .lien {{ display: inline-block; margin-top: 0.75rem; }}
-.pivot-badge {{ color: #1a7f37; font-weight: bold; margin: 0.75rem 0 0; }}
 .conseil {{ color: #777; font-size: 0.85rem; margin: 0.5rem 0 0; }}
+.message {{ color: #a33; font-size: 0.85rem; margin: 0.25rem 0 0; }}
 </style>
 </head>
 <body>
 <header class="entete">
 <h1>Video Topic Explorer</h1>
-<form action="/parcours" method="get">
-<label>Point de départ
-<select name="start">
-<optgroup label="Vidéos">
-{video_options}
-</optgroup>
-<optgroup label="Sujets">
+<form class="sortie" onsubmit="return false;">
+<label>Sujet
+<select name="sujet" id="sujet">
 {topic_options}
-</optgroup>
 </select>
 </label>
-<label>Mode
-<input type="radio" name="mode" value="approfondir" checked> Approfondir
-<input type="radio" name="mode" value="decouvrir"> Découvrir
-</label>
-<button type="submit">Lancer le parcours</button>
+<button type="button" id="changer-branche">Changer de branche</button>
 </form>
-<p class="conseil">Panneau ci-dessous : restez sur une vidéo pour en faire le pivot — la suite suivra sa branche.</p>
+<p class="conseil">Le temps de visionnage pilote le parcours : rester longtemps approfondit, passer vite éloigne. Changer de branche ne juge jamais la carte en cours.</p>
+<p class="message" id="message"></p>
 </header>
-<main class="panneau" id="panneau" data-mode="decouvrir">
+<main class="panneau" id="panneau">
 {cards}
 </main>
 <script>

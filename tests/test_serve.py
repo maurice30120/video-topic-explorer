@@ -1,10 +1,12 @@
-"""Serveur local minimal : sélection départ/mode, parcours lancés depuis la page.
+"""Serveur local minimal : parcours lancés depuis leur URL, run.json écrit.
 
 Seam testé (le plus haut possible) : l'interface HTTP du serveur stdlib
 (http.server), interrogée avec http.client contre un serveur éphémère
 lancé sur le port 0 — sans Selenium, sans navigateur, sans réseau externe.
 La logique serveur (dispatch départ/mode, run.json écrit par parcours lancé,
-chemins d'erreur) est testée automatiquement ; les cosmétiques de la page
+chemins d'erreur) est testée automatiquement ; la page d'accueil — le
+panneau du parcours sensible à la rétention — est testée à part
+(test_panneau.py) ; les cosmétiques de la page
 restent une vérification manuelle au sens des Testing Decisions du spec #2.
 """
 import http.client
@@ -49,23 +51,6 @@ def chain_server(chain_corpus, tmp_path):
     yield httpd
     httpd.shutdown()
     httpd.server_close()
-
-
-def test_index_page_offers_start_and_mode_selection(server):
-    """AC #7 : la page permet de sélectionner le départ (vidéo OU sujet) et le mode."""
-    status, body = get(server, "/")
-    doc = body.decode("utf-8")
-    assert status == 200
-    assert '<form action="/parcours" method="get">' in doc
-    assert 'name="start"' in doc
-    assert 'name="mode"' in doc
-    # les vidéos du corpus sont proposées comme départs
-    assert '<option value="v1"' in doc
-    # les sujets du corpus sont proposés comme départs
-    assert '<option value="Roslyn"' in doc
-    # les deux modes
-    assert 'value="approfondir"' in doc
-    assert 'value="decouvrir"' in doc
 
 
 def test_parcours_from_page_renders_result_and_writes_run_json(server, tmp_path):
