@@ -18,6 +18,18 @@ from urllib.parse import parse_qs, quote_plus, urlparse
 from . import graph_engine
 from .corpus import videos_by_id
 
+SEUIL_MS = 5000
+
+
+def rayon_depuis_duree(duree_ms: int) -> int:
+    """Rétention applicative → rayon du pas suivant (mapping binaire, spec #27).
+
+    Rester longtemps (durée ≥ SEUIL_MS) c'est aimer : le pas reste dans le
+    voisinage immédiat (rayon 1). Passer vite (durée < SEUIL_MS) c'est ne pas
+    aimer : le pas s'éloigne (rayon 3). Pas de bande intermédiaire.
+    """
+    return 1 if duree_ms >= SEUIL_MS else 3
+
 
 def panel_start(corpus: dict[str, Any]) -> tuple[str | None, graph_engine.Run | None]:
     """Départ du panneau : la vidéo par défaut si présente, sinon la première
@@ -292,12 +304,27 @@ def make_handler(corpus: dict[str, Any], runs_dir: Path) -> type[BaseHTTPRequest
             self._send_html(200, parcours_page(corpus, run, start, mode))
 
         def _handle_etape(self, query: dict[str, list[str]]) -> None:
-            """Pas suivant orienté par la vidéo regardée, servi en JSON au panneau."""
+            """Pas suivant orienté par la carte quittée, servi en JSON au panneau.
+
+            Phase d'expand : la durée de visionnage de la carte quittée pilote
+            le rayon côté serveur (rétention applicative) ; l'ancien paramètre
+            de mode reste accepté.
+            """
             start = (query.get("from") or [""])[0]
             mode = (query.get("mode") or ["decouvrir"])[0]
             exclu = set(query.get("exclu") or [])
+            duree = (query.get("duree") or [None])[0]
+            if duree is not None:
+                try:
+                    rayon = rayon_depuis_duree(int(duree))
+                except ValueError:
+                    self._send_json(400, {"erreur": f"durée invalide : {duree!r} (attendu : des millisecondes entières)"})
+                    return
             try:
-                step = graph_engine.next_step(corpus, start, mode, exclude=exclu)
+                if duree is not None:
+                    step = graph_engine.next_step(corpus, start, radius=rayon, exclude=exclu)
+                else:
+                    step = graph_engine.next_step(corpus, start, mode, exclude=exclu)
             except graph_engine.PathfindingError as exc:
                 self._send_json(400, {"erreur": str(exc)})
                 return
