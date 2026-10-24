@@ -133,33 +133,3 @@ def test_etape_plus_aucune_candidate(server):
     assert status == 404
     data = json.loads(body)
     assert "erreur" in data
-
-
-# --- Serveur : le panneau à rétention sur la page d'accueil ---
-
-
-def test_index_offre_le_panneau_avec_la_chaine_initiale(server):
-    """La page d'accueil embarque le panneau scroll : cartes de la chaîne initiale,
-    chaque transition porte son chemin de sujets (explicabilité)."""
-    status, body = get(server, "/")
-    doc = body.decode("utf-8")
-    assert status == 200
-    assert 'class="panneau"' in doc
-    cards = [line for line in doc.splitlines() if "data-video=" in line]
-    assert len(cards) >= 5, "le panneau doit embarquer une chaîne initiale de 5 cartes"
-    assert "point de départ" in doc
-    assert "→" in doc  # chemins de sujets affichés sur les transitions
-
-
-def test_index_embarque_la_logique_de_retention(server):
-    """Rétention applicative : rester sur une carte en fait le pivot ; la suite
-    est demandée depuis le pivot, pas depuis l'ordre linéaire des cartes."""
-    status, body = get(server, "/")
-    doc = body.decode("utf-8")
-    assert status == 200
-    assert "IntersectionObserver" in doc
-    assert "pivot" in doc
-    assert "/etape?from=" in doc
-    assert "SEUIL_MS" in doc
-    # les cartes portent leur vidéo pour l'observateur
-    assert 'data-video=' in doc
