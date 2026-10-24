@@ -184,7 +184,7 @@ def parcours(corpus: dict[str, Any], start: str, mode: str, radius: int | None =
     - Chaque vidéo suggérée suit la précédente par un chemin de sujets
       réellement présent dans le graphe (direct ou via sujets intermédiaires).
     - Cinq vidéos distinctes maximum, jamais de doublon.
-    - Départage à égalité : longueur du chemin de sujets, puis ID croissant.
+    - Départage à égalité : sujets communs décroissants, puis ID croissant.
     - Jamais d'élargissement automatique du rayon.
     - Sujets morts exclus des candidats ; parcours partiel avec motif.
     """
@@ -275,7 +275,7 @@ def _extend(
             paths.sort(key=len)
             common = len(topics_in(graph, current) & topics_in(graph, video_id))
             next_candidates.append((common, video_id, paths[0]))
-        next_candidates.sort(key=lambda c: (-c[0], len(c[2]), c[1]))
+        next_candidates.sort(key=lambda c: (-c[0], c[1]))
         if not next_candidates:
             break
         common, chosen, best = next_candidates[0]

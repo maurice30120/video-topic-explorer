@@ -162,3 +162,21 @@ def load_corpus_from_videos(videos):
     Path(path).unlink()
     return corpus
 
+def test_tiebreak_is_common_topics_then_id_only():
+    """Departage spec : sujets communs decroissant, puis ID croissant — rien d'autre.
+
+    Depuis c, y et z sont a egalite de sujets communs (0) ; z a un chemin de
+    sujets plus court ([P, R]) mais un ID plus grand : l'ID doit gagner,
+    la longueur du chemin ne participe pas au departage.
+    """
+    corpus = load_corpus_from_videos([
+        make_video("s", ["A"]),
+        make_video("br", ["A", "P", "R"]),
+        make_video("c", ["P", "Q"]),
+        make_video("z", ["R", "S"]),
+        make_video("y", ["S"]),
+    ])
+    run = graph_engine.parcours(corpus, "s", "decouvrir")
+    assert run.videos == ["s", "br", "c", "y", "z"]
+
+
