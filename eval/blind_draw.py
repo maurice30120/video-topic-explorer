@@ -12,7 +12,7 @@ Génère le protocole complet, sans discipline manuelle (user story 18) :
   vidéos (id, titre) — jamais le mode, l'origine ni les chemins de sujets,
 - tire et fige l'ordre de présentation des 15 listes (lettres A..O),
 - écrit eval/order.json (matériel aveugle) et eval/mapping.json (enveloppe
-  scellée : lettre → {start, kind}, lue uniquement par reveal.py).
+  scellée : lettre → {start, origine}, lue uniquement par reveal.py).
 """
 
 import argparse
@@ -27,7 +27,7 @@ from vte.corpus import load_corpus
 from vte.graph_engine import PathfindingError, baseline, parcours
 
 SUGGESTIONS = 4
-KINDS = ("baseline", "approfondir", "decouvrir")
+ORIGINES = ("baseline", "approfondir", "decouvrir")
 
 
 def eligible_starts(corpus: dict) -> list[str]:
@@ -41,7 +41,7 @@ def eligible_starts(corpus: dict) -> list[str]:
     for video in corpus["videos"]:
         start = video["id"]
         try:
-            lengths = {len(_blind_list(corpus, start, kind)[:SUGGESTIONS]) for kind in KINDS}
+            lengths = {len(_blind_list(corpus, start, origine)[:SUGGESTIONS]) for origine in ORIGINES}
         except PathfindingError:
             continue
         if len(lengths) == 1 and 0 not in lengths:
@@ -49,12 +49,12 @@ def eligible_starts(corpus: dict) -> list[str]:
     return sorted(eligible)
 
 
-def _blind_list(corpus: dict, start: str, kind: str) -> list[dict]:
+def _blind_list(corpus: dict, start: str, origine: str) -> list[dict]:
     by_id = {video["id"]: video for video in corpus["videos"]}
-    if kind == "baseline":
+    if origine == "baseline":
         ids = baseline(corpus, start)[:SUGGESTIONS]
     else:
-        ids = parcours(corpus, start, kind).videos[1:1 + SUGGESTIONS]
+        ids = parcours(corpus, start, origine).videos[1:1 + SUGGESTIONS]
     return [{"id": vid, "title": by_id[vid]["title"]} for vid in ids]
 
 
@@ -69,14 +69,14 @@ def build_protocol(corpus: dict, seed: int, starts: list[str] | None = None, cou
             )
         starts = rng.sample(pool, count)
     for start in starts:
-        lengths = {len(_blind_list(corpus, start, kind)[:SUGGESTIONS]) for kind in KINDS}
+        lengths = {len(_blind_list(corpus, start, origine)[:SUGGESTIONS]) for origine in ORIGINES}
         if len(lengths) != 1 or 0 in lengths:
             raise SystemExit(
                 f"départ {start!r} : listes de longueurs différentes {sorted(lengths)} ; "
                 "la longueur ne doit pas révéler l'origine ; choisissez un départ éligible"
             )
 
-    slots = [{"start": start, "kind": kind} for start in starts for kind in KINDS]
+    slots = [{"start": start, "origine": origine} for start in starts for origine in ORIGINES]
     rng.shuffle(slots)
     letters = [chr(ord("A") + i) for i in range(len(slots))]
 
@@ -87,12 +87,12 @@ def build_protocol(corpus: dict, seed: int, starts: list[str] | None = None, cou
         "letters": {
             letter: {
                 "start": slot["start"],
-                "videos": _blind_list(corpus, slot["start"], slot["kind"]),
+                "videos": _blind_list(corpus, slot["start"], slot["origine"]),
             }
             for letter, slot in zip(letters, slots)
         },
     }
-    mapping = {letter: {"start": slot["start"], "kind": slot["kind"]} for letter, slot in zip(letters, slots)}
+    mapping = {letter: {"start": slot["start"], "origine": slot["origine"]} for letter, slot in zip(letters, slots)}
     return order, mapping
 
 

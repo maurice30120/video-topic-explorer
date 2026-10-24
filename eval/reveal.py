@@ -26,10 +26,10 @@ def reveal(order_path: str, scores_path: str, mapping_path: str) -> dict:
 
     buckets: dict[str, list[dict]] = {}
     for letter, entry in mapping.items():
-        buckets.setdefault(entry["kind"], []).append(scores[letter])
+        buckets.setdefault(entry["origine"], []).append(scores[letter])
 
-    def avg(kind, criterion):
-        rows = buckets.get(kind, [])
+    def avg(origine, criterion):
+        rows = buckets.get(origine, [])
         return sum(row[criterion] for row in rows) / len(rows) if rows else 0.0
 
     surprise_baseline = avg("baseline", "surprise")
@@ -54,7 +54,7 @@ def reveal(order_path: str, scores_path: str, mapping_path: str) -> dict:
                 "decouvrir": coherence_decouvrir,
             },
             "surprise": {"baseline": surprise_baseline, "decouvrir": surprise_decouvrir},
-            "clarte": {kind: avg(kind, "clarte") for kind in ("baseline", "approfondir", "decouvrir")},
+            "clarte": {origine: avg(origine, "clarte") for origine in ("baseline", "approfondir", "decouvrir")},
         },
         "marge_surprise": surprise_margin,
         "seuil": {"marge_min": MARGIN, "adr": "docs/adr/0001-seuil-go-no-go-pre-engage.md"},
