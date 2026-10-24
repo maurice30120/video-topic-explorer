@@ -8,9 +8,9 @@ intermédiaire). La sortie de branche dirigée par sujet est servie à un
 point d'accès distinct (/sortie) : première candidate par la règle de
 départage unique du moteur, hors déjà-vues ; sujet mort ou inconnu →
 erreur explicite ; aucune candidate restante → 404 fin honnête. Le
-contrat JSON reste identique (départ, arrivée, vidéo, chemin de sujets)
-et l'ancien paramètre de mode reste accepté — phase d'expand, rien ne
-casse. Testé au niveau HTTP (http.client) comme test_etape.py.
+contrat JSON reste identique (départ, arrivée, vidéo, chemin de sujets) ;
+/etape n'accepte plus aucun mode, seulement la durée (ticket #35). Testé
+au niveau HTTP (http.client) comme test_etape.py.
 """
 import http.client
 import json
@@ -123,12 +123,21 @@ def test_etape_duree_respecte_le_contrat_json(server):
 
 
 def test_etape_duree_respecte_les_exclusions(server):
-    """Durée ou mode : les cartes déjà montrées restent exclues, sans répéter
+    """Avec la durée : les cartes déjà montrées restent exclues, sans répéter
     l'exclue."""
     status, body = get(server, "/etape?from=v1&duree=6000&exclu=v2")
     assert status == 200
     data = json.loads(body)
     assert data["to"] != "v2"
+
+
+def test_etape_sans_duree_n_accepte_aucun_repli(server):
+    """Ticket #35 : aucun paramètre ne remplace la durée — sans elle,
+    400 explicite, jamais de repli silencieux sur un autre rayon."""
+    status, body = get(server, "/etape?from=v1")
+    assert status == 400
+    data = json.loads(body)
+    assert "durée requise" in data["erreur"]
 
 
 def test_etape_duree_invalide_erreur_explicite(server):

@@ -94,24 +94,24 @@ def test_ponts_surprenants_presents(arbre):
         assert touches, f"pont surprenant absent : {first} × {second}"
 
 
-@pytest.mark.parametrize("mode", ["decouvrir", "approfondir"])
-def test_parcours_complet_sans_doublon_depuis_chaque_depart(arbre, mode):
-    """Quel que soit le départ (les 69 vidéos), le parcours aboutit : 5 vidéos distinctes."""
+@pytest.mark.parametrize("rayon", [1, 3])
+def test_parcours_complet_sans_doublon_depuis_chaque_depart(arbre, rayon):
+    """Quel que soit le départ et le rayon, le parcours aboutit : 5 vidéos distinctes."""
     for video in arbre["videos"]:
-        run = graph_engine.parcours(arbre, video["id"], mode)
-        assert run.complete, f"{video['id']} ({mode}) : {run.reason}"
+        run = graph_engine.parcours(arbre, video["id"], rayon)
+        assert run.complete, f"{video['id']} (rayon {rayon}) : {run.reason}"
         assert run.videos[0] == video["id"]
         assert len(run.videos) == graph_engine.MAX_PATH
         assert len(set(run.videos)) == len(run.videos)
 
 
-@pytest.mark.parametrize("mode", ["decouvrir", "approfondir"])
-def test_le_visionnage_oriente_la_suivante(arbre, mode):
+@pytest.mark.parametrize("rayon", [1, 3])
+def test_le_visionnage_oriente_la_suivante(arbre, rayon):
     """Chaque transition part d'un sujet de la vidéo regardée, aboutit à un sujet
     de la suivante, et le chemin est réel : deux sujets consécutifs co-occurrent
     sur une vidéo du corpus (vérifié dans le JSON, pas par le moteur)."""
     for video in arbre["videos"]:
-        run = graph_engine.parcours(arbre, video["id"], mode)
+        run = graph_engine.parcours(arbre, video["id"], rayon)
         by_id = {v["id"]: v for v in arbre["videos"]}
         for step in run.transitions:
             watched = by_id[step["from"]]
@@ -124,25 +124,25 @@ def test_le_visionnage_oriente_la_suivante(arbre, mode):
                 assert cooccurs(arbre, first, second), f"chemin irréel : {first} → {second}"
 
 
-@pytest.mark.parametrize("mode", ["decouvrir", "approfondir"])
-def test_saut_de_branche_systematique(arbre, mode):
+@pytest.mark.parametrize("rayon", [1, 3])
+def test_saut_de_branche_systematique(arbre, rayon):
     """Une branche de 4 vidéos s'épuise avant les 5 du parcours : chaque chaîne
     traverse un pont et visite au moins deux branches, quel que soit le départ."""
     by_id = {v["id"]: v for v in arbre["videos"]}
     for video in arbre["videos"]:
-        run = graph_engine.parcours(arbre, video["id"], mode)
+        run = graph_engine.parcours(arbre, video["id"], rayon)
         visited = set()
         for vid in run.videos:
             visited |= branches_of(arbre, by_id[vid])
-        assert len(visited) >= 2, f"{video['id']} ({mode}) : jamais de saut de branche ({run.videos})"
+        assert len(visited) >= 2, f"{video['id']} (rayon {rayon}) : jamais de saut de branche ({run.videos})"
 
 
-@pytest.mark.parametrize("mode", ["decouvrir", "approfondir"])
-def test_l_arbre_entier_est_exploite(arbre, mode):
+@pytest.mark.parametrize("rayon", [1, 3])
+def test_l_arbre_entier_est_exploite(arbre, rayon):
     """Parcours intéressant : en partant de partout, l'union des chaînes couvre les 14 branches."""
     visited = set()
     for video in arbre["videos"]:
-        run = graph_engine.parcours(arbre, video["id"], mode)
+        run = graph_engine.parcours(arbre, video["id"], rayon)
         for vid in run.videos:
             by_id = {v["id"]: v for v in arbre["videos"]}
             visited |= branches_of(arbre, by_id[vid])
@@ -151,8 +151,8 @@ def test_l_arbre_entier_est_exploite(arbre, mode):
 
 def test_parcours_deterministe(arbre):
     """Le même visionnage oriente toujours la même suite : deux runs identiques."""
-    run1 = graph_engine.parcours(arbre, "vid-ro-001", "decouvrir")
-    run2 = graph_engine.parcours(arbre, "vid-ro-001", "decouvrir")
+    run1 = graph_engine.parcours(arbre, "vid-ro-001", 3)
+    run2 = graph_engine.parcours(arbre, "vid-ro-001", 3)
     assert run1.videos == run2.videos
     assert [t["topic_path"] for t in run1.transitions] == [t["topic_path"] for t in run2.transitions]
 

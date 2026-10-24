@@ -34,6 +34,22 @@ def rayon_depuis_duree(duree_ms: int) -> int:
     return 1 if duree_ms >= SEUIL_MS else 3
 
 
+_RAYON_INVALIDE = object()
+"""Sentinelle : le paramètre rayon est présent mais n'est pas un entier."""
+
+
+def _parse_rayon(query: dict[str, list[str]]) -> int | None | object:
+    """Extrait le rayon d'une query : absent → None (le moteur répondra), présent
+    mais non entier → _RAYON_INVALIDE (le point d'accès répond 400 explicite)."""
+    raw = (query.get("rayon") or [None])[0]
+    if raw is None:
+        return None
+    try:
+        return int(raw)
+    except ValueError:
+        return _RAYON_INVALIDE
+
+
 def panel_start(corpus: dict[str, Any]) -> tuple[str | None, graph_engine.Run | None]:
     """Départ du panneau : la vidéo par défaut si présente, sinon la première
     vidéo (triée par id) qui donne un parcours — l'index reste utile sur tout corpus figé."""
@@ -43,7 +59,9 @@ def panel_start(corpus: dict[str, Any]) -> tuple[str | None, graph_engine.Run | 
     candidates = ([DEFAULT_START] if DEFAULT_START in ids else []) + sorted(ids)
     for candidate in candidates:
         try:
-            return candidate, graph_engine.parcours(corpus, candidate, "decouvrir")
+            # rayon 3 (« passer vite ») : la chaîne initiale embarquée couvre large,
+            # le pilotage par la durée reprend dès la première carte quittée.
+            return candidate, graph_engine.parcours(corpus, candidate, 3)
         except graph_engine.PathfindingError:
             continue
     return None, None
@@ -268,26 +286,26 @@ body {{ font-family: sans-serif; margin: 2rem; }}
 """
 
 
-def parcours_page(corpus: dict[str, Any], run: graph_engine.Run, start: str, mode: str) -> str:
+def parcours_page(corpus: dict[str, Any], run: graph_engine.Run, start: str, rayon: int) -> str:
     """Rend la page du parcours avec le lien vers le graphe surligné à la demande."""
     from .render import build_html
 
-    graph_href = f"/graphe.png?start={quote_plus(start)}&mode={quote_plus(mode)}"
+    graph_href = f"/graphe.png?start={quote_plus(start)}&rayon={rayon}"
     return build_html(corpus, run.to_dict(), graph_href)
 
 
-def graph_png(corpus: dict[str, Any], start: str, mode: str) -> bytes:
-    """Rend le graphe statique ; sous-graphe du parcours surligné si start/mode fournis.
+def graph_png(corpus: dict[str, Any], start: str, rayon: int | None) -> bytes:
+    """Rend le graphe statique ; sous-graphe du parcours surligné si start/rayon fournis.
 
-    Un start/mode invalide ou isolé rend le graphe complet, sans surlignage :
+    Un start/rayon invalide ou isolé rend le graphe complet, sans surlignage :
     c'est exactement ce que suggère le message « affichez le graphe du corpus ».
     """
     from .render import render_graph
 
     run = None
-    if start and mode:
+    if start and rayon is not None:
         try:
-            run = graph_engine.parcours(corpus, start, mode).to_dict()
+            run = graph_engine.parcours(corpus, start, rayon).to_dict()
         except graph_engine.PathfindingError:
             run = None
     with tempfile.TemporaryDirectory() as tmp:
@@ -314,45 +332,52 @@ def make_handler(corpus: dict[str, Any], runs_dir: Path) -> type[BaseHTTPRequest
             elif parsed.path == "/graphe.png":
                 query = parse_qs(parsed.query)
                 start = (query.get("start") or [""])[0]
-                mode = (query.get("mode") or [""])[0]
-                self._send_png(graph_png(corpus, start, mode))
+                rayon = _parse_rayon(query)
+                if rayon is _RAYON_INVALIDE:
+                    rayon = None  # rayon illisible : graphe complet, sans surlignage
+                self._send_png(graph_png(corpus, start, rayon))
             else:
                 self._send_html(404, "<html><body><p>page inconnue</p></body></html>")
 
         def _handle_parcours(self, query: dict[str, list[str]]) -> None:
             start = (query.get("start") or [""])[0]
-            mode = (query.get("mode") or [""])[0]
+            rayon = _parse_rayon(query)
+            if rayon == _RAYON_INVALIDE:
+                self._send_html(400, error_page(
+                    "rayon invalide : le parcours complet prend un rayon explicite "
+                    "(un nombre entier >= 1, ex. rayon=3)"
+                ))
+                return
             try:
-                run = graph_engine.parcours(corpus, start, mode)
+                run = graph_engine.parcours(corpus, start, rayon)
             except graph_engine.PathfindingError as exc:
                 self._send_html(400, error_page(str(exc)))
                 return
             # Un run.json par parcours lancé depuis la page, au même format que la CLI.
-            graph_engine.save_run(run, Path(runs_dir) / f"{start}-{mode}.json")
-            self._send_html(200, parcours_page(corpus, run, start, mode))
+            graph_engine.save_run(run, Path(runs_dir) / f"{start}-r{run.radius}.json")
+            self._send_html(200, parcours_page(corpus, run, start, run.radius))
 
         def _handle_etape(self, query: dict[str, list[str]]) -> None:
             """Pas suivant orienté par la carte quittée, servi en JSON au panneau.
 
-            Phase d'expand : la durée de visionnage de la carte quittée pilote
-            le rayon côté serveur (rétention applicative) ; l'ancien paramètre
-            de mode reste accepté.
+            La durée de visionnage de la carte quittée pilote le rayon côté
+            serveur (rétention applicative, mapping binaire) : sans durée,
+            la requête est invalide — jamais de repli silencieux sur un
+            autre rayon.
             """
             start = (query.get("from") or [""])[0]
-            mode = (query.get("mode") or ["decouvrir"])[0]
             exclu = set(query.get("exclu") or [])
             duree = (query.get("duree") or [None])[0]
-            if duree is not None:
-                try:
-                    rayon = rayon_depuis_duree(int(duree))
-                except ValueError:
-                    self._send_json(400, {"erreur": f"durée invalide : {duree!r} (attendu : des millisecondes entières)"})
-                    return
+            if duree is None:
+                self._send_json(400, {"erreur": "durée requise : le rayon du pas suivant se dérive de la durée de visionnage de la carte quittée (millisecondes entières)"})
+                return
             try:
-                if duree is not None:
-                    step = graph_engine.next_step(corpus, start, radius=rayon, exclude=exclu)
-                else:
-                    step = graph_engine.next_step(corpus, start, mode, exclude=exclu)
+                rayon = rayon_depuis_duree(int(duree))
+            except ValueError:
+                self._send_json(400, {"erreur": f"durée invalide : {duree!r} (attendu : des millisecondes entières)"})
+                return
+            try:
+                step = graph_engine.next_step(corpus, start, radius=rayon, exclude=exclu)
             except graph_engine.PathfindingError as exc:
                 self._send_json(400, {"erreur": str(exc)})
                 return

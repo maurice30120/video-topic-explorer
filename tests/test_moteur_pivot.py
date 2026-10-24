@@ -3,9 +3,8 @@
 Seam testé (moteur pur, sans HTTP ni session) : le rayon devient un
 paramètre explicite du pas suivant et du parcours complet — il filtre
 l'éligibilité des candidates, jamais la recherche du chemin de sujets
-(GLOSSARY, « Chemin de sujets »). Les modes Approfondir et Découvrir
-restent acceptés pendant la phase d'expand : sans rayon explicite, le
-mode donne le rayon via MODE_RADIUS.
+(GLOSSARY, « Chemin de sujets »). Le rayon est dérivé de la rétention
+applicative côté session ou serveur — plus aucun mode n'existe (ticket #35).
 
 Le premier pas depuis un sujet est la brique de la sortie de branche
 dirigée (GLOSSARY, « Sortie de branche ») : (sujet, déjà-vues) → pas,
@@ -38,12 +37,12 @@ def _topic_path_est_reel(corpus, from_id, to_id, topic_path):
 # --- Le pas suivant prend un rayon explicite, filtre l'éligibilité, jamais le chemin ---
 
 
-def test_pas_suivant_rayon_explicite_vaut_le_rayon_du_mode(rich_corpus):
-    """Rayon explicite 1 = le pas du mode approfondir ; rayon 3 = celui du mode découvrir."""
+def test_pas_suivant_rayon_explicite_vaut_la_premiere_transition_du_parcours(rich_corpus):
+    """Le pas au rayon N est exactement la première transition du parcours complet au rayon N."""
     rapproche = graph_engine.next_step(rich_corpus, "v1", radius=1)
     elargi = graph_engine.next_step(rich_corpus, "v1", radius=3)
-    assert rapproche == graph_engine.parcours(rich_corpus, "v1", "approfondir").transitions[0]
-    assert elargi == graph_engine.parcours(rich_corpus, "v1", "decouvrir").transitions[0]
+    assert rapproche == graph_engine.parcours(rich_corpus, "v1", 1).transitions[0]
+    assert elargi == graph_engine.parcours(rich_corpus, "v1", 3).transitions[0]
 
 
 def test_pas_suivant_rayon_explicite_filtre_l_eligibilite_pas_le_chemin(chain_corpus):
@@ -61,26 +60,19 @@ def test_pas_suivant_rayon_explicite_filtre_l_eligibilite_pas_le_chemin(chain_co
     assert len(atteint["topic_path"]) == 3  # Roslyn → Compilateurs → LLVM : jamais plafonné par le rayon
 
 
-def test_pas_suivant_rayon_explicite_sans_mode(rich_corpus):
-    """Le mode n'est plus obligatoire : le rayon explicite suffit à orienter le pas."""
-    sans_mode = graph_engine.next_step(rich_corpus, "v1", radius=3)
-    assert sans_mode == graph_engine.parcours(rich_corpus, "v1", "decouvrir").transitions[0]
-
-
-def test_pas_suivant_sans_rayon_ni_mode_erreur_explicite(chain_corpus):
-    """Ni rayon ni mode : erreur explicite, jamais de repli silencieux."""
-    with pytest.raises(graph_engine.PathfindingError):
+def test_pas_suivant_sans_rayon_erreur_explicite(chain_corpus):
+    """Ticket #35 : plus aucun mode ne donne le rayon — sans rayon, erreur explicite."""
+    with pytest.raises(graph_engine.PathfindingError, match="rayon requis"):
         graph_engine.next_step(chain_corpus, "a")
 
 
-def test_le_rayon_explicite_du_parcours_complet_prime_sur_le_mode(rich_corpus):
-    """Le parcours complet prend lui aussi un rayon explicite : rayon 1 malgré le
-    mode découvrir, le run porte ce rayon."""
-    run = graph_engine.parcours(rich_corpus, "v1", "decouvrir", radius=1)
+def test_le_parcours_complet_prend_un_rayon_explicite(rich_corpus):
+    """Le parcours complet prend lui aussi un rayon explicite : le run porte ce
+    rayon, jamais un mode (ticket #35)."""
+    run = graph_engine.parcours(rich_corpus, "v1", 1)
     assert run.radius == 1
-    assert run.mode.value == "decouvrir"
-    reference = graph_engine.parcours(rich_corpus, "v1", "approfondir")
-    assert run.videos == reference.videos
+    assert "mode" not in run.to_dict()
+    assert graph_engine.parcours(rich_corpus, "v1", 3).radius == 3
 
 
 # --- Premier pas depuis un sujet : la brique de la sortie de branche dirigée ---
@@ -91,7 +83,7 @@ def test_premier_pas_depuis_sujet_reprend_le_depart_par_sujet(rich_corpus):
     départ par sujet : v1 et v4 portent le sujet (vérifié dans le JSON), à sujets
     communs égaux l'ID croissant décide."""
     step = graph_engine.first_step(rich_corpus, "Roslyn")
-    assert step == graph_engine.parcours(rich_corpus, "Roslyn", "approfondir").transitions[0]
+    assert step["to"] == "v1"  # porteurs triés : à sujets communs égaux, l'ID croissant gagne
     porteurs = [v["id"] for v in rich_corpus["videos"] if "Roslyn" in topics_of(v)]
     assert porteurs == ["v1", "v4"]
     assert step["to"] == "v1"
