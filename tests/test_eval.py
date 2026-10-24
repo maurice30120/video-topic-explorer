@@ -227,6 +227,20 @@ class TestReveal:
         with pytest.raises(SystemExit, match="clarte"):
             reveal.reveal(*paths)
 
+    def test_refuses_scoring_not_yet_started(self, tmp_path):
+        """Révélation lancée avant toute notation : refus propre, pas de traceback."""
+        reveal = load_eval("reveal")
+        mapping = {"A": {"start": "v1", "origine": "baseline"}, "B": {"start": "v1", "origine": "decouvrir"}}
+        order = {
+            "order": ["A", "B"],
+            "letters": {letter: {"start": "v1", "videos": [{"id": "v2", "title": "Vidéo v2"}]} for letter in "AB"},
+        }
+        tmp_path.joinpath("order.json").write_text(json.dumps(order, ensure_ascii=False), encoding="utf-8")
+        tmp_path.joinpath("mapping.json").write_text(json.dumps(mapping, ensure_ascii=False), encoding="utf-8")
+        with pytest.raises(SystemExit, match="notation incomplète"):
+            reveal.reveal(str(tmp_path / "order.json"), str(tmp_path / "scores.json"),
+                          str(tmp_path / "mapping.json"))
+
     def test_decision_go(self, tmp_path):
         reveal = load_eval("reveal")
         mapping = {
@@ -254,6 +268,82 @@ class TestReveal:
             assert kind in result["moyennes"]["clarte"]
             assert kind in result["moyennes"]["coherence"]
         assert result["moyennes"]["clarte"]["decouvrir"] == 5.0
+
+    def test_clarte_reported_but_outside_the_formula(self, tmp_path):
+        """AC #24 : la clarté est rapportée pour information, hors formule de
+        décision — une clarté désastreuse n'empêche pas le GO si la formule
+        (marge surprise, pas de perte de cohérence) est satisfaite."""
+        reveal = load_eval("reveal")
+        mapping = {
+            "A": {"start": "v1", "origine": "baseline"},
+            "B": {"start": "v1", "origine": "approfondir"},
+            "C": {"start": "v1", "origine": "decouvrir"},
+        }
+        scores = {
+            "A": {"coherence": 4, "surprise": 2, "clarte": 5},
+            "B": {"coherence": 4, "surprise": 3, "clarte": 1},
+            "C": {"coherence": 4, "surprise": 4, "clarte": 1},
+        }
+        paths = self.write_inputs(tmp_path, ["A", "B", "C"], mapping, scores)
+        result = reveal.reveal(*paths)
+        assert result["decision"].startswith("GO")
+        assert result["moyennes"]["clarte"]["decouvrir"] == 1.0
+        assert result["comparaisons"]["decouvrir"]["clarte"] == -4.0
+
+    def test_reports_per_mode_comparisons_vs_baseline(self, tmp_path):
+        """La révélation rapporte la comparaison (parcours vs baseline) par mode,
+        sur les trois critères — la clarté pour information, hors formule."""
+        reveal = load_eval("reveal")
+        mapping = {
+            "A": {"start": "v1", "origine": "baseline"},
+            "B": {"start": "v1", "origine": "approfondir"},
+            "C": {"start": "v1", "origine": "decouvrir"},
+        }
+        scores = {
+            "A": {"coherence": 4, "surprise": 2, "clarte": 5},
+            "B": {"coherence": 5, "surprise": 3, "clarte": 4},
+            "C": {"coherence": 4, "surprise": 4, "clarte": 3},
+        }
+        paths = self.write_inputs(tmp_path, ["A", "B", "C"], mapping, scores)
+        result = reveal.reveal(*paths)
+        assert result["comparaisons"]["approfondir"] == {
+            "coherence": 1.0, "surprise": 1.0, "clarte": -1.0,
+        }
+        assert result["comparaisons"]["decouvrir"] == {
+            "coherence": 0.0, "surprise": 2.0, "clarte": -2.0,
+        }
+        assert result["decision"].startswith("GO")
+
+    def test_exact_margin_of_one_is_go(self, tmp_path):
+        """ADR-0001 : marge ≥ 1. Une marge vraie de 1 (8/3 - 5/3) ne doit pas
+        être rejetée par un artefact d'arrondi flottant."""
+        reveal = load_eval("reveal")
+        mapping = {
+            "A": {"start": "v1", "origine": "baseline"},
+            "B": {"start": "v1", "origine": "baseline"},
+            "C": {"start": "v1", "origine": "baseline"},
+            "D": {"start": "v1", "origine": "approfondir"},
+            "E": {"start": "v1", "origine": "approfondir"},
+            "F": {"start": "v1", "origine": "approfondir"},
+            "G": {"start": "v1", "origine": "decouvrir"},
+            "H": {"start": "v1", "origine": "decouvrir"},
+            "I": {"start": "v1", "origine": "decouvrir"},
+        }
+        scores = {
+            "A": {"coherence": 4, "surprise": 2, "clarte": 3},
+            "B": {"coherence": 4, "surprise": 2, "clarte": 3},
+            "C": {"coherence": 4, "surprise": 1, "clarte": 3},
+            "D": {"coherence": 4, "surprise": 3, "clarte": 3},
+            "E": {"coherence": 4, "surprise": 3, "clarte": 3},
+            "F": {"coherence": 4, "surprise": 3, "clarte": 3},
+            "G": {"coherence": 4, "surprise": 3, "clarte": 3},
+            "H": {"coherence": 4, "surprise": 3, "clarte": 3},
+            "I": {"coherence": 4, "surprise": 2, "clarte": 3},
+        }
+        paths = self.write_inputs(tmp_path, sorted(mapping), mapping, scores)
+        result = reveal.reveal(*paths)
+        assert result["marge_surprise"] == 1.0
+        assert result["decision"].startswith("GO")
 
     def test_decision_no_go_on_surprise_margin(self, tmp_path):
         reveal = load_eval("reveal")

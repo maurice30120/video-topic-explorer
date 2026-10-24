@@ -99,7 +99,7 @@ def graph_png(corpus: dict[str, Any], start: str, mode: str) -> bytes:
     Un start/mode invalide ou isolé rend le graphe complet, sans surlignage :
     c'est exactement ce que suggère le message « affichez le graphe du corpus ».
     """
-    from .render import render_graph_png
+    from .render import render_graph
 
     run = None
     if start and mode:
@@ -109,7 +109,7 @@ def graph_png(corpus: dict[str, Any], start: str, mode: str) -> bytes:
             run = None
     with tempfile.TemporaryDirectory() as tmp:
         out = Path(tmp) / "graphe.png"
-        render_graph_png(corpus, run, out)
+        render_graph(corpus, run, out)
         return out.read_bytes()
 
 
