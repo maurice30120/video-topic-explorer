@@ -76,6 +76,29 @@ def build_graph(corpus: dict[str, Any]) -> nx.Graph:
     return graph
 
 
+def graph_stats(corpus: dict[str, Any]) -> dict[str, Any]:
+    """Stats du graphe biparti : composantes connectées, sujets morts, densité.
+
+    Les sujets morts (portés par une seule vidéo) y sont distingués des sujets
+    reliant plusieurs vidéos : ils restent dans le graphe visuel mais sont
+    exclus des candidats de parcours.
+    """
+    graph = build_graph(corpus)
+    topic_nodes = [n for n, d in graph.nodes(data=True) if d["kind"] == "topic"]
+    sizes = sorted((len(c) for c in nx.connected_components(graph)), reverse=True)
+    degree = {n.removeprefix("topic:"): graph.degree(n) for n in topic_nodes}
+    return {
+        "videos": graph.number_of_nodes() - len(topic_nodes),
+        "topics": len(topic_nodes),
+        "edges": graph.number_of_edges(),
+        "components": len(sizes),
+        "component_sizes": sizes,
+        "density": nx.density(graph),
+        "dead_topics": sorted(t for t, deg in degree.items() if deg < 2),
+        "linking_topics": sorted(t for t, deg in degree.items() if deg >= 2),
+    }
+
+
 def topic_radius(graph: nx.Graph, seed_topics: set[str], radius: int) -> set[str]:
     """Sujets atteignables en au plus `radius` hops de sujets depuis les sujets du départ.
 

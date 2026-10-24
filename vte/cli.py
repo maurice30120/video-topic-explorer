@@ -6,6 +6,7 @@ Utilisation :
     python -m vte run data/corpus.json --start vid-001 --mode decouvrir
     python -m vte render data/corpus.json --run data/runs/<fichier>.json --out out/parcours.html
     python -m vte graph data/corpus.json --run data/runs/<fichier>.json --out out/graphe.png
+    python -m vte stats data/corpus.json
 """
 
 from __future__ import annotations
@@ -149,6 +150,21 @@ def cmd_graph(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_stats(args: argparse.Namespace) -> int:
+    """Affiche les stats du graphe biparti : composantes, sujets morts, densité."""
+    corpus = load_corpus(args.corpus)
+    stats = graph_engine.graph_stats(corpus)
+    print(f"vidéos : {stats['videos']}")
+    print(f"sujets : {stats['topics']} (dont {len(stats['dead_topics'])} sujets morts)")
+    print(f"liens vidéo-sujet : {stats['edges']}")
+    sizes = ", ".join(str(size) for size in stats["component_sizes"])
+    print(f"composantes connectées : {stats['components']} (tailles : {sizes})")
+    print(f"sujets morts : {', '.join(stats['dead_topics']) or 'aucun'}")
+    print(f"sujets reliant plusieurs vidéos : {', '.join(stats['linking_topics']) or 'aucun'}")
+    print(f"densité : {stats['density']:.3f}")
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="vte", description="Video Topic Explorer — MVP")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -188,6 +204,10 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--run", default=None)
     p.add_argument("--out", default=None)
     p.set_defaults(func=cmd_graph)
+
+    p = sub.add_parser("stats", help="stats du graphe : composantes, sujets morts, densité")
+    p.add_argument("corpus")
+    p.set_defaults(func=cmd_stats)
 
     args = parser.parse_args(argv)
     return args.func(args)
