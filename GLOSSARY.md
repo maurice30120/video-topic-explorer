@@ -16,13 +16,21 @@ _Avoid_ : recommandation, saut
 Une chaîne ordonnée de vidéos distinctes, où chaque vidéo partage un sujet (direct ou via un sujet intermédiaire) avec la précédente. Jusqu'à cinq vidéos au MVP.
 _Avoid_ : liste, playlist, séquence
 
-**Approfondir** :
-Le mode qui parcourt le graphe en restant dans le voisinage immédiat du point de départ (rayon de 1 hop de sujets).
-_Avoid_ : explorer en profondeur, mode focus
+**Parcours sensible à la rétention** :
+Le mode unique du feed : la durée de visionnage de la dernière carte quittée décide du rayon du pas suivant. Rester longtemps garde le parcours dans le voisinage immédiat de ce qui est aimé ; passer vite s'en éloigne.
+_Avoid_ : Approfondir, Découvrir, mode adaptatif, personnalisation
 
-**Découvrir** :
-Le mode qui parcourt le graphe en s'éloignant progressivement du point de départ (rayon de 2 à 3 hops de sujets) tout en gardant des transitions explicables.
-_Avoid_ : mode surprise, mode aléatoire
+**Pont** :
+Une vidéo dont les sujets relient deux branches du graphe ; c'est elle qui rend le saut de branche possible.
+_Avoid_ : passerelle, lien, raccourci
+
+**Saut de branche** :
+Une transition qui quitte la branche courante pour une branche voisine en empruntant un pont.
+_Avoid_ : zapping, dérive, changement de mode
+
+**Sortie de branche** :
+L'action explicite de quitter la branche en cours, dirigée par le choix d'un sujet canonique réel ou non dirigée. C'est un acte de navigation : elle ne juge jamais la carte courante.
+_Avoid_ : zap, dislike, changement de mode
 
 **Baseline** :
 Les vidéos partageant au moins un sujet avec le point de départ, triées par nombre de sujets communs décroissant. C'est la liste thématique honnête contre laquelle le graphe est comparé.
@@ -46,5 +54,9 @@ Un sujet associé à une seule vidéo. Présent dans le JSON et le graphe visuel
 _Avoid_ : sujet orphelin, cul-de-sac
 
 **Rétention applicative** :
-Le temps de visionnage effectif d'une vidéo par un lecteur du parcours, observé dans la page elle-même. C'est le signal implicite d'appréciation d'une vidéo : rester longtemps, c'est aimer ; passer vite, c'est ne pas aimer.
+Le temps de visionnage effectif d'une carte par le curioeur, observé dans la page elle-même. C'est le signal implicite d'appréciation : rester longtemps, c'est aimer ; passer vite, c'est ne pas aimer.
 _Avoid_ : like, note, étoile, rétention YouTube Analytics
+
+**Fin honnête** :
+L'arrêt explicite du feed quand plus aucune candidate ne reste à proposer. Une fin normale du parcours, jamais une erreur.
+_Avoid_ : bug, échec, feed vide
