@@ -9,7 +9,7 @@ from __future__ import annotations
 import json
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any
+from typing import Any, Iterable
 
 import networkx as nx
 
@@ -37,20 +37,6 @@ MODE_RADIUS: dict[Mode, int] = {Mode.APPROFONDIR: 1, Mode.DECOUVRIR: 3}
 
 class PathfindingError(ValueError):
     """Point de départ invalide ou parcouru impossible."""
-
-
-@dataclass(frozen=True)
-class Transition:
-    """Transition entre deux vidéos d'un parcours.
-
-    `topic_path` est le chemin de sujets réellement présent dans le graphe
-    (ex. ["Roslyn", "Compilateurs", "LLVM"]) — jamais une justification inventée.
-    """
-
-    topic_path: list[str]
-
-    def explanation(self) -> str:
-        return " → ".join(self.topic_path)
 
 
 @dataclass
@@ -192,13 +178,30 @@ def topics_in(graph: nx.Graph, video_id: str, allowed: set[str] | None = None) -
     return topics
 
 
-def parcours(corpus: dict[str, Any], start: str, mode: str, radius: int | None = None) -> Run:
+def _ranked_candidates(
+    graph: nx.Graph, seed_topics: set[str], video_ids: Iterable[str]
+) -> list[str]:
+    """Départage unique (docs/MVP.md §11) : sujets communs décroissants, puis ID croissant.
+
+    Cette seule règle sert le choix de la première vidéo d'un départ par
+    sujet comme chaque extension ; la longueur des chemins de sujets n'y
+    participe jamais.
+    """
+    scored = [(len(seed_topics & topics_in(graph, video_id)), video_id) for video_id in video_ids]
+    scored.sort(key=lambda item: (-item[0], item[1]))
+    return [video_id for _, video_id in scored]
+
+
+def parcours(corpus: dict[str, Any], start: str, mode: str | Mode, radius: int | None = None) -> Run:
     """Fonction pure : (corpus figé, point de départ, mode) → run.
 
     - Chaque vidéo suggérée suit la précédente par un chemin de sujets
-      réellement présent dans le graphe (direct ou via sujets intermédiaires).
+      réellement présent dans le graphe complet (direct ou via sujets
+      intermédiaires) ; le rayon ne filtre que l'éligibilité des
+      candidates par rapport au départ, jamais la recherche de chemin.
     - Cinq vidéos distinctes maximum, jamais de doublon.
-    - Départage à égalité : sujets communs décroissants, puis ID croissant.
+    - Départage unique : sujets communs décroissants, puis ID croissant —
+      la longueur du chemin de sujets n'y intervient jamais.
     - Jamais d'élargissement automatique du rayon.
     - Sujets morts exclus des candidats ; parcours partiel avec motif.
     """
@@ -222,11 +225,10 @@ def parcours(corpus: dict[str, Any], start: str, mode: str, radius: int | None =
     if start_kind is StartKind.TOPIC and f"topic:{start}" not in graph:
         raise PathfindingError(f"sujet inconnu : {start!r}")
 
-    if start_kind == "video":
-        chain: list[str] = [start]
+    if start_kind is StartKind.VIDEO:
+        chain = [start]
         seed_topics = topics_in(graph, start)
     else:
-        chain = []
         seed_topics = {start}
 
     alive_seed = seed_topics - dead
@@ -238,19 +240,14 @@ def parcours(corpus: dict[str, Any], start: str, mode: str, radius: int | None =
         )
 
     if start_kind is StartKind.TOPIC:
-        if not any(
-            topics_in(graph, data["video_id"], allowed)
-            for _, data in graph.nodes(data=True)
-            if data["kind"] == "video"
-        ):
-            raise PathfindingError(
-                "point de départ isolé : aucune vidéo ne porte ce sujet vivant dans le rayon"
-            )
-        chain = [min(
-            (v for v in by_id if topics_in(graph, v) & {start}),
-            key=lambda v: v,
-        )]
-        run = _extend(graph, corpus, chain, allowed, projected, mode, radius, start, start_kind)
+        chain = [
+            _ranked_candidates(
+                graph,
+                alive_seed,
+                [video_id for video_id in by_id if start in topics_in(graph, video_id)],
+            )[0]
+        ]
+        run = _extend(graph, chain, allowed, projected, mode, radius, start, start_kind)
         run.transitions.insert(0, {
             "from": None,
             "from_node": None,
@@ -262,43 +259,40 @@ def parcours(corpus: dict[str, Any], start: str, mode: str, radius: int | None =
         })
         return run
 
-    return _extend(graph, corpus, chain, allowed, projected, mode, radius, start, start_kind)
+    return _extend(graph, chain, allowed, projected, mode, radius, start, start_kind)
 
 
 def _extend(
     graph: nx.Graph,
-    corpus: dict[str, Any],
     chain: list[str],
     allowed: set[str],
     projected: nx.Graph,
     mode: Mode,
     radius: int,
     start: str,
-    start_kind: str,
+    start_kind: StartKind,
 ) -> Run:
+    """Étend la chaîne vidéo par vidéo jusqu'à MAX_PATH ou épuisement des candidates."""
     run = Run(start=start, start_kind=start_kind, mode=mode, radius=radius)
     used = set(chain)
-    current = chain[-1] if chain else None
+    current = chain[-1]
 
-    while current is not None and len(chain) < MAX_PATH:
-        current_topics = topics_in(graph, current, allowed)
-        next_candidates: list[tuple[int, str, list[str]]] = []
+    while len(chain) < MAX_PATH:
+        paths: dict[str, list[str]] = {}
         for node, data in graph.nodes(data=True):
             if data["kind"] != "video" or data["video_id"] in used:
                 continue
             video_id = data["video_id"]
-            video_topics = topics_in(graph, video_id, allowed)
-            if not video_topics:
-                continue
+            if not topics_in(graph, video_id, allowed):
+                continue  # le rayon filtre l'éligibilité, jamais la recherche de chemin
             path = _shortest_topic_path(projected, graph, current, video_id)
-            if path is None:
-                continue
-            common = len(topics_in(graph, current) & topics_in(graph, video_id))
-            next_candidates.append((common, video_id, path))
-        next_candidates.sort(key=lambda c: (-c[0], c[1]))
-        if not next_candidates:
+            if path is not None:
+                paths[video_id] = path
+        ranked = _ranked_candidates(graph, topics_in(graph, current), paths)
+        if not ranked:
             break
-        common, chosen, best = next_candidates[0]
+        chosen = ranked[0]
+        best = paths[chosen]
         run.transitions.append({
             "from": current,
             "from_node": f"video:{current}",
