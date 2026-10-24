@@ -1,0 +1,16 @@
+[
+  {
+    "id": "aa11bb22cc33",
+    "url": "https://www.youtube.com/watch?v=aa11bb22cc33",
+    "title": "Roslyn sous le capot",
+    "description": "Comment la plateforme de compilateur C# analyse et réécrit le code.",
+    "transcript": null
+  },
+  {
+    "id": "dd44ee55ff66",
+    "url": "https://www.youtube.com/watch?v=dd44ee55ff66",
+    "title": "Promenade dans l'optimiseur LLVM",
+    "description": "Du LLVM IR au code machine : passes et transformations.",
+    "transcript": null
+  }
+]

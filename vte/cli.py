@@ -23,10 +23,19 @@ from .corpus import CorpusError, canonical, load_corpus
 
 EXTRACTION_PROMPT = (
     "Pour la vidéo suivante, extrais 3 à 5 sujets pertinents, sous forme de liste JSON "
-    'd\'objets {"raw": "<libellé>", "justification": "<courte justification fondée sur les données>"}. '
+    'd\'objets {{"raw": "<libellé>", "justification": "<courte justification fondée sur les données>"}}. '
     "Réponds uniquement avec le JSON, sans texte autour.\n\n"
     "Titre : {title}\nDescription : {description}\nTranscription : {transcript}"
 )
+
+
+def _model_version(response: Any, fallback: str) -> str:
+    """Version réelle du modèle rapportée par la réponse API (jamais « cached »)."""
+    for attr in ("model_version", "modelVersion"):
+        value = getattr(response, attr, None)
+        if value:
+            return str(value)
+    return fallback
 
 
 def cmd_ingest(args: argparse.Namespace) -> int:
@@ -86,6 +95,7 @@ def cmd_extract(args: argparse.Namespace) -> int:
         )
         response = model.generate_content(prompt)
         extracted = json.loads(response.text.strip().removeprefix("```json").removesuffix("```").strip())
+        version = _model_version(response, args.model)
         topics = []
         for item in extracted:
             raw_label = item["raw"]
@@ -93,7 +103,7 @@ def cmd_extract(args: argparse.Namespace) -> int:
                 "raw": raw_label,
                 "canonical": canonical(raw_label),
                 "justification": item.get("justification", ""),
-                "provenance": {"source": "gemini", "model": args.model, "version": "cached"},
+                "provenance": {"source": "gemini", "model": args.model, "version": version},
             })
         enriched = dict(video)
         enriched["topics"] = topics
