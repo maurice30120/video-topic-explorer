@@ -127,15 +127,40 @@ def test_deployed_url_rejects_root_serving_list_page(rich_corpus):
         )
 
 
+# ------------------------------------------------------------------ dérivation du run
+
+
+def test_first_video_from_run_derives_first_of_generated_run():
+    import json
+
+    run = {"videos": ["v1", "v2"]}
+
+    assert smoke.first_video_from_run(run) == "v1"
+
+
+def test_first_video_from_run_rejects_run_without_videos():
+    with pytest.raises(smoke.SmokeCheckError, match="aucune vidéo"):
+        smoke.first_video_from_run({"videos": []})
+
+
 # ------------------------------------------------------------------ CLI vte smoke
+
+
+def _write_run(tmp_path, videos):
+    import json
+
+    run_path = tmp_path / "run.json"
+    run_path.write_text(json.dumps({"videos": videos}), encoding="utf-8")
+    return run_path
 
 
 def test_cli_smoke_local_site_passes(rich_corpus, tmp_path, capsys):
     from vte.cli import main
 
     site = make_site(rich_corpus, tmp_path)
+    run_path = _write_run(tmp_path, ["v1"])
 
-    assert main(["smoke", "--site", str(site), "--first-video", "v1"]) == 0
+    assert main(["smoke", "--site", str(site), "--run", str(run_path)]) == 0
     assert "feed" in capsys.readouterr().out
 
 
@@ -143,6 +168,16 @@ def test_cli_smoke_local_site_fails_with_exit_code(rich_corpus, tmp_path, capsys
     from vte.cli import main
 
     site = make_site(rich_corpus, tmp_path)
+    run_path = _write_run(tmp_path, ["v2"])  # pas la carte de départ du site
 
-    assert main(["smoke", "--site", str(site), "--first-video", "v2"]) == 1
+    assert main(["smoke", "--site", str(site), "--run", str(run_path)]) == 1
     assert "ERREUR" in capsys.readouterr().err
+
+
+def test_cli_smoke_rejects_unreadable_run(tmp_path, capsys):
+    from vte.cli import main
+
+    run_path = tmp_path / "run.json"  # absent
+
+    assert main(["smoke", "--site", str(tmp_path), "--run", str(run_path)]) == 1
+    assert "run" in capsys.readouterr().err

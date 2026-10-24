@@ -7,7 +7,9 @@ Deux niveaux, un seul contrat :
   l'URL publique une fois GitHub Pages propagé (avec retries).
 
 Le parcours par défaut du site est « Découvrir » (mode par défaut du feed) :
-la première carte attendue est la carte de départ de ce parcours.
+la première carte attendue est la carte de départ de ce parcours. Cette
+première vidéo n'est jamais ressaisie à la main : elle est dérivée du
+run.json généré en amont (vte.smoke.first_video_from_run).
 """
 
 from __future__ import annotations
@@ -27,6 +29,21 @@ DEFAULT_MODE = DEFAULT_FEED_MODE.value
 
 class SmokeCheckError(Exception):
     """Le site ne répond pas au contrat du feed publié (messages en français)."""
+
+
+def first_video_from_run(run: dict) -> str:
+    """Première vidéo attendue du site, dérivée du run.json généré.
+
+    Le run est l'artefact de référence : sa première vidéo est la carte de
+    départ du parcours par défaut. Aucune ressaisie manuelle.
+    """
+    videos = run.get("videos") if isinstance(run, dict) else None
+    if not videos:
+        raise SmokeCheckError(
+            "le run fourni ne contient aucune vidéo : impossible de dériver "
+            "la première vidéo attendue du site"
+        )
+    return videos[0]
 
 
 def _first_card_slice(doc: str, start: int) -> str:

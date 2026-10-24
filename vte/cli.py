@@ -9,7 +9,7 @@ Utilisation :
     python -m vte graph data/corpus.json --run data/runs/<fichier>.json --out out/graphe.png (ou .svg)
     python -m vte stats data/corpus.json
     python -m vte serve data/corpus.json --port 8000
-    python -m vte.cli smoke --site out/site --first-video ghnY4S8unMM (ou --url https://…)
+    python -m vte.cli smoke --site out/site --run out/run/demo.json (ou --url https://…)
 """
 
 from __future__ import annotations
@@ -238,24 +238,31 @@ def cmd_stats(args: argparse.Namespace) -> int:
 def cmd_smoke(args: argparse.Namespace) -> int:
     """Contrôle de fumée du site : contenu généré (répertoire) ou URL publique.
 
-    Le déploiement GitHub Pages est lent à propager : le contrôle distant
-    retente (attempts x delay) avant d'échouer.
+    La première vidéo attendue est dérivée du run.json généré en amont
+    (--run), jamais ressaisie à la main. Le déploiement GitHub Pages est
+    lent à propager : le contrôle distant retente (attempts x delay).
     """
-    from .smoke import SmokeCheckError, check_deployed_url, check_site_dir
+    from .smoke import SmokeCheckError, check_deployed_url, check_site_dir, first_video_from_run
 
     try:
+        run = json.loads(Path(args.run).read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        print(f"ERREUR : impossible de lire le run {args.run} ({exc})", file=sys.stderr)
+        return 1
+    try:
+        first_video = first_video_from_run(run)
         if args.url:
             check_deployed_url(
                 args.url,
-                first_video=args.first_video,
+                first_video=first_video,
                 graph_name=args.graph,
                 attempts=args.attempts,
                 delay=args.delay,
             )
-            print(f"contrôle de fumée : {args.url} sert le feed (première carte {args.first_video})")
+            print(f"contrôle de fumée : {args.url} sert le feed (première carte {first_video}, dérivée de {args.run})")
         else:
-            check_site_dir(args.site, first_video=args.first_video, graph_name=args.graph)
-            print(f"contrôle de fumée : {args.site} — la racine sert le feed (première carte {args.first_video})")
+            check_site_dir(args.site, first_video=first_video, graph_name=args.graph)
+            print(f"contrôle de fumée : {args.site} — la racine sert le feed (première carte {first_video}, dérivée de {args.run})")
     except SmokeCheckError as exc:
         print(f"ERREUR : {exc}", file=sys.stderr)
         return 1
@@ -322,7 +329,7 @@ def main(argv: list[str] | None = None) -> int:
     p = sub.add_parser("smoke", help="contrôle de fumée du site : répertoire généré ou URL publique")
     p.add_argument("--site", default="out/site", help="répertoire du site généré (contrôle local)")
     p.add_argument("--url", default=None, help="URL publique de la racine du site (contrôle distant)")
-    p.add_argument("--first-video", required=True, help="première vidéo attendue du parcours par défaut")
+    p.add_argument("--run", required=True, help="run.json généré : la première vidéo attendue en est dérivée")
     p.add_argument("--graph", default="graphe.png")
     p.add_argument("--attempts", type=int, default=10, help="tentatives du contrôle distant")
     p.add_argument("--delay", type=float, default=30.0, help="secondes entre deux tentatives distantes")

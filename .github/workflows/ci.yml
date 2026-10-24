@@ -48,8 +48,13 @@ jobs:
         run: |
           python -m vte.cli feed data/corpus_real.json --start ghnY4S8unMM --out out/site/index.html
           python -m vte.cli graph data/corpus_real.json --run out/run/demo.json --out out/site/graphe.png
-      - name: Smoke check generated site (feed à la racine, pas de page liste)
-        run: python -m vte.cli smoke --site out/site --first-video ghnY4S8unMM
+      - name: Smoke check generated site (feed à la racine, première carte dérivée du run généré)
+        run: python -m vte.cli smoke --site out/site --run out/run/demo.json
+      - name: Upload run artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: run
+          path: out/run/demo.json
       - name: Upload site artifact
         uses: actions/upload-artifact@v4
         with:
@@ -91,7 +96,11 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install --retries 5 networkx
+      - name: Download run artifact (première vidéo attendue dérivée du run généré)
+        uses: actions/download-artifact@v4
+        with:
+          name: run
       - name: Smoke check public URL (racine = feed, retries pendant la propagation Pages)
         run: |
           python -m vte.cli smoke --url "${{ needs.deploy-pages.outputs.page_url }}" \
-            --first-video ghnY4S8unMM --attempts 20 --delay 30
+            --run demo.json --attempts 20 --delay 30
